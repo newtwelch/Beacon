@@ -1,0 +1,29 @@
+﻿<div class="font-ark z-10 flex h-screen min-w-20
+flex-col items-center rounded-r-3xl bg-l-sidepanel
+py-5 text-l-text
+dark:text-d-text dark:bg-d-sidepanel">
+	
+	<div class="flex-1 flex flex-col">
+		<button class="size-12 text-center text-lg @(ActivePage == BeaconPage.SongLibrary ? "text-l-primary dark:text-d-primary" : "")"
+		@onclick="() => SwitchPage.InvokeAsync(BeaconPage.SongLibrary)">S</button>
+
+		<button class="size-12 text-center text-lg @(ActivePage == BeaconPage.BibleLibrary ? "text-l-primary dark:text-d-primary" : "")"
+		@onclick="() => SwitchPage.InvokeAsync(BeaconPage.BibleLibrary)">B</button>
+	</div>
+	
+	<button class="size-12 text-center text-lg justify-self-end @(ActivePage == BeaconPage.SettingsPage ? "text-l-primary dark:text-d-primary" : "")"
+	@onclick="() => SwitchPage.InvokeAsync(BeaconPage.SettingsPage)">O</button>
+
+</div>
+
+<div class="z-0 absolute h-screen w-20 bg-l-container dark:bg-d-container">
+
+</div>
+
+@code {
+	[Parameter]
+	public EventCallback<BeaconPage> SwitchPage { get; set; }
+
+	[Parameter]
+	public BeaconPage ActivePage { get; set; }
+}

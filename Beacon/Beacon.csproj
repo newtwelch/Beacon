@@ -13,22 +13,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="Blazor\wwwroot\css\input.css">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Blazor\wwwroot\index.html">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
+      <None Include="wwwroot\css\input.css" />
+      <None Include="wwwroot\css\output.css" />
+      <None Include="wwwroot\fonts\arkicons.ttf" />
+      <None Include="wwwroot\fonts\GONTSERRAT-BOLD.TTF" />
+      <None Include="wwwroot\fonts\GONTSERRAT-REGULAR.TTF" />
+      <None Include="wwwroot\index.html" />
     </ItemGroup>
-
+	
+	
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="8.*" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.*" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Blazor\Components\" />
-      <Folder Include="Model\" />
     </ItemGroup>
 
 </Project>

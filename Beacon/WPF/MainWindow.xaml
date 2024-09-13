@@ -5,25 +5,60 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:b="http://schemas.microsoft.com/winfx/2006/xaml/presentation/blazor"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:Beacon.WPF;assembly=Beacon"
+    xmlns:local="clr-namespace:Beacon"
     xmlns:blazor="clr-namespace:Beacon.Blazor"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="MainWindow"
-    MinHeight="506"
-    MinWidth="900"
+    Title="Beacon"
+    WindowStyle="None"
     Height="720"
     Width="1280"
+    Background="#121314"
     mc:Ignorable="d">
-    <Grid>
-        <b:BlazorWebView
-            HostPage="Blazor/wwwroot/index.html"
-            Services="{StaticResource services}"
-            StartPath="/">
+
+    <!-- =====================================
+    WINDOW CHROME: custom title bar and window stuff
+    ========================================== -->
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="40" ResizeBorderThickness="5" CornerRadius="24"
+                     GlassFrameThickness="0" NonClientFrameEdges="Left,Right,Bottom"/>
+    </WindowChrome.WindowChrome>
+
+    <DockPanel Margin="5 1">
+
+        <!-- =====================================
+        TITLE BAR: Icon, Menus, and App Buttons
+        ========================================== -->
+        <Border DockPanel.Dock="Top" Background="#121314" BorderBrush="#1D1F21" Height="40" BorderThickness="0 0 0 1" Margin="-1 -1 -1 0">
+
+            <DockPanel Grid.ColumnSpan="2" LastChildFill="False" DockPanel.Dock="Top">
+                <!--  Logo : ARK! -->
+                <Image x:Name="Logo" Height="20" Margin="15 5 5 5"/>
+                <TextBlock x:Name="AppTitle"  FontFamily="Gontserrat" Foreground="#9A989A"
+                               FontSize="14" VerticalAlignment="Center" Margin="5 0 0 0"/>
+                <!-- CLOSE : close the app -->
+                <Button x:Name="CloseButton" Style="{StaticResource WindowButton}"
+                            Background="#EF4949" Margin="0 0 20 0"/>
+                <!-- MINIMIZE & MAXIMIZE : beep boop -->
+                <Button x:Name="MinMaxButton" Style="{StaticResource WindowButton}"
+                            Background="#EFA73A" />
+                <!-- HIDE : where am i? -->
+                <Button x:Name="HideButton" Style="{StaticResource WindowButton}"
+                            Background="#21FF72" />
+            </DockPanel>
+
+        </Border>
+
+        <b:BlazorWebView DockPanel.Dock="Right"
+            Background="#0A0A0A"
+            HostPage="wwwroot/index.html"
+            Services="{DynamicResource services}">
             <b:BlazorWebView.RootComponents>
                 <b:RootComponent
-                    ComponentType="{x:Type blazor:Main}"
-                    Selector="#app"/>
+                    Selector="#app"
+                    ComponentType="{x:Type blazor:Main}"/>
             </b:BlazorWebView.RootComponents>
         </b:BlazorWebView>
-    </Grid>
+
+
+    </DockPanel>
 </Window>
