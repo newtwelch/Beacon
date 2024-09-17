@@ -23,6 +23,7 @@
 	
 	
     <ItemGroup>
+        <PackageReference Include="Majorsoft.Blazor.Components.Debounce" Version="1.5.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="8.*" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.*" />
     </ItemGroup>

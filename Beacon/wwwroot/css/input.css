@@ -2,6 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components{
+    .text-default{
+        @apply text-l-text dark:text-d-text;
+    }
+    
+    .text-accented {
+        @apply text-l-text-accent dark:text-d-text-accent;
+    }
+
+    .bg-sidepanel{
+        @apply bg-l-sidepanel dark:bg-d-sidepanel;
+    }
+    .border-sidepanel {
+        @apply border-l-sidepanel dark:border-d-sidepanel;
+    }
+
+    .bg-container {
+        @apply bg-l-container dark:bg-d-container;
+    }
+
+    .bg-default {
+        @apply bg-l-background dark:bg-d-background;
+    }
+
+    .bg-primary{
+        @apply bg-l-primary dark:bg-d-primary;
+    }
+}
+
 @font-face {
     font-family: 'Gontserrat';
     font-weight: normal;
@@ -43,14 +72,14 @@
 
 /* Track */
 ::-webkit-scrollbar-track:vertical {
-    background: #0A0A0A;
+    @apply bg-l-background dark:bg-d-background;
     border-radius: 12px;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb:vertical {
-    background: #71757D;
     border-radius: 12px;
+    @apply bg-l-sidepanel dark:bg-d-sidepanel;
 }
 
 /* HORIZONTAL */
@@ -61,13 +90,13 @@
 
 /* Track */
 ::-webkit-scrollbar-track:horizontal {
-    background: transparent;
+    @apply bg-l-sidepanel dark:bg-d-sidepanel;
     border-radius: 12px;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb:horizontal {
-    background: #71757D;
+    @apply bg-l-background dark:bg-d-background;
     border-radius: 12px;
 }
 

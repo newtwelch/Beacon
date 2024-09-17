@@ -30,6 +30,11 @@ module.exports = {
         },
     },
     darkMode: 'class',
-    plugins: [],
+    future: {
+        hoverOnlyWhenSupported: true,
+    },
+    plugins: [
+        require('@tailwindcss/forms')
+    ],
 }
 

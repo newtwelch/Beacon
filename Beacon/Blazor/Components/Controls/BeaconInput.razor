@@ -1,0 +1,12 @@
+﻿
+<DebounceInput class="h-16 w-full px-3 beacon-background beacon-text-color-accented text-sm rounded-xl border-0 focus:ring-1" 
+			placeholder="@Placeholder" DebounceTime="DebounceTime"/>
+			
+
+@code {
+	[Parameter]
+	public string Placeholder { get; set; }
+
+	[Parameter]
+	public int DebounceTime { get; set; }
+}

@@ -1,0 +1,25 @@
+﻿<button @onclick="() => OnClick.InvokeAsync()"
+		class="bg-sidepanel space-x-3 text-xs flex items-center justify-center px-5 h-10 rounded-[6px]
+			   hover:bg-primary hover:text-d-text-accent">
+
+	<span class="font-ark">
+		@Icon
+	</span>
+
+	<span class="font-bold tracking-widest capitalize">
+		@Message
+	</span>
+
+</button>
+
+@code {
+	[Parameter]
+	public EventCallback OnClick { get; set; }
+
+	[Parameter]
+	public string Icon { get; set; }
+
+	[Parameter]
+	public string Message { get; set; }
+
+}

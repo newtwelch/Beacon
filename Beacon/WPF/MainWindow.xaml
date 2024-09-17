@@ -12,6 +12,8 @@
     WindowStyle="None"
     Height="720"
     Width="1280"
+    MinHeight="600"
+    MinWidth="900"
     Background="#121314"
     mc:Ignorable="d">
 

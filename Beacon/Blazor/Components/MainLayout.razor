@@ -1,25 +1,22 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="font-gont flex h-screen w-screen bg-l-background text-l-text dark:bg-d-background dark:text-d-text">
+<div class="font-gont flex h-screen w-screen bg-default text-default">
 	
 	<SideBar SwitchPage="switchPage" ActivePage="activePage"/>
 
-	@if(activePage == BeaconPage.SongLibrary)
-	{
-		<SongLibrary/>
-	}
-	else if (activePage == BeaconPage.SongLibrary)
-	{
+
+	<div class="@(activePage == BeaconPage.SongLibrary ? "" : "hidden") w-full h-full">
+		<SongLibrary />
+	</div>
+	<div class="@(activePage == BeaconPage.BibleLibrary ? "" : "hidden") w-full h-full">
 		<BibleLibrary />
-	}
+	</div>
 
 </div>
 
 @code {
 	private BeaconPage activePage = BeaconPage.SongLibrary;
 
-	private void switchPage(BeaconPage page)
-	{
-		activePage = page;
-	}
+	private void switchPage(BeaconPage page) => activePage = page;
+	
 }

@@ -1,36 +1,72 @@
-﻿
-<div class="grid-cols-7 grid  h-full w-full">
+﻿<div class="grid-cols-12 grid h-full w-full">
 
-	<!-- LEFT SIDE -->
-	<div class="border-r-4 col-span-3 rounded-r-3xl border-l-sidepanel bg-l-container dark:border-d-sidepanel dark:bg-d-container">
+	<!--===== LEFT SIDE ======-->
+	<div class="flex flex-col border-r-2 col-span-6 space-y-3 rounded-r-3xl border-sidepanel bg-container p-10 h-full overflow-hidden">
 
-	</div>
-	
-	<!-- RIGHT SIDE -->
-	<div class="flex flex-col col-span-4 h-full w-full bg-l-background dark:bg-d-background">
-		
-		<div class="flex via-l-container/25 border-b-4 border-l-sidepanel to-l-container/0 h-32 w-full rounded-b-3xl bg-gradient-to-t from-l-container dark:border-d-sidepanel
-			dark:from-d-container dark:via-d-container/25 dark:to-d-container/0 px-10 items-center">
 
-			<div class="size-16 flex flex-none items-center justify-center rounded-xl bg-l-sidepanel dark:bg-d-sidepanel">
-				<span class="flex text-2xl text-center text-l-text-accent dark:text-d-text-accent ">F#</span>
-			</div>
+		<!--[ SEARCH INPUT ]-->
+		<div class="flex flex-col w-full space-y-2">
+			@* <p class="flex space-x-3">
+				<span class="tracking-widest text-xs beacon-text opacity-50 font-bold italic">SEARCH MODE:</span>
+				<span class="tracking-widest text-xs beacon-text font-bold">TITLE</span>
+				<span class="tracking-widest text-xs beacon-text opacity-50 font-bold">LYRIC</span>
+				<span class="tracking-widest text-xs beacon-text opacity-50 font-bold">AUTHOR</span>
+				<span class="tracking-widest text-xs beacon-text opacity-50 font-bold">TAG</span>
+			</p>*@
+			<DebounceInput class="h-16 px-3 bg-default text-accented text-sm rounded-xl border-0 focus:ring-1" 
+							placeholder="Search"
+							DebounceTime="100" ></DebounceInput>
+		</div>
 
-			<p class="flex-1 truncate mx-3">
-				<span class="text-3xl w-full text-l-text-accent dark:text-d-text-accent font-bold ">Amazing Grace Amazing Indeed</span><br />
-				<span class="text-lg text-l-text-accent dark:text-d-text-accent">John Newton</span>
-			</p>
 
-			<div class="flex flex-none">
-				<button class="bg-l-sidepanel px-6 rounded-lg h-10 text-xs text-l-text font-bold tracking-wider
-								dark:bg-d-sidepanel dark:text-d-text">
-					<span class="font-ark mr-2">E</span>EDIT
-				</button>
-			</div>
+		<!--[ SONG LIST ]-->
+		<div class="w-full overflow-auto h-full">
+		</div>
+
+		<!--[ QUEUE AND ADD SONG ]-->
+		<div class="flex justify-between">
+			<BeaconButton Message="View Queue" Icon="P"></BeaconButton>
+			<BeaconButton Message="Add Song" Icon="S"></BeaconButton>
 
 		</div>
 
 	</div>
+
+
+	<!--===== RIGHT SIDE ======-->
+	<div class="flex flex-col col-span-6 h-full w-full bg-default">
+
+		<!--------[ TOP ]-------->
+		<div class="flex via-l-container/25 border-b-2 border-sidepanel to-l-container/0 h-32 w-full rounded-b-3xl bg-gradient-to-t from-l-container
+			dark:from-d-container dark:via-d-container/25 dark:to-d-container/0 px-10 items-center">
+
+			<!--[ KEY ]-->
+			<div class="size-16 flex flex-none items-center justify-center rounded-xl bg-sidepanel">
+				<span class="flex text-2xl text-center text-l-text-accent dark:text-d-text-accent ">F#</span>
+			</div>
+
+
+			<!--[ TITLE AND AUTHOR ]-->
+			<p class="flex-1 truncate mx-3">
+				<span class="text-3xl w-full text-accented font-bold ">Amazing Grace Amazing Indeed</span><br />
+				<span class="text-lg text-accented">John Newton</span>
+			</p>
+
+
+			<!--[ ACTION BUTTONS ]-->
+			<div class="flex flex-none">
+				<BeaconButton Message="EDIT" Icon="E"></BeaconButton>
+			</div>
+
+		</div>
+
+
+		<!--------[ BOTTOM ]-------->
+
+		<!--[ LANGUAGE ]-->
+		<!--[ LYRICS ]-->
+
+	</div> 
 
 </div>
 
