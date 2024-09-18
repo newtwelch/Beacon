@@ -1,0 +1,38 @@
+﻿<div class="flex h-16 items-center space-x-3 overflow-x-auto">
+	<p class="beacon-text text-xs font-bold italic tracking-widest opacity-50">LANGUAGE:</p>
+	
+	@foreach(var Song in Songs)
+	{
+		
+		<div class="bg-sidepanel flex h-10 cursor-pointer items-center justify-center space-x-3 rounded-[6px] px-5
+text-xs hover:bg-primary hover:text-d-text-accent @(Song.Id == SelectedSong.Id ? "bg-primary text-accented-on-primary" : "")"
+			@onclick="async () => await SelectionChanged(Song)">
+
+			@Song.Language
+
+		</div>
+	}
+	<BeaconButton Message="+" OnClick="(() => AddLanguage.InvokeAsync())"></BeaconButton>
+
+</div>
+
+@code {
+	[Parameter]
+	public List<Song> Songs { get; set; }
+
+	[Parameter]
+	public Song SelectedSong { get; set; } = new Song();
+
+	[Parameter]
+	public EventCallback AddLanguage { get; set; }
+
+	[Parameter]
+	public EventCallback<Song> SelectedSongChanged { get; set; }
+
+	private async Task SelectionChanged(Song song)
+	{
+		SelectedSong = song;
+		await SelectedSongChanged.InvokeAsync(song);
+
+	}
+}

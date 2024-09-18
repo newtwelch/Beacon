@@ -14,7 +14,7 @@
             @IconUnchecked
         </span>
 
-        <span class="font-bold tracking-widest capitalize">
+        <span class="font-bold capitalize tracking-widest">
             @MessageUnchecked
         </span>
     }
@@ -24,16 +24,17 @@
             @IconChecked
         </span>
 
-        <span class="font-bold tracking-widest capitalize">
+        <span class="font-bold capitalize tracking-widest">
             @MessageChecked
         </span>
     }
 
 </button>
 
-@code {
+@code{
+
     [Parameter]
-    public bool IsChecked {get; set;}
+    public bool IsChecked { get; set; }
 
     [Parameter]
     public bool CheckBoxVersion { get; set; }
@@ -53,3 +54,4 @@
     [Parameter]
     public string MessageChecked { get; set; }
 }
+

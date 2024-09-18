@@ -1,0 +1,86 @@
+﻿@inject IJSRuntime jSRuntime
+
+<div tabindex="0" id="SongList" class="h-full w-full overflow-auto" @onkeydown="Navigate">
+
+	<Virtualize Items="Songs" Context="Song" ItemSize="64">
+		@{
+			var isSelected = Song.Id == SelectedSong.Id;
+
+			<div tabindex="@Song.Id" class="outline-0 group flex h-16 cursor-pointer items-center rounded-xl px-3
+@(isSelected ? "bg-primary text-accented-on-primary" : "hover:text-accented-on-primary hover:bg-primary hover:bg-opacity-50 dark:hover:bg-opacity-15 ")"
+				@onclick="(async () => await SelectionChanged(Song))">
+	
+				<div class="flex-1 text-sm">
+					<span class="text-sm">@Song.Title</span>
+					@if (!String.IsNullOrEmpty(Song.Author))
+					{
+						<br />
+	
+						<span class="text-xs opacity-50">@Song.Author</span>
+					}
+				</div>
+	
+				<div class="@(IsQueueMode ? "" : "hidden group-hover:flex space-x-5")">
+					<button class="font-ark hover:opacity-50">
+						@if(Song.InQueue)
+						{
+							<span>R</span>
+						}
+						else
+						{
+							<span>A</span>
+						}
+					</button>
+					<button class="font-ark hover:opacity-50">D</button>
+				</div>
+	
+			</div>
+		}
+
+
+	</Virtualize>
+
+</div>
+
+@code {
+	[Parameter]
+	public List<Song> Songs { get; set; }
+
+	[Parameter]
+	public Song SelectedSong { get; set; } = new Song();
+
+	[Parameter]
+	public EventCallback<Song> SelectedSongChanged { get; set; }
+
+	[Parameter]
+	public bool IsQueueMode { get; set; }
+
+	private DateTime lastKeyDownTime = DateTime.MinValue;
+	private async Task Navigate(KeyboardEventArgs e)
+	{
+		DateTime currentTime = DateTime.Now;
+		int timeElapsed = (currentTime - lastKeyDownTime).Milliseconds;
+		if (timeElapsed <= 150) return;
+		lastKeyDownTime = currentTime;
+
+		var index = Songs!.IndexOf(Songs.Where(s => s.Id == SelectedSong!.Id).First());
+
+		if (e.Code == "ArrowUp")
+			await SelectionChanged(Songs[Math.Max(index - 1, 0)]);
+		else if (e.Code == "ArrowDown")
+			await SelectionChanged(Songs[Math.Min(index + 1, Songs.Count() - 1)]);
+
+	}
+
+	private async Task SelectionChanged(Song song)
+	{
+		SelectedSong = song;
+
+		var index = Songs!.IndexOf(Songs.Where(s => s.Id == SelectedSong!.Id).First());
+		await jSRuntime.InvokeVoidAsync("ScrollWithHeight", "SongList", index);
+
+		await SelectedSongChanged.InvokeAsync(song);
+
+	}
+
+}

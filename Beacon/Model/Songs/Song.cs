@@ -72,4 +72,13 @@ namespace Beacon.Model.Songs
     {
 
     }
+
+    public enum SearchMode
+    {
+        Title,
+        Lyric,
+        Author,
+        Tag
+    }
+
 }

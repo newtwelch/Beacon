@@ -9,20 +9,63 @@
     <link href="css/output.css" rel="stylesheet" />
 </head>
 
-<body class="app-content">
+<body class="font-gont app-content bg-black"
+      ondragstart="return false;"
+      ondrop="return false;">
+
+    <div class="status-bar-safe-area"></div>
+
     <div id="app">
-        <div class="splash">
-            asdasdas
+        <div class="flex h-screen w-screen items-center justify-center text-center text-white">
+            <span class="text-gray">[</span>
+            <span class="text-l-orange">!</span>
+            <span class="text-gray">]&nbsp;</span>
+            Loading
+            <span class="text-gray">&nbsp;[</span>
+            <span class="text-l-orange">!</span>
+            <span class="text-gray">]</span>
+            <span class="text-gray">-</span>
+            Please wait...
         </div>
     </div>
 
-    <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
+    <div id="blazor-error-ui" class="h-fit w-full p-2 text-white">
+        <div class="bg-red rounded-xl bg-opacity-25 p-3">
+            An unhandled error has occurred.
+            <a href="" class="reload text-primary">Reload</a>
+            <a class="dismiss text-primary">🗙</a>
+        </div>
     </div>
 
     <script src="_framework/blazor.webview.js"></script>
+    <script>
+
+        document.addEventListener('keydown', preventKeyBoardScroll, false);
+        function preventKeyBoardScroll(e) {
+            var keys = [32, 33, 34, 35, 37, 38, 39, 40];
+            if (!(document.activeElement.tagName == "INPUT" || document.activeElement.tagName == "TEXTAREA")) {
+                if (keys.includes(e.keyCode)) {
+                    e.preventDefault();
+                    return false;
+                }
+            }
+        }
+
+        function SwitchFocusTo(id) {
+            document.getElementById(id).focus();
+        }
+
+        function ScrollWithHeight(containerId, index) {
+            var height = 64;
+            const ListContainer = document.getElementById(containerId);
+
+            ListContainer.scrollTo({
+                top: ((height * index) - (ListContainer.offsetHeight * 0.5)) + (height * 0.5),
+                behavior: "smooth"
+            });
+        }
+
+    </script>
 </body>
 
 </html>

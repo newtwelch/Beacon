@@ -13,6 +13,8 @@ namespace Beacon.Model.Songs
             //CreateTables().SafeFireAndForget();
         }
 
+        public async Task<Song> GetAsync(int id) => await dbConnection.Table<Song>().FirstOrDefaultAsync(song => song.Id == id);
+
         public async Task<List<Song>> GetAllAsync()
         {
             return await dbConnection.QueryAsync<Song>($"SELECT Id, Title, Author, InQueue FROM Song WHERE Language = 'English' OR Language = 'Filipino'");
@@ -21,6 +23,12 @@ namespace Beacon.Model.Songs
 		public async Task<int> GetCountAsync()
 		{
 			return await dbConnection.Table<Song>().CountAsync();
+		}
+
+		public async Task<List<Song>> GetLanguagesAsync(int Number)
+		{
+		    return await dbConnection.QueryAsync<Song>($"SELECT * FROM Song WHERE Number = {Number}");
+
 		}
 
 		//    private SQLiteAsyncConnection dbConnection;
@@ -106,14 +114,14 @@ namespace Beacon.Model.Songs
 
 	}
 
-    public interface ISongService
+	public interface ISongService
     {
-    //    public Task<Song> GetAsync(int id);
+        public Task<Song> GetAsync(int id);
         public Task<List<Song>> GetAllAsync();
         public Task<int> GetCountAsync();
+		public Task<List<Song>> GetLanguagesAsync(int Number);
 
     //    public Task<List<Song>> GetQueueAsync();
-    //    public Task<List<Song>> GetLanguagesOfSongAsync(int Number);
     //    public Task<List<Song>> QueryTitleAsync(string searchTerm);
     //    public Task<List<Song>> QueryAuthorAsync(string searchTerm);
     //    public Task<List<Song>> QueryLyricAsync(string searchTerm);

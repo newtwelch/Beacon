@@ -1,0 +1,20 @@
+﻿<p class="flex space-x-3">
+	<span class="beacon-text text-xs font-bold italic tracking-widest opacity-50">SEARCH MODE:</span>
+	<button @onclick="() => SelectionChanged(SearchMode.Title)"  class="tracking-widest text-xs beacon-text font-bold @(ActiveSearchMode == SearchMode.Title ? "" : "opacity-25")">TITLE</button>
+	<button @onclick="() => SelectionChanged(SearchMode.Lyric)" class="tracking-widest text-xs beacon-text font-bold @(ActiveSearchMode == SearchMode.Lyric ? "" : "opacity-25")">LYRIC</button>
+	<button @onclick="() => SelectionChanged(SearchMode.Author)" class="tracking-widest text-xs beacon-text font-bold @(ActiveSearchMode == SearchMode.Author ? "" : "opacity-25")">AUTHOR</button>
+	<button @onclick="() => SelectionChanged(SearchMode.Tag)" class="tracking-widest text-xs beacon-text font-bold @(ActiveSearchMode == SearchMode.Tag ? "" : "opacity-25")">TAG</button>
+</p>
+
+@code {
+	[Parameter]
+	public SearchMode ActiveSearchMode { get; set; 
+	}
+	[Parameter]
+	public EventCallback<SearchMode> SearchModeChanged{ get; set; }
+
+	private async Task SelectionChanged(SearchMode searchMode)
+	{
+		await SearchModeChanged.InvokeAsync(searchMode);
+	}
+}
