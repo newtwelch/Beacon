@@ -11,21 +11,26 @@
         @apply text-l-text-accent dark:text-d-text-accent;
     }
 
+    .text-accented-on-primary {
+        @apply text-d-text-accent;
+    }
+
     .bg-sidepanel{
         @apply bg-l-sidepanel dark:bg-d-sidepanel;
     }
     .border-sidepanel {
         @apply border-l-sidepanel dark:border-d-sidepanel;
     }
+    .border-primary {
+        @apply border-l-primary dark:border-d-primary;
+    }
 
     .bg-container {
         @apply bg-l-container dark:bg-d-container;
     }
-
     .bg-default {
         @apply bg-l-background dark:bg-d-background;
     }
-
     .bg-primary{
         @apply bg-l-primary dark:bg-d-primary;
     }
@@ -107,7 +112,7 @@
 }
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: #235DDA;
+    @apply bg-l-primary dark:bg-d-primary cursor-pointer
 }
 
 input[type=file] {

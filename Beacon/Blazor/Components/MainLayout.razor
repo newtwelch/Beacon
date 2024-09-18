@@ -1,6 +1,8 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="font-gont flex h-screen w-screen bg-default text-default">
+<span class="">
+
+	<div class="font-gont flex h-screen w-screen bg-default text-default">
 	
 	<SideBar SwitchPage="switchPage" ActivePage="activePage"/>
 
@@ -12,7 +14,8 @@
 		<BibleLibrary />
 	</div>
 
-</div>
+	</div>
+</span>
 
 @code {
 	private BeaconPage activePage = BeaconPage.SongLibrary;

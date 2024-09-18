@@ -1,4 +1,7 @@
-﻿<div class="grid-cols-12 grid h-full w-full">
+﻿@using System.Diagnostics
+@inject ISongService SongService
+
+<div class="grid-cols-12 grid h-full w-full ">
 
 	<!--===== LEFT SIDE ======-->
 	<div class="flex flex-col border-r-2 col-span-6 space-y-3 rounded-r-3xl border-sidepanel bg-container p-10 h-full overflow-hidden">
@@ -21,13 +24,29 @@
 
 		<!--[ SONG LIST ]-->
 		<div class="w-full overflow-auto h-full">
+			<Virtualize Items="songs" Context="Song" ItemSize="64">
+				<div class="flex h-16 items-center group cursor-pointer rounded-xl px-3 hover:text-accented-on-primary hover:bg-primary">
+					
+					<div class="flex-1 text-sm">
+						<span class="text-sm">@Song.Title</span> 
+						@if(!String.IsNullOrEmpty(Song.Author)){
+						<br/><span class="text-xs opacity-50">@Song.Author</span> 
+						}
+					</div>
+
+					<div class="@(isQueueMode ? "" : "hidden group-hover:flex space-x-5")">
+						<span class="font-ark">A</span>
+						<span class="font-ark">D</span>
+					</div>
+
+				</div>
+			</Virtualize>
 		</div>
 
 		<!--[ QUEUE AND ADD SONG ]-->
 		<div class="flex justify-between">
-			<BeaconButton Message="View Queue" Icon="P"></BeaconButton>
+			<BeaconToggle IconUnchecked="L" MessageUnchecked="VIEW QUEUE" IconChecked="L" MessageChecked="BACK TO SONGS"></BeaconToggle>
 			<BeaconButton Message="Add Song" Icon="S"></BeaconButton>
-
 		</div>
 
 	</div>
@@ -71,5 +90,12 @@
 </div>
 
 @code {
+	private List<Song> songs = new List<Song>();
 
+	private bool isQueueMode = false;
+
+	protected override async Task OnInitializedAsync()
+	{
+		songs = await SongService.GetAllAsync();
+	}
 }

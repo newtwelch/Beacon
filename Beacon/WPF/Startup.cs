@@ -1,3 +1,5 @@
+using Beacon.Model;
+using Beacon.Model.Songs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -18,6 +20,8 @@ public static class Startup
     private static void WireupServices(IServiceCollection services)
     {
         services.AddWpfBlazorWebView();
+        services.AddSingleton<ISongService, SongService>();
+        services.AddSingleton<ICustomHttpFactory, HttpFactory>();
 
 #if DEBUG
         services.AddBlazorWebViewDeveloperTools();
