@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Beacon.Model.Enum
 {
-	public enum BeaconPage
-	{
-		SongLibrary,
-		BibleLibrary,
-		HistoryLibrary,
-		SettingsPage
-	};
+    public enum SettingsCategory
+    {
+        General,
+        SongLibrary,
+        BibleLibrary,
+        History
+    }
 }

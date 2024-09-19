@@ -3,10 +3,9 @@
                         IsChecked = !IsChecked;
                         await OnClick.InvokeAsync();
                     }"
-        class="border-2 space-x-3 text-xs flex items-center justify-center  rounded-[6px] border-l-text-accent/20 dark:border-d-text-accent/10
+        class="border-2 space-x-3 text-xs flex px-5 items-center justify-center  rounded-[6px] border-l-text-accent/20 dark:border-d-text-accent/10
 			@(IsChecked ? "bg-primary text-accented-on-primary" :
-                            "hover:bg-primary hover:bg-opacity-50 hover:text-accented-on-primary h")
-            @(CheckBoxVersion ? "size-5" : "px-5 h-10")">
+                            "hover:bg-primary hover:bg-opacity-50 hover:text-accented-on-primary h")">
 
     @if (!  IsChecked)
     {
@@ -35,9 +34,6 @@
 
     [Parameter]
     public bool IsChecked { get; set; }
-
-    [Parameter]
-    public bool CheckBoxVersion { get; set; }
 
     [Parameter]
     public EventCallback OnClick { get; set; }

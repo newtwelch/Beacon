@@ -1,0 +1,27 @@
+﻿<button @onclick="async () =>
+                    {
+                        IsChecked = !IsChecked;
+                        await OnClick.InvokeAsync();
+                    }" class="flex space-x-3 group items-center">
+    <div class="border-2 space-x-3 text-xs flex items-center justify-center size-5 rounded-[6px] border-l-text-accent/20 dark:border-d-text-accent/10
+			@(IsChecked ? "bg-primary text-accented-on-primary" :
+                            "group-hover:bg-primary group-hoverhover:bg-opacity-50 group-hoverhover:text-accented-on-primary h")">
+
+    </div>
+
+    <div class="text-sm">
+        @Message
+    </div>
+
+</button>
+
+@code {
+    [Parameter]
+    public bool IsChecked { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    [Parameter]
+    public string Message { get; set; }
+}

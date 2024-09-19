@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="dark">
+<div class="@(Settings.EnableDarkMode ? "dark":"")">
 
 	<div class="font-gont bg-default text-default flex h-screen w-screen">
 	
@@ -13,13 +13,18 @@
 	<div class="@(activePage == BeaconPage.BibleLibrary ? "" : "hidden") h-full w-full">
 		<BibleLibrary />
 	</div>
+	<div class="@(activePage == BeaconPage.SettingsPage ? "" : "hidden") h-full w-full">
+		<SettingsPage DarkModeToggled="DarkModeToggled"/>
+	</div>
 
 	</div>
 </div>
 
 @code {
+
 	private BeaconPage activePage = BeaconPage.SongLibrary;
 
 	private void switchPage(BeaconPage page) => activePage = page;
-	
+
+	private void DarkModeToggled() => StateHasChanged();
 }

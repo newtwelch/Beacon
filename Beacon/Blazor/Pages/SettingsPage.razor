@@ -1,0 +1,39 @@
+﻿<div class="flex w-full h-full overflow-auto">
+    @* <div class="border-r-2 col-span-5 border-sidepanel bg-container flex h-full flex-col space-y-3 overflow-hidden rounded-r-3xl p-10">
+        <BeaconCheckBox Message="Enable Dark Mode" IsChecked="Settings.EnableDarkMode"
+                        OnClick="DarkModeToggle"></BeaconCheckBox>
+    </div> *@
+    <div class="border-r-2 col-span-5 border-sidepanel bg-container flex h-full flex-col space-y-3 overflow-hidden rounded-r-3xl p-10">
+        <p class="flex flex-col space-y-3">
+            <button @onclick="() => activeCategory = SettingsCategory.General" class="tracking-widest text-xs beacon-text font-bold @(activeCategory == SettingsCategory.General ? "" : "opacity-50")">GENERAL</button>
+            <button @onclick="() => activeCategory = SettingsCategory.SongLibrary" class="tracking-widest text-xs beacon-text font-bold @(activeCategory == SettingsCategory.SongLibrary ? "" : "opacity-50")">SONG LIBRARY</button>
+            <button @onclick="() => activeCategory = SettingsCategory.BibleLibrary" class="tracking-widest text-xs beacon-text font-bold @(activeCategory == SettingsCategory.BibleLibrary ? "" : "opacity-50")">BIBLE LIBRARY</button>
+            <button @onclick="() => activeCategory = SettingsCategory.History" class="tracking-widest text-xs beacon-text font-bold @(activeCategory == SettingsCategory.History ? "" : "opacity-50")">HISTORY</button>
+        </p>
+    </div>
+
+    <div class="@(activeCategory == SettingsCategory.General ? "p-10" : "hidden")">
+        <BeaconCheckBox Message="Enable Dark Mode" IsChecked="Settings.EnableDarkMode"
+                        OnClick="DarkModeToggle"></BeaconCheckBox>
+    </div>
+
+    <div class="@(activeCategory == SettingsCategory.SongLibrary ? "p-10" : "hidden")">
+        <BeaconButton Message="DOWNLOAD SONGS FROM BEACON API"></BeaconButton>
+        
+    </div>
+
+
+
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback DarkModeToggled { get; set; }
+
+    private SettingsCategory activeCategory;
+
+    private async Task DarkModeToggle(){
+        Settings.EnableDarkMode = !Settings.EnableDarkMode;
+        await DarkModeToggled.InvokeAsync();
+    }
+}

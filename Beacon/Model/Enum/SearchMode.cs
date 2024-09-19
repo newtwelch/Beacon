@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Beacon.Model.Enum
 {
-	public enum BeaconPage
+	public enum SearchMode
 	{
-		SongLibrary,
-		BibleLibrary,
-		HistoryLibrary,
-		SettingsPage
-	};
+		Title,
+		Lyric,
+		Author,
+		Tag
+	}
 }

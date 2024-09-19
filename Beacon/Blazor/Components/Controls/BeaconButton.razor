@@ -4,14 +4,14 @@
 	
 	@if(!String.IsNullOrEmpty(Icon))
 	{
-		<span class="font-ark">
+		<span class="font-ark @IconClass">
 			@Icon
 		</span>
 	}
 	
 	@if(!String.IsNullOrEmpty(Message))
 	{
-		<span class="font-bold capitalize tracking-widest">
+		<span class="font-bold capitalize tracking-widest @MessageClass">
 			@Message
 		</span>
 	}
@@ -27,5 +27,11 @@
 
 	[Parameter]
 	public string Message { get; set; }
+
+	[Parameter]
+	public string IconClass { get; set; }
+
+	[Parameter]
+	public string MessageClass { get; set; }
 
 }

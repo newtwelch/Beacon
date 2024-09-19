@@ -30,7 +30,7 @@
         <!-- =====================================
         TITLE BAR: Icon, Menus, and App Buttons
         ========================================== -->
-        <Border DockPanel.Dock="Top" Background="#121314" BorderBrush="#1D1F21" Height="40" BorderThickness="0 0 0 1" Margin="-1 -1 -1 0">
+        <Border DockPanel.Dock="Top" Background="#252527" BorderBrush="#19191A" Height="40" BorderThickness="0 0 0 2" Margin="-1 -1 -1 0">
 
             <DockPanel Grid.ColumnSpan="2" LastChildFill="False" DockPanel.Dock="Top">
                 <!--  Logo : ARK! -->
