@@ -64,6 +64,14 @@
                 behavior: "smooth"
             });
         }
+        
+        function ScrollToView(containerId, itemId) {
+            document.getElementById(itemId).scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+        }
+
 
     </script>
 </body>

@@ -1,4 +1,4 @@
-﻿<div class="flex w-full h-full overflow-auto">
+﻿<div class="flex h-full w-full overflow-auto">
     @* <div class="border-r-2 col-span-5 border-sidepanel bg-container flex h-full flex-col space-y-3 overflow-hidden rounded-r-3xl p-10">
         <BeaconCheckBox Message="Enable Dark Mode" IsChecked="Settings.EnableDarkMode"
                         OnClick="DarkModeToggle"></BeaconCheckBox>
@@ -15,6 +15,7 @@
     <div class="@(activeCategory == SettingsCategory.General ? "p-10" : "hidden")">
         <BeaconCheckBox Message="Enable Dark Mode" IsChecked="Settings.EnableDarkMode"
                         OnClick="DarkModeToggle"></BeaconCheckBox>
+
     </div>
 
     <div class="@(activeCategory == SettingsCategory.SongLibrary ? "p-10" : "hidden")">

@@ -14,6 +14,7 @@ namespace Beacon.Model.Songs
         public string Sequence { get; set; } = "";
         public string Language { get; set; } = "";
         public string Tags { get; set; } = "";
+        public string Key { get; set; } = "";
         public int QueueOrder { get; set; }
         public bool InQueue { get; set;} = false;
 
@@ -32,6 +33,7 @@ namespace Beacon.Model.Songs
             LyricText = "";
             Sequence = "auto";
             Tags = "";
+            Key = "C#";
         }
 
         /// <summary>
@@ -48,6 +50,7 @@ namespace Beacon.Model.Songs
             Author = _author;
             Sequence = "auto";
             Tags = "";
+            Key = "C#";
         }
 
         /// <summary>

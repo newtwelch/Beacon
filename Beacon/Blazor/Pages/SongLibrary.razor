@@ -3,14 +3,14 @@
 
 <div class="grid-cols-12 grid h-full w-full">
 
-	<!--===== LEFT SIDE ======-->
+	<!-- |===== LEFT SIDE ======| -->
 	<div class="border-r-2 col-span-5 border-sidepanel bg-container flex h-full flex-col space-y-3 overflow-hidden rounded-r-3xl p-10">
 
-
+		
 		<!--[ SEARCH INPUT ]-->
 		<div class="flex w-full flex-col space-y-2">
 			<BeaconSearchMode ActiveSearchMode="currentSearchMode" SearchModeChanged="switchSearchMode"></BeaconSearchMode>
-			<DebounceInput class="bg-default text-accented border-0 h-16 rounded-xl px-3 text-sm ring-l-primary dark:ring-d-primary focus:ring-1 placeholder-l-text dark:placeholder-d-text placeholder-opacity-50 dark:placeholder-opacity-50" 
+			<DebounceInput class="bg-default text-accented border-0 h-16 rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50" 
 							placeholder="Search"
 							DebounceTime="100" ></DebounceInput>
 		</div>
@@ -28,12 +28,11 @@
 	</div>
 		
 
-	<!--===== RIGHT SIDE ======-->
+	<!-- |===== RIGHT SIDE ======| -->
 	<div class="col-span-7 bg-default flex h-full w-full flex-col overflow-auto">
 
 		<!--------[ TOP ]-------->
-		<div class="via-l-container/25 border-b-2 border-sidepanel to-l-container/0 flex h-32 w-full items-center rounded-b-3xl
-bg-gradient-to-t from-l-container px-10 dark:from-d-container dark:via-d-container/25 dark:to-d-container/0">
+		<div class="via-l-container/25 border-b-2 border-sidepanel to-l-container/0 flex h-32 w-full items-center rounded-b-3xl bg-gradient-to-t from-l-container px-10 dark:from-d-container dark:via-d-container/25 dark:to-d-container/0">
 
 			<!--[ KEY ]-->
 			<div class="bg-sidepanel flex size-16 flex-none items-center justify-center rounded-xl">
@@ -56,7 +55,7 @@ bg-gradient-to-t from-l-container px-10 dark:from-d-container dark:via-d-contain
 		</div>
 
 
-		<!--------[ BOTTOM ]-------->
+		<!-------[ BOTTOM ]-------->
 
 		<!--[ LANGUAGE ]-->
 		<div class="px-10 pt-5">
@@ -64,21 +63,7 @@ bg-gradient-to-t from-l-container px-10 dark:from-d-container dark:via-d-contain
 		</div>
 
 		<!--[ LYRICS ]-->
-		<div class="flex flex-col mx-10 space-y-2 overflow-auto h-full mb-5 rounded-3xl">
-
-			@foreach(var lyric in selectedSong.Lyrics())
-			{
-				<div class="border-y-2 border-sidepanel w-full items-center rounded-3xl relative flex
- text-center text-sm bg-container hover:bg-primary hover:bg-opacity-50 dark:hover:bg-opacity-15 hover:text-accented-on-primary cursor-pointer whitespace-pre">
-
-					<span class="absolute top-3 left-5 text-xs">@lyric.Line</span>
-					<p class="py-4 w-full h-fit text-sm">@lyric.Text
-					</p>
-				</div>
-				
-			}
-
-		</div>
+		<LyricList SelectedLyric="selectedLyric" Lyrics="selectedSong.Lyrics()" SelectedLyricChanged="SelectedLyricChanged"></LyricList>
 
 
 	</div> 
@@ -89,6 +74,7 @@ bg-gradient-to-t from-l-container px-10 dark:from-d-container dark:via-d-contain
 	private List<Song> songs = new List<Song>();
 	private List<Song> languagesOfSelectedSong = new List<Song>();
 	private Song selectedSong = new Song();
+	private Lyric selectedLyric = new Lyric();
 
 	private SearchMode currentSearchMode;
 	private bool isQueueMode = false;
@@ -104,5 +90,10 @@ bg-gradient-to-t from-l-container px-10 dark:from-d-container dark:via-d-contain
 	{
 		selectedSong = await SongService.GetAsync(song.Id);
 		languagesOfSelectedSong = await SongService.GetLanguagesAsync(selectedSong.Number);
+	}
+
+	private void SelectedLyricChanged(Lyric lyric)
+	{
+		selectedLyric = lyric;
 	}
 }

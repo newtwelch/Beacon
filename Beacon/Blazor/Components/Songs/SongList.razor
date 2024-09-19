@@ -6,7 +6,7 @@
 		@{
 			var isSelected = Song.Id == SelectedSong.Id;
 
-			<div tabindex="@Song.Id" class="outline-0 group flex h-16 cursor-pointer items-center rounded-xl px-3 select-none
+			<div id="@Song.Id" class="outline-0 group flex h-16 cursor-pointer select-none items-center rounded-xl px-3
 @(isSelected ? "bg-primary text-accented-on-primary" : "hover:text-accented-on-primary hover:bg-primary hover:bg-opacity-50 dark:hover:bg-opacity-15 ")"
 				@onclick="(async () => await SelectionChanged(Song))">
 	
