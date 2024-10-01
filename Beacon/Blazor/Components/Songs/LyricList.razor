@@ -7,12 +7,12 @@
 		var isSelected = lyric.Id == SelectedLyric.Id;
 		var sameText = lyric.Text == SelectedLyric.Text;
 
-		<div id="lyric(@lyric.Id)" class="border-y-2 border-sidepanel bg-container relative flex w-full cursor-pointer items-center whitespace-pre rounded-3xl text-center text-sm 
+		<div id="lyric(@lyric.Id)" class="border-x-2 border-sidepanel bg-container relative flex w-full cursor-pointer items-center whitespace-pre rounded-3xl text-center text-sm 
 									@(isSelected && sameText ? "bg-primary text-accented-on-primary" : "hover:bg-primary hover:bg-opacity-50 hover:text-accented-on-primary dark:hover:bg-opacity-15")"
 		@onclick="(async () => await SelectionChanged(lyric))">
 
 			<span class="absolute left-5 top-3 text-xs">@lyric.Line</span>
-			<p class="h-fit w-full py-4 text-sm">@lyric.Text</p>
+			<p class="h-fit w-full py-4 text-sm">@((MarkupString)lyric.Text)</p>
 		</div>
 		
 	}

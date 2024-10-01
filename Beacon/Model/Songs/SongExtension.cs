@@ -11,13 +11,13 @@ namespace Beacon.Model.Songs
 
             var normalizedSong = song;
 
-            normalizedSong.Title = song.Title.Replace("<span class=\"text-orange group-hover:text-white_light\">", "");
+            normalizedSong.Title = song.Title.Replace("<span class=\"text-orange group-hover:text-accented-on-primary\">", "");
             normalizedSong.Title = song.Title.Replace("</span>", "");
-            normalizedSong.Author = song.Author.Replace("<span class=\"text-orange group-hover:text-white_light\">", "");
+            normalizedSong.Author = song.Author.Replace("<span class=\"text-orange group-hover:text-accented-on-primary\">", "");
             normalizedSong.Author = song.Author.Replace("</span>", "");
-            normalizedSong.Tags = song.Tags.Replace("<span class=\"text-orange group-hover:text-white_light\">", "");
+            normalizedSong.Tags = song.Tags.Replace("<span class=\"text-orange group-hover:text-accented-on-primary\">", "");
             normalizedSong.Tags = song.Tags.Replace("</span>", "");
-            normalizedSong.LyricText = song.LyricText.Replace("<span class=\"text-orange group-hover:text-white_light\">", "");
+            normalizedSong.LyricText = song.LyricText.Replace("<span class=\"text-orange group-hover:text-accented-on-primary\">", "");
             normalizedSong.LyricText = song.LyricText.Replace("</span>", "");
 
 

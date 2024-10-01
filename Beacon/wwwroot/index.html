@@ -66,10 +66,13 @@
         }
         
         function ScrollToView(containerId, itemId) {
-            document.getElementById(itemId).scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            });
+            console.log(getElementById(containerId));
+            console.log(getElementById(containerId).getElementById(itemId));
+
+            //document.getElementById(containerId).getElementById(itemId).scrollIntoView({
+            //    behavior: "smooth",
+            //    block: "center"
+            //});
         }
 
 

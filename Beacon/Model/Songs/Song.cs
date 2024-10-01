@@ -44,7 +44,7 @@ namespace Beacon.Model.Songs
         /// <param name="_author"></param>
         public Song(int _number, string _title, string _author)
         {
-            Language = "Filipino";
+            Language = "LANGUAGE";
             Title = _title;
             Number = _number;
             Author = _author;
@@ -67,6 +67,7 @@ namespace Beacon.Model.Songs
             LyricText = _song.LyricText;
             Sequence = _song.Sequence;
             Tags = _song.Tags;
+            Key = _song.Key;
         }
     }
 

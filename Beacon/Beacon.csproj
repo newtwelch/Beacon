@@ -5,22 +5,29 @@
         <TargetFramework>net8.0-windows7.0</TargetFramework>
         <OutputType>WinExe</OutputType>
         <UseWPF>true</UseWPF>
+		<PublishSingleFile>true</PublishSingleFile>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+		<DefaultItemExcludes>wwwroot/**</DefaultItemExcludes>
 
+		<!--CHANGE VERSION HERE AS WELL-->
+		<PublisherName>Newt Welch</PublisherName>
+		<Title>Beacon</Title>
+		<Author>Newt Welch</Author>
+		<Version>0.1.1</Version>
+		<PublisherName>Welch Engine</PublisherName>
+		<AssemblyTitle>Beacon</AssemblyTitle>
+		<AssemblyName>Beacon</AssemblyName>
+		<AssemblyVersion>0.1.1</AssemblyVersion>
+		
         <!-- Project Options -->
         <LangVersion>latest</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>Beacon</RootNamespace>
     </PropertyGroup>
-
-    <ItemGroup>
-      <None Include="wwwroot\css\input.css" />
-      <None Include="wwwroot\css\output.css" />
-      <None Include="wwwroot\fonts\arkicons.ttf" />
-      <None Include="wwwroot\fonts\GONTSERRAT-BOLD.TTF" />
-      <None Include="wwwroot\fonts\GONTSERRAT-REGULAR.TTF" />
-      <None Include="wwwroot\index.html" />
-    </ItemGroup>
-	
+	<ItemGroup>
+		<EmbeddedResource Include="wwwroot\**" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
 	
     <ItemGroup>
         <PackageReference Include="AsyncAwaitBestPractices" Version="8.0.0" />

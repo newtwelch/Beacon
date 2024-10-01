@@ -11,8 +11,16 @@
         @apply text-l-text-accent dark:text-d-text-accent;
     }
 
+    .text-primary {
+        @apply text-l-primary dark:text-d-primary;
+    }
+
     .text-accented-on-primary {
         @apply text-d-text-accent;
+    }
+
+    .text-orange {
+        @apply dark:text-d-orange text-l-orange;
     }
 
     .bg-sidepanel{

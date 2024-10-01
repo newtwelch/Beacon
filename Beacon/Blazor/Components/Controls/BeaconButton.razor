@@ -1,6 +1,6 @@
 ﻿<button @onclick="() => OnClick.InvokeAsync()"
-		class="bg-sidepanel space-x-3 text-xs flex items-center justify-center px-5 h-10 rounded-[6px]
-			   hover:bg-primary hover:text-d-text-accent">
+		class="@(String.IsNullOrEmpty(Background) ? "bg-sidepanel " : $"{Background}") space-x-3 text-xs flex items-center justify-center px-5 h-10 rounded-[6px]
+		@(String.IsNullOrEmpty(Hover) ? "hover:bg-primary hover:text-d-text-accent " : $"{Hover}")">
 	
 	@if(!String.IsNullOrEmpty(Icon))
 	{
@@ -34,4 +34,9 @@
 	[Parameter]
 	public string MessageClass { get; set; }
 
+	[Parameter]
+	public string Background {get ;set;}
+
+	[Parameter]
+	public string Hover { get; set; }
 }

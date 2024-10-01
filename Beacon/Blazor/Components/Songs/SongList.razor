@@ -10,14 +10,25 @@
 @(isSelected ? "bg-primary text-accented-on-primary" : "hover:text-accented-on-primary hover:bg-primary hover:bg-opacity-50 dark:hover:bg-opacity-15 ")"
 				@onclick="(async () => await SelectionChanged(Song))">
 	
-				<div class="flex-1 text-sm">
-					<span class="text-sm">@Song.Title</span>
-					@if (!String.IsNullOrEmpty(Song.Author))
-					{
-						<br />
-	
-						<span class="text-xs opacity-50">@Song.Author</span>
-					}
+				<div class="flex-1 text-sm truncate">
+					<span class="text-sm">@((MarkupString)Song.Title)</span>
+					<br/>
+					<span class="text-xs @(isSelected ? "" : "opacity-50")">
+						@if (!String.IsNullOrWhiteSpace(Song.LyricText))
+						{
+							var spanStart = "<span class=\"text-orange\">";
+							var spanEnd = "</span>";
+							@((MarkupString)$" {Song!.LyricText.Replace("<b>", spanStart).Replace("</b>", spanEnd)} ")
+						}
+						else if (!String.IsNullOrWhiteSpace(Song.Tags))
+						{
+							@((MarkupString)Song!.Tags)
+						}
+						else
+						{
+							@((MarkupString)Song!.Author)
+						}
+					</span>
 				</div>
 	
 				<div class="@(IsQueueMode ? "" : "hidden group-hover:flex space-x-5")">

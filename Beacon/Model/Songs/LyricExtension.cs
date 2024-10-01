@@ -14,12 +14,12 @@ namespace Beacon.Model.Songs
             var startIndex = snippet.IndexOf("<b>");
             var endIndex = snippet.IndexOf("</b>") - startIndex - "<b>".Length;
             var match = snippet.Substring(startIndex + "<b>".Length, endIndex);
-            return lyric.Replace(match, $"<span class=\"text-orange group-hover:text-white_light\">{match}</span>");
+            return lyric.Replace(match, $"<span class=\"text-orange\">{match}</span>");
         }
 
         public static string RemoveHighlight(this string lyric)
         {
-            return lyric.Replace("<span class=\"text-orange group-hover:text-white_light\">", "").Replace("</span>", "");
+            return lyric.Replace("<span class=\"text-orange\">", "").Replace("</span>", "");
         }
     }
 }
