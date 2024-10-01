@@ -65,14 +65,12 @@
             });
         }
         
-        function ScrollToView(containerId, itemId) {
-            console.log(getElementById(containerId));
-            console.log(getElementById(containerId).getElementById(itemId));
+        function ScrollToView(itemId) {
 
-            //document.getElementById(containerId).getElementById(itemId).scrollIntoView({
-            //    behavior: "smooth",
-            //    block: "center"
-            //});
+            document.getElementById(itemId).scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
         }
 
 

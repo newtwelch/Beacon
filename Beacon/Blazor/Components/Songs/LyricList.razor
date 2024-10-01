@@ -50,7 +50,7 @@
 	{
 		SelectedLyric = lyric;
 
-		await jSRuntime.InvokeVoidAsync("ScrollToView", "LyricList", $"lyric({lyric.Id})");
+		await jSRuntime.InvokeVoidAsync("ScrollToView", $"lyric({lyric.Id})");
 
 		await SelectedLyricChanged.InvokeAsync(lyric);
 

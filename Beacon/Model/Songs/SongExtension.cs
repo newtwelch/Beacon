@@ -85,7 +85,7 @@ namespace Beacon.Model.Songs
 
                 foreach (var line in sequence)
                 {
-                    var lyric = ConvertTextToLyrics(song.LyricText).Find(x => x.Line.Replace("V", "").Replace("v", "") == line.Replace("V", "").Replace("v", ""));
+                    var lyric = ConvertTextToLyrics(song.LyricText).Find(x => x.Line.Replace("V", "").Replace("v", "").ToLower() == line.Replace("V", "").Replace("v", "").ToLower());
                     
                     if(lyric is not null)
                         lyric.Id = lyricId++;

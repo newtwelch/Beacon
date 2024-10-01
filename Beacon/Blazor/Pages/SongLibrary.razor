@@ -7,10 +7,22 @@
 	<!-- |===== LEFT SIDE ======| -->
 	<div class="border-r-2 col-span-5 border-sidepanel bg-container h-full  overflow-hidden rounded-r-3xl p-10">
 
-		<div class="@(editMode ? "" : "hidden") flex flex-col w-full h-full space-y-3 overflow-hidden">
+		<div class="@(editMode ? "" : "hidden") flex flex-col w-full h-full  ">
 			<!--[ EDIT MODE: Lyric Text]-->
+			<label class="font-bold tracking-widest opacity-50 text-accented">LYRIC EDITOR</label>
+			<textarea class="bg-sidepanel text-default text-sm m-px border-0 mb-3 w-full min-h-1/2 h-1/2 max-h-1/2 rounded-xl px-4 py-3 placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+					  value="@selectedSong.LyricText" @oninput="(e => { selectedSong.LyricText = e.Value.ToString(); UpdateLyrics();})" spellcheck="false" placeholder="Lyric" />
 			<!--[ EDIT MODE: Sequence ]-->
+
+			<label class="font-bold tracking-widest opacity-50 text-accented">SEQUENCE</label>
+			<input class="bg-sidepanel text-default text-sm m-px border-0 mb-3 w-full rounded-xl px-4 py-3 placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+					  value="@selectedSong.Sequence" @oninput="(e => { selectedSong.Sequence = e.Value.ToString(); UpdateLyrics();})" spellcheck="false" placeholder="[ 1, C, 2... ]" />
+
 			<!--[ EDIT MODE: Tags ]-->
+			<label class="font-bold tracking-widest opacity-50 text-accented">TAGS</label>
+			<input class="bg-sidepanel text-default text-sm m-px border-0 mb-3 w-full rounded-xl px-4 py-3 placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+					  value="@selectedSong.Tags" @oninput="(e => { selectedSong.Tags = e.Value.ToString(); UpdateLyrics();})" spellcheck="false" placeholder="Solemn, Joyful, Communion, Blood" />
+
 		</div>
 
 		<div class="@(editMode ? "hidden" : "") flex flex-col w-full h-full space-y-3 overflow-hidden">
@@ -18,9 +30,9 @@
 			<!--[ SEARCH INPUT ]-->
 			<div class="flex w-full flex-col space-y-2">
 				<BeaconSearchMode ActiveSearchMode="currentSearchMode" SearchModeChanged="switchSearchMode"></BeaconSearchMode>
-				<DebounceInput class="bg-default text-accented border-0 h-16 rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+				<DebounceInput class="bg-default text-accented border-0 h-16 mx-px rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
 							   placeholder="Search" @bind-Value="searchText" @bind-Value:event="oninput" OnValueChanged="OnSearchChanged"
-							   DebounceTime="100"></DebounceInput>
+							   DebounceTime="100" ></DebounceInput>
 			</div>
 
 			<!--[ SONG LIST ]-->
@@ -45,7 +57,8 @@
 
 			<!--[ KEY ]-->
 			<div class="bg-sidepanel flex size-16 flex-none items-center justify-center rounded-xl">
-				<input class="text-l-text-accent flex text-center text-2xl dark:text-d-text-accent bg-transparent border-0 focus:ring-0" placeholder="C#" value="@selectedSong.Key"/>
+				<input class="text-l-text-accent flex text-center text-2xl dark:text-d-text-accent bg-transparent border-0 focus:ring-0"
+					   placeholder="Key" @bind-value="@selectedSong.Key" @bind-value:event="oninput" spellcheck="false" disabled="@(!editMode)"/>
 			</div>
 
 
@@ -59,13 +72,13 @@
 				}
 				else
 				{
-					<input class="bg-sidepanel text-accented m-px border-0 w-full rounded-xl px-3 py-0.5 text-lg placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
-					@bind-value="@selectedSong.Title" @bind-value:event="oninput"/>
+					<input class="bg-sidepanel text-accented m-px border-0 w-full rounded-lg px-3 py-0.5 text-lg placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+						   @bind-value="@selectedSong.Title" @bind-value:event="oninput" spellcheck="false" placeholder="Song Title" />
 
 					<br />
 
-					<input class="bg-sidepanel text-accented m-px border-0 rounded-xl px-3 py-0.5 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
-					@bind-value="selectedSong.Author"/>
+					<input class="bg-sidepanel text-accented m-px border-0 rounded-lg px-3 py-0.5 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+						   @bind-value="selectedSong.Author" @bind-value:event="oninput" spellcheck="false" placeholder="Author" />
 				}
 			</p>
 
@@ -90,7 +103,18 @@
 
 		<!--[ LANGUAGE ]-->
 		<div class="px-10 pt-5">
-			<SongLanguageList SelectedSong="selectedSong" Songs="languagesOfSelectedSong" SelectedSongChanged="SelectedSongChanged" AddLanguage="AddLanguageClick"></SongLanguageList>
+			@if (editMode)
+			{
+				<label class="font-bold tracking-widest opacity-50 text-accented">LANGUAGE</label>
+				<input class="bg-sidepanel text-default text-sm m-px mb-2 border-0 w-fit rounded-xl px-4 py-3 placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+					   value="@selectedSong.Language" @oninput="(e => { selectedSong.Language = e.Value.ToString(); UpdateLyrics();})" spellcheck="false" placeholder="Language" />
+
+			}
+			else
+			{
+				<SongLanguageList SelectedSong="selectedSong" Songs="languagesOfSelectedSong" SelectedSongChanged="SelectedSongChanged" AddLanguage="AddLanguageClick"></SongLanguageList>
+				
+			}
 		</div>
 
 		<!--[ LYRICS ]-->
@@ -100,98 +124,3 @@
 	</div> 
 
 </div>
-
-@code {
-	private List<Song> songs = new List<Song>();
-	private List<Song> languagesOfSelectedSong = new List<Song>();
-	private Song selectedSong = new Song();
-	private Song selectedSongClone = new Song();
-	private Lyric selectedLyric = new Lyric();
-	private List<Lyric> lyrics = new List<Lyric>();
-
-	private SearchMode currentSearchMode;
-	private bool isQueueMode = false;
-	private bool editMode = false;
-
-	private string searchText = "";
-
-	protected override async Task OnInitializedAsync()
-	{
-		songs = await SongService.GetAllAsync();
-	}
-
-	private async Task switchSearchMode(SearchMode searchMode)
-	{
-		currentSearchMode = searchMode;
-		await OnSearchChanged(searchText);
-	} 
-
-	private async Task SelectedSongChanged(Song song)
-	{
-		selectedSong = await SongService.GetAsync(song.Id);
-		languagesOfSelectedSong = await SongService.GetLanguagesAsync(selectedSong.Number);
-		UpdateLyrics();
-	}
-
-	private void UpdateLyrics() => lyrics = selectedSong.Lyrics();
-
-	private async Task OnSearchChanged(string value)
-	{
-		if(String.IsNullOrWhiteSpace(searchText))
-		{
-			songs = await SongService.GetAllAsync();
-			return;
-		}
-
-		songs = currentSearchMode switch
-		{
-			SearchMode.Title => await SongService.QueryTitleAsync(searchText),
-			SearchMode.Lyric => await SongService.QueryLyricAsync(searchText),
-			_ => await SongService.GetAllAsync()
-		};
-	}
-
-	private void EditButtonClick()
-	{
-		editMode = true;
-		selectedSongClone = new Song(selectedSong);
-	}
-
-	private async Task SaveEditClick()
-	{
-		editMode = false;
-		await SongService.UpdateAsync(selectedSong);
-	}
-
-	private void DiscardEditClick()
-	{
-		editMode = false;
-		selectedSong = new Song(selectedSongClone);
-	}
-
-	private async Task AddSongClick()
-	{
-		await AddSong(new Song("Song Title", "Song Author"));
-	}
-
-	private async Task AddLanguageClick()
-	{
-		await AddSong(new Song(selectedSong.Number, selectedSong.Title, selectedSong.Author));
-
-	}
-
-	private async Task AddSong(Song song)
-	{
-		var newSong = await SongService.AddAsync(song);
-		songs.Add(newSong);
-		await SelectedSongChanged(newSong);
-
-		await InvokeAsync(StateHasChanged);
-		await jSRuntime.InvokeVoidAsync("ScrollWithHeight", "SongList", songs.Count());
-	}
-
-	private void SelectedLyricChanged(Lyric lyric)
-	{
-		selectedLyric = lyric;
-	}
-}
