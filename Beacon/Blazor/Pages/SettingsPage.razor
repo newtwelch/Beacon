@@ -15,12 +15,26 @@
     <div class="@(activeCategory == SettingsCategory.General ? "p-10" : "hidden")">
         <BeaconCheckBox Message="Enable Dark Mode" IsChecked="Settings.EnableDarkMode"
                         OnClick="DarkModeToggle"></BeaconCheckBox>
-
+    
     </div>
 
-    <div class="@(activeCategory == SettingsCategory.SongLibrary ? "p-10" : "hidden")">
-        <BeaconButton Message="DOWNLOAD SONGS FROM BEACON API"></BeaconButton>
+    <div class="@(activeCategory == SettingsCategory.SongLibrary ? "p-10 space-y-1" : "hidden")">
+        <label class="font-bold tracking-widest text-accented">DOWNLOAD SONGS</label>
+        <div class="flex space-x-2">
+            <BeaconButton Message="NEWT COLLECTION"></BeaconButton>
+            <BeaconButton Message="TAGALOG"></BeaconButton>
+            <BeaconButton Message="ENGLISH"></BeaconButton>
+        </div>
         
+        <br/>
+
+        <label class="font-bold tracking-widest text-accented">DATABASE SIZE</label>
+        <div><span class="italic">Songs.db </span>.... @((new System.IO.FileInfo(Constants.SongDbPath).Length / 1048576).ToString()) MB</div>
+        <div class="flex space-x-2">
+            <BeaconButton Message="TRIM"></BeaconButton>
+            <BeaconButton Message="DELETE ALL" Hover="hover:bg-red hover:text-accented"></BeaconButton>
+        </div>
+
     </div>
 
 
@@ -32,6 +46,8 @@
     public EventCallback DarkModeToggled { get; set; }
 
     private SettingsCategory activeCategory;
+
+
 
     private async Task DarkModeToggle(){
         Settings.EnableDarkMode = !Settings.EnableDarkMode;

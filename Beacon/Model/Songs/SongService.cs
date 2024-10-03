@@ -62,8 +62,8 @@ namespace Beacon.Model.Songs
 			return newSong;
 		}
 
-		public async Task UpdateAsync(Song song) => await dbConnection.UpdateAsync(song);
-
+		public async Task UpdateAsync(Song song) => await dbConnection.UpdateAsync(song); 
+		public async Task DeleteAsync(Song song) => await dbConnection.DeleteAsync(song);
 
 		//    private SQLiteAsyncConnection dbConnection;
 
@@ -146,6 +146,7 @@ namespace Beacon.Model.Songs
         public Task<Song> GetAsync(int id);
         public Task<Song> AddAsync(Song song);
         public Task UpdateAsync(Song song);
+        public Task DeleteAsync(Song song);
         public Task<List<Song>> GetAllAsync();
         public Task<int> GetCountAsync();
 		public Task<List<Song>> GetLanguagesAsync(int Number);

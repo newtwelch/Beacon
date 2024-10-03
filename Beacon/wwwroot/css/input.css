@@ -6,21 +6,20 @@
     .text-default{
         @apply text-l-text dark:text-d-text;
     }
-    
     .text-accented {
         @apply text-l-text-accent dark:text-d-text-accent;
     }
-
     .text-primary {
         @apply text-l-primary dark:text-d-primary;
     }
-
     .text-accented-on-primary {
         @apply text-d-text-accent;
     }
-
     .text-orange {
         @apply dark:text-d-orange text-l-orange;
+    }
+    .text-red {
+        @apply dark:text-d-red text-l-red;
     }
 
     .bg-sidepanel{
@@ -33,6 +32,9 @@
         @apply border-l-primary dark:border-d-primary;
     }
 
+    .bg-red {
+        @apply bg-l-red dark:bg-d-red;
+    }
     .bg-container {
         @apply bg-l-container dark:bg-d-container;
     }

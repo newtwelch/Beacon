@@ -32,17 +32,19 @@
 				</div>
 	
 				<div class="@(IsQueueMode ? "" : "hidden group-hover:flex space-x-5")">
-					<button class="font-ark hover:opacity-50">
-						@if(Song.InQueue)
-						{
-							<span>R</span>
-						}
-						else
-						{
-							<span>A</span>
-						}
-					</button>
-					<button class="font-ark hover:opacity-50">D</button>
+					@if (Song.InQueue)
+					{
+						<button class="font-ark hover:opacity-50" @onclick="(() => RemoveFromQueueClick(Song))">
+							R
+						</button>
+					}
+					else
+					{
+						<button class="font-ark hover:opacity-50" @onclick="(() => AddToQueueClick(Song))">
+							A
+						</button>
+					}
+					<button class="font-ark hover:opacity-50" @onclick="(() => DeleteSongClick(Song))">D</button>
 				</div>
 	
 			</div>
@@ -62,6 +64,15 @@
 
 	[Parameter]
 	public EventCallback<Song> SelectedSongChanged { get; set; }
+
+	[Parameter]
+	public EventCallback<Song> SongDeletionRequest { get; set; }
+
+	[Parameter]
+	public EventCallback<Song> SongAddToQueue { get; set; }
+
+	[Parameter]
+	public EventCallback<Song> SongRemoveFromQueue { get; set; }
 
 	[Parameter]
 	public bool IsQueueMode { get; set; }
@@ -94,4 +105,7 @@
 
 	}
 
+	private async Task AddToQueueClick(Song song) => await SongAddToQueue.InvokeAsync(song);
+	private async Task RemoveFromQueueClick(Song song) => await SongRemoveFromQueue.InvokeAsync(song);
+	private async Task DeleteSongClick(Song song) => await SongDeletionRequest.InvokeAsync(song);
 }

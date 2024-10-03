@@ -10,12 +10,14 @@ namespace Beacon.Blazor.Pages
 		private List<Song> languagesOfSelectedSong = new List<Song>();
 		private Song selectedSong = new Song();
 		private Song selectedSongClone = new Song();
+		private Song songToDelete = new Song();
 		private Lyric selectedLyric = new Lyric();
 		private List<Lyric> lyrics = new List<Lyric>();
 
 		private SearchMode currentSearchMode;
 		private bool isQueueMode = false;
 		private bool editMode = false;
+		private bool showDeleteModal = false;
 
 		private string searchText = "";
 
@@ -88,7 +90,28 @@ namespace Beacon.Blazor.Pages
 		private async Task AddLanguageClick()
 		{
 			await AddSong(new Song(selectedSong.Number, selectedSong.Title, selectedSong.Author));
+		}
 
+		private async Task SongDeleteClick(Song song)
+		{
+			songToDelete = song;
+			
+			if (true) // add a bool in setting for "Always verify song deletion"
+			{
+				showDeleteModal = true;
+			}
+			else
+			{
+				await DeleteSong();
+			}
+		}
+
+		private async Task DeleteSong()
+		{
+			songs.Remove(songToDelete);
+			await SongService.DeleteAsync(songToDelete);
+			songToDelete = new Song();
+			showDeleteModal = false;
 		}
 
 		private async Task AddSong(Song song)

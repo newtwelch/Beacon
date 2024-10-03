@@ -2,6 +2,22 @@
 @inject ISongService SongService
 @inject IJSRuntime jSRuntime
 
+<div class="absolute @(showDeleteModal ?  "flex" : "hidden") justify-center items-center top-0 left-0 w-full h-full bg-d-background bg-opacity-25 z-40">
+
+	<div class="bg-container rounded-xl space-y-3 p-10">
+		<label class="font-bold tracking-widest opacity-50 text-accented">DELETE CONFIRMATION</label>
+		<br />
+		Are you sure you want to delete <span class="italic text-red">@songToDelete.Title</span>?
+
+		<div class="flex space-x-3">
+			<BeaconButton Message="Yes" Background="bg-red" Hover="hover:bg-sidepanel hover:text-default text-accented-on-primary" OnClick="DeleteSong"></BeaconButton>
+			<BeaconButton Message="No" OnClick="() => showDeleteModal = false" ></BeaconButton>
+
+		</div>
+	</div>
+
+</div>
+
 <div class="grid-cols-12 grid h-full w-full relative">
 
 	<!-- |===== LEFT SIDE ======| -->
@@ -36,7 +52,8 @@
 			</div>
 
 			<!--[ SONG LIST ]-->
-			<SongList Songs="songs" SelectedSong="selectedSong" IsQueueMode="isQueueMode" SelectedSongChanged="SelectedSongChanged"></SongList>
+			<SongList Songs="songs" SelectedSong="selectedSong" IsQueueMode="isQueueMode" SelectedSongChanged="SelectedSongChanged"
+						SongDeletionRequest="SongDeleteClick" ></SongList>
 
 			<!--[ QUEUE AND ADD SONG ]-->
 			<div class="flex justify-between">
