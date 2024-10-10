@@ -1,4 +1,4 @@
-using Beacon.Model.Enum;
+using Beacon.Model.Enums;
 using Beacon.Model.Songs;
 using Microsoft.JSInterop;
 
@@ -31,16 +31,13 @@ namespace Beacon.Blazor.Pages
 			currentSearchMode = searchMode;
 			await OnSearchChanged(searchText);
 		}
-
 		private async Task SelectedSongChanged(Song song)
 		{
 			selectedSong = await SongService.GetAsync(song.Id);
 			languagesOfSelectedSong = await SongService.GetLanguagesAsync(selectedSong.Number);
 			UpdateLyrics();
 		}
-
 		private void UpdateLyrics() => lyrics = selectedSong.Lyrics();
-
 		private async Task OnSearchChanged(string value)
 		{
 			if (String.IsNullOrWhiteSpace(searchText))
@@ -62,7 +59,6 @@ namespace Beacon.Blazor.Pages
 			editMode = true;
 			selectedSongClone = new Song(selectedSong);
 		}
-
 		private async Task SaveEditClick()
 		{
 			editMode = false;
@@ -74,24 +70,20 @@ namespace Beacon.Blazor.Pages
 
 			await SongService.UpdateAsync(selectedSong);
 		}
-
 		private void DiscardEditClick()
 		{
 			editMode = false;
 			selectedSong = new Song(selectedSongClone);
 			UpdateLyrics();
 		}
-
 		private async Task AddSongClick()
 		{
 			await AddSong(new Song("Song Title", "Song Author"));
 		}
-
 		private async Task AddLanguageClick()
 		{
 			await AddSong(new Song(selectedSong.Number, selectedSong.Title, selectedSong.Author));
 		}
-
 		private async Task SongDeleteClick(Song song)
 		{
 			songToDelete = song;
@@ -105,6 +97,20 @@ namespace Beacon.Blazor.Pages
 				await DeleteSong();
 			}
 		}
+		private async Task AddToQueueClick(Song song)
+		{
+			song.InQueue = true;
+			var songToAdd = await SongService.GetAsync(song.Id);
+			songToAdd.InQueue = true;
+			await SongService.UpdateAsync(songToAdd);
+		}
+		private async Task RemoveFromQueueClick(Song song)
+		{
+			song.InQueue = false;
+			var songToAdd = await SongService.GetAsync(song.Id);
+			songToAdd.InQueue = false;
+			await SongService.UpdateAsync(songToAdd);
+		}
 
 		private async Task DeleteSong()
 		{
@@ -113,7 +119,6 @@ namespace Beacon.Blazor.Pages
 			songToDelete = new Song();
 			showDeleteModal = false;
 		}
-
 		private async Task AddSong(Song song)
 		{
 			var newSong = await SongService.AddAsync(song);
@@ -123,7 +128,6 @@ namespace Beacon.Blazor.Pages
 			await InvokeAsync(StateHasChanged);
 			await jSRuntime.InvokeVoidAsync("ScrollWithHeight", "SongList", songs.Count());
 		}
-
 		private void SelectedLyricChanged(Lyric lyric)
 		{
 			selectedLyric = lyric;

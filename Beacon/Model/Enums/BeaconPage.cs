@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Beacon.Model.Enum
+namespace Beacon.Model.Enums
 {
-	public enum SearchMode
+	public enum BeaconPage
 	{
-		Title,
-		Lyric,
-		Author,
-		Tag
-	}
+		SongLibrary,
+		BibleLibrary,
+		HistoryLibrary,
+		SettingsPage
+	};
 }

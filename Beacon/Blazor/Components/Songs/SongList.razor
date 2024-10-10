@@ -7,10 +7,10 @@
 			var isSelected = Song.Id == SelectedSong.Id;
 
 			<div id="@Song.Id" class="outline-0 group flex h-16 cursor-pointer select-none items-center rounded-xl px-3
-@(isSelected ? "bg-primary text-accented-on-primary" : "hover:text-accented-on-primary hover:bg-primary hover:bg-opacity-50 dark:hover:bg-opacity-15 ")"
+@(isSelected ? "bg-primary text-accented-on-primary" : "hover:text-accented hover:bg-primary hover:bg-opacity-25 dark:hover:bg-opacity-15 ")"
 				@onclick="(async () => await SelectionChanged(Song))">
 	
-				<div class="flex-1 text-sm truncate">
+				<div class="flex-1 truncate text-sm">
 					<span class="text-sm">@((MarkupString)Song.Title)</span>
 					<br/>
 					<span class="text-xs @(isSelected ? "" : "opacity-50")">
@@ -30,23 +30,24 @@
 						}
 					</span>
 				</div>
-	
-				<div class="@(IsQueueMode ? "" : "hidden group-hover:flex space-x-5")">
-					@if (Song.InQueue)
-					{
-						<button class="font-ark hover:opacity-50" @onclick="(() => RemoveFromQueueClick(Song))">
-							R
-						</button>
-					}
-					else
-					{
-						<button class="font-ark hover:opacity-50" @onclick="(() => AddToQueueClick(Song))">
-							A
-						</button>
-					}
-					<button class="font-ark hover:opacity-50" @onclick="(() => DeleteSongClick(Song))">D</button>
+
+				<div class="flex space-x-5 ">
+					<div class="@(Song.InQueue ? "" : (isSelected ? "flex" : "hidden group-hover:flex"))">
+						@if (Song.InQueue)
+						{
+							<button class="font-ark hover:opacity-50" @onclick="(() => RemoveFromQueueClick(Song))" @onclick:stopPropagation="true">
+								R
+							</button>
+						}
+						else
+						{
+							<button class="font-ark hover:opacity-50" @onclick="(() => AddToQueueClick(Song))" @onclick:stopPropagation="true">
+								A
+							</button>
+						}
+					</div>
+					<button class="font-ark hover:opacity-50 @(isSelected ? "flex" : "invisible group-hover:visible")" @onclick="(() => DeleteSongClick(Song))" @onclick:stopPropagation="true">D</button>
 				</div>
-	
 			</div>
 		}
 

@@ -19,7 +19,7 @@
     </div>
 
     <div class="@(activeCategory == SettingsCategory.SongLibrary ? "p-10 space-y-1" : "hidden")">
-        <label class="font-bold tracking-widest text-accented">DOWNLOAD SONGS</label>
+        <label class="text-accented font-bold tracking-widest">DOWNLOAD SONGS</label>
         <div class="flex space-x-2">
             <BeaconButton Message="NEWT COLLECTION"></BeaconButton>
             <BeaconButton Message="TAGALOG"></BeaconButton>
@@ -28,7 +28,7 @@
         
         <br/>
 
-        <label class="font-bold tracking-widest text-accented">DATABASE SIZE</label>
+        <label class="text-accented font-bold tracking-widest">DATABASE SIZE</label>
         <div><span class="italic">Songs.db </span>.... @((new System.IO.FileInfo(Constants.SongDbPath).Length / 1048576).ToString()) MB</div>
         <div class="flex space-x-2">
             <BeaconButton Message="TRIM"></BeaconButton>
@@ -47,6 +47,10 @@
 
     private SettingsCategory activeCategory;
 
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
 
 
     private async Task DarkModeToggle(){

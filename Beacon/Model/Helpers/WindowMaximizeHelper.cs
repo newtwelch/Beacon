@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 
-namespace Beacon.Model.Helper
+namespace Beacon.Model.Helpers
 {
     //! ====================================================
     //! WINDOW MAXIMIZE FIX: this should fix the maximizing issue, (is there even an issue? idk, but I like this)

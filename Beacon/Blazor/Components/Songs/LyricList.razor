@@ -1,14 +1,14 @@
 ﻿@inject IJSRuntime jSRuntime
 
-<div tabindex="0" id="LyricList" class="select-none mx-10 mb-5 flex h-full flex-col space-y-2 overflow-auto rounded-3xl" @onkeydown="Navigate">
+<div tabindex="0" id="LyricList" class="mx-10 mb-5 flex h-full select-none flex-col space-y-2 overflow-auto rounded-3xl" @onkeydown="Navigate">
 	
 	@foreach(var lyric in Lyrics)
 	{
 		var isSelected = lyric.Id == SelectedLyric.Id;
 		var sameText = lyric.Text == SelectedLyric.Text;
 
-		<div id="lyric(@lyric.Id)" class="border-x-2 border-sidepanel bg-container relative flex w-full cursor-pointer items-center whitespace-pre rounded-3xl text-center text-sm 
-									@(isSelected && sameText ? "bg-primary text-accented-on-primary" : "hover:bg-primary hover:bg-opacity-50 hover:text-accented-on-primary dark:hover:bg-opacity-15")"
+		<div id="lyric(@lyric.Id)" class="border-x-2 border-sidepanel bg-container relative flex w-full cursor-pointer items-center whitespace-pre rounded-3xl text-center text-sm
+@(isSelected && sameText ? "bg-primary text-accented-on-primary" : "hover:bg-primary hover:bg-opacity-50 hover:text-accented-on-primary dark:hover:bg-opacity-15")"
 		@onclick="(async () => await SelectionChanged(lyric))">
 
 			<span class="absolute left-5 top-3 text-xs">@lyric.Line</span>

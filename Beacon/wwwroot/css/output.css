@@ -1044,6 +1044,10 @@ select {
   background-color: rgb(35 93 218 / var(--tw-bg-opacity));
 }
 
+.invisible {
+  visibility: hidden;
+}
+
 .absolute {
   position: absolute;
 }
@@ -1241,6 +1245,10 @@ select {
   max-width: 56rem;
 }
 
+.max-w-\[500px\] {
+  max-width: 500px;
+}
+
 .max-w-md {
   max-width: 28rem;
 }
@@ -1289,6 +1297,10 @@ select {
 
 .items-center {
   align-items: center;
+}
+
+.justify-end {
+  justify-content: flex-end;
 }
 
 .justify-center {
@@ -1375,6 +1387,11 @@ select {
 
 .whitespace-pre {
   white-space: pre;
+}
+
+.break-normal {
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .rounded {
@@ -1507,10 +1524,6 @@ select {
 
 .p-3 {
   padding: 0.75rem;
-}
-
-.p-5 {
-  padding: 1.25rem;
 }
 
 .px-0\.5 {
@@ -2053,6 +2066,10 @@ a, .btn-link {
     background-color: rgb(245 243 245 / var(--tw-bg-opacity));
   }
 
+  .hover\:bg-opacity-25:hover {
+    --tw-bg-opacity: 0.25;
+  }
+
   .hover\:bg-opacity-50:hover {
     --tw-bg-opacity: 0.5;
   }
@@ -2147,6 +2164,10 @@ a, .btn-link {
 }
 
 @media (hover: hover) and (pointer: fine) {
+  .group:hover .group-hover\:visible {
+    visibility: visible;
+  }
+
   .group:hover .group-hover\:flex {
     display: flex;
   }

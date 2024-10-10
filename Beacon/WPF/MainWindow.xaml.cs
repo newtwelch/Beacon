@@ -1,4 +1,4 @@
-﻿using Beacon.Model.Helper;
+﻿using Beacon.Model.Helpers;
 using Microsoft.VisualBasic;
 using System.Windows;
 using System.Windows.Interop;

@@ -16,10 +16,10 @@
         @apply text-d-text-accent;
     }
     .text-orange {
-        @apply dark:text-d-orange text-l-orange;
+        @apply text-l-orange dark:text-d-orange;
     }
     .text-red {
-        @apply dark:text-d-red text-l-red;
+        @apply text-l-red dark:text-d-red;
     }
 
     .bg-sidepanel{
