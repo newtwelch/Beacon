@@ -1,11 +1,15 @@
 using Beacon.Model.Enums;
 using Beacon.Model.Songs;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 
 namespace Beacon.Blazor.Pages
 {
 	public partial class SongLibrary
 	{
+		[Parameter] public Func<bool> ShouldReRender { get; set; }
+
 		private List<Song> songs = new List<Song>();
 		private List<Song> languagesOfSelectedSong = new List<Song>();
 		private Song selectedSong = new Song();
@@ -48,7 +52,7 @@ namespace Beacon.Blazor.Pages
 
 			if (searchText.StartsWith("."))
 			{
-				songs = await SongService.QueryLyricAsync(searchText.Substring(0));
+				songs = await SongService.QueryLyricAsync(searchText.Substring(1));
 				return;
 			}
 
@@ -60,7 +64,19 @@ namespace Beacon.Blazor.Pages
 			};
 		}
 
-		private void QueueModeToggle() => isQueueMode = !isQueueMode;
+		private async Task QueueModeToggle()
+		{
+			isQueueMode = !isQueueMode;
+
+			if (isQueueMode) 
+			{
+				songs = await SongService.GetQueueAsync();
+			}
+			else
+			{
+				songs = await SongService.GetAllAsync();
+			}
+		}
 		private void EditButtonClick()
 		{
 			editMode = true;
@@ -107,16 +123,46 @@ namespace Beacon.Blazor.Pages
 		private async Task AddToQueueClick(Song song)
 		{
 			song.InQueue = true;
+
 			var songToAdd = await SongService.GetAsync(song.Id);
 			songToAdd.InQueue = true;
+			songToAdd.QueueOrder = await SongService.GetHighestQueueOrderAsync() + 1;
 			await SongService.UpdateAsync(songToAdd);
 		}
 		private async Task RemoveFromQueueClick(Song song)
 		{
 			song.InQueue = false;
-			var songToAdd = await SongService.GetAsync(song.Id);
-			songToAdd.InQueue = false;
-			await SongService.UpdateAsync(songToAdd);
+
+			var songToRemove = await SongService.GetAsync(song.Id);
+			songToRemove.InQueue = false;
+			songToRemove.QueueOrder = 0;
+			await SongService.UpdateAsync(songToRemove);
+
+			if (isQueueMode)
+			{
+				songs.Remove(song);
+			}
+		}
+		private async Task OnSearchKeyPress(KeyboardEventArgs e)
+		{
+			if (e.Code == "Enter")
+			{
+				await SelectedSongChanged(songs[0]);
+			}
+		}
+		private async Task ClearQueue()
+		{
+			if (!isQueueMode) return;
+
+			foreach(var song in songs)
+			{
+				var songToRemove = await SongService.GetAsync(song.Id);
+				songToRemove.InQueue = false;
+				songToRemove.QueueOrder = 0;
+				await SongService.UpdateAsync(songToRemove);
+			}
+
+			songs.Clear();
 		}
 
 		private async Task DeleteSong()

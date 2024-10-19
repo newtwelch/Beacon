@@ -31,6 +31,9 @@
     .border-primary {
         @apply border-l-primary dark:border-d-primary;
     }
+    .border-accented {
+        @apply border-l-text-accent dark:border-d-text-accent;
+    }
 
     .bg-red {
         @apply bg-l-red dark:bg-d-red;

@@ -50,6 +50,8 @@
         <label class="text-accented font-bold tracking-widest">LIBRARY</label>
         <BeaconCheckBox Message="Confirm before deleting a Song" IsChecked="settingsService.settings.AlwaysConfirmSongDeletion"
                         OnClick="ConfirmSongDeletionToggle"></BeaconCheckBox>
+        <BeaconCheckBox Message="Show Lyric safe area margin when editing" IsChecked="settingsService.settings.ShowLyricMargin"
+                        OnClick="ShowLyricMarginToggle"></BeaconCheckBox>
     </div>
 
 
@@ -58,7 +60,7 @@
 
 @code {
     [Parameter]
-    public EventCallback DarkModeToggled { get; set; }
+    public EventCallback ChangeState { get; set; }
 
     private SettingsCategory activeCategory;
 
@@ -71,13 +73,20 @@
     private async Task DarkModeToggle(){
         settingsService.settings.EnableDarkMode = !settingsService.settings.EnableDarkMode;
         await settingsService.Save();
-        await DarkModeToggled.InvokeAsync();
+        await ChangeState.InvokeAsync();
     }
 
     private async Task ConfirmSongDeletionToggle()
     {
         settingsService.settings.AlwaysConfirmSongDeletion = !settingsService.settings.AlwaysConfirmSongDeletion;
         await settingsService.Save();
-        await DarkModeToggled.InvokeAsync();
+        await ChangeState.InvokeAsync();
+    }
+
+    private async Task ShowLyricMarginToggle()
+    {
+        settingsService.settings.ShowLyricMargin = !settingsService.settings.ShowLyricMargin;
+        await settingsService.Save();
+        await ChangeState.InvokeAsync();
     }
 }

@@ -9,13 +9,13 @@
 
 
 	<div class="@(activePage == BeaconPage.SongLibrary ? "" : "hidden") h-full w-full">
-		<SongLibrary />
+			<SongLibrary ShouldReRender="ShouldRender" />
 	</div>
 	<div class="@(activePage == BeaconPage.BibleLibrary ? "" : "hidden") h-full w-full">
 		<BibleLibrary />
 	</div>
 	<div class="@(activePage == BeaconPage.SettingsPage ? "" : "hidden") h-full w-full">
-		<SettingsPage DarkModeToggled="DarkModeToggled"/>
+			<SettingsPage ChangeState="ChangeState" />
 	</div>
 
 	</div>
@@ -25,13 +25,14 @@
 
 @code {
 
-
-
 	private BeaconPage activePage = BeaconPage.SongLibrary;
 
-	private void switchPage(BeaconPage page) => activePage = page;
-
-	private void DarkModeToggled() => StateHasChanged();
+	private void switchPage(BeaconPage page)
+	{
+		activePage = page;
+	} 
+	
+	private void ChangeState() => StateHasChanged();
 
 	protected override async Task OnInitializedAsync()
 	{

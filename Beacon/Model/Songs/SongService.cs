@@ -17,8 +17,8 @@ namespace Beacon.Model.Songs
         }
 
         public async Task<Song> GetAsync(int id) => await dbConnection.Table<Song>().FirstOrDefaultAsync(song => song.Id == id);
-
-        public async Task<List<Song>> GetAllAsync()
+		public async Task<List<Song>> GetQueueAsync() => await dbConnection.QueryAsync<Song>($"SELECT Id, Title, Author, InQueue FROM Song WHERE InQueue = true ORDER BY QueueOrder DESC");
+		public async Task<List<Song>> GetAllAsync()
         {
             return await dbConnection.QueryAsync<Song>($"SELECT Id, Title, Author, InQueue FROM Song WHERE Language = 'English' OR Language = 'Filipino' OR Language = 'LANGUAGE'");
         }
@@ -26,6 +26,10 @@ namespace Beacon.Model.Songs
 		public async Task<int> GetCountAsync()
 		{
 			return await dbConnection.Table<Song>().CountAsync();
+		}
+		public async Task<int> GetHighestQueueOrderAsync()
+		{
+			return await dbConnection.ExecuteScalarAsync<int>("SELECT MAX(QueueOrder) FROM Song");
 		}
 
 		public async Task<List<Song>> GetLanguagesAsync(int Number)
@@ -37,7 +41,7 @@ namespace Beacon.Model.Songs
 		{
 		    searchText = searchText.Trim().Replace(" ", "* + ").Replace("'", " ");
 		    var songsQueried = await dbConnection.QueryAsync<Song>($"SELECT Id, HIGHLIGHT(SongFts, 1, '<span class=\"text-orange group-hover:text-accented-on-primary\">', '</span>') AS Title, Author, InQueue " +
-																   $"FROM SongFts WHERE Title MATCH '*{searchText}*' ORDER BY rank DESC");
+																   $"FROM SongFts WHERE Title MATCH '{searchText}*' ORDER BY rank DESC");
 		    return songsQueried;
 		}
 
@@ -131,8 +135,7 @@ namespace Beacon.Model.Songs
 		//    }
 
 		//    public async Task<List<Song>> GetAllAsync() => await dbConnection.QueryAsync<Song>($"SELECT Id, Title, Author, InQueue FROM Song WHERE Language = 'English' OR Language = 'Filipino'").ConfigureAwait(false);
-		//    public async Task<List<Song>> GetQueueAsync() => await dbConnection.QueryAsync<Song>($"SELECT Id, Title, Author, InQueue FROM Song WHERE InQueue = true ORDER BY QueueOrder DESC").ConfigureAwait(false);
-
+		
 		//    public async Task<List<Song>> GetLanguagesOfSongAsync(int Number)
 		//    {
 		//        var songsQueried = await dbConnection.QueryAsync<Song>($"SELECT Id, Language FROM Song WHERE Number = {Number}").ConfigureAwait(false);
@@ -148,12 +151,13 @@ namespace Beacon.Model.Songs
         public Task UpdateAsync(Song song);
         public Task DeleteAsync(Song song);
         public Task<List<Song>> GetAllAsync();
+		public Task<List<Song>> GetQueueAsync();
         public Task<int> GetCountAsync();
+        public Task<int> GetHighestQueueOrderAsync();
 		public Task<List<Song>> GetLanguagesAsync(int Number);
 		public Task<List<Song>> QueryTitleAsync(string searchText);
 		public Task<List<Song>> QueryLyricAsync(string searchText);
 
-		//    public Task<List<Song>> GetQueueAsync();
 		//    public Task<List<Song>> QueryTitleAsync(string searchText);
 		//    public Task<List<Song>> QueryAuthorAsync(string searchText);
 		//    public Task<List<Song>> QueryTagsAsync(string searchText);

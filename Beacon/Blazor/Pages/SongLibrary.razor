@@ -25,10 +25,20 @@
 		<div class="@(editMode ? "" : "hidden") flex h-full w-full flex-col">
 			<!--[ EDIT MODE: Lyric Text]-->
 			<label class="text-accented font-bold tracking-widest opacity-50">LYRIC EDITOR</label>
-			<textarea class="bg-sidepanel text-default border-0 min-h-1/2 max-h-1/2 m-px mb-3 h-1/2 w-full rounded-xl px-4 py-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
-					  value="@selectedSong.LyricText" @oninput="(e => { selectedSong.LyricText = e.Value.ToString(); UpdateLyrics();})" spellcheck="false" placeholder="Lyric" />
-			<!--[ EDIT MODE: Sequence ]-->
+			<div class="h-full w-full relative mb-3">
+				<textarea class="bg-sidepanel text-default border-0 min-h-1/2 h-full m-px w-full rounded-xl px-4 py-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+						  value="@selectedSong.LyricText" @oninput="(e => { selectedSong.LyricText = e.Value.ToString(); UpdateLyrics();})" spellcheck="false" placeholder="Lyric" />
+				
+				@if (settingsService.settings.ShowLyricMargin)
+				{
+					<div class="absolute top-0 left-0 w-fit border-dashed border-r-2 border-accented h-full opacity-15 rounded-xl z-10 text-transparent text-sm">
+						Amazing Grace, How sweet the sound
+					</div>
+				}
 
+			</div>
+			
+			<!--[ EDIT MODE: Sequence ]-->
 			<label class="text-accented font-bold tracking-widest opacity-50">SEQUENCE</label>
 			<input class="bg-sidepanel text-default border-0 m-px mb-3 w-full rounded-xl px-4 py-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
 					  value="@selectedSong.Sequence" @oninput="(e => { selectedSong.Sequence = e.Value.ToString(); UpdateLyrics();})" spellcheck="false" placeholder="[ 1, C, 2... ]" />
@@ -40,14 +50,14 @@
 
 		</div>
 
-		<div class="@(editMode ? "hidden" : "") flex h-full w-full flex-col space-y-3 overflow-hidden">
+		<div class="@(editMode ? "hidden" : "") relative flex h-full w-full flex-col space-y-3 overflow-hidden transition-all">
 
 			<!--[ SEARCH INPUT ]-->
-			<div class="flex w-full flex-col space-y-2">
+			<div class="flex w-full flex-col space-y-2 transition-all duration-200 @(isQueueMode ? "-translate-y-24 absolute top-0 left-0 opacity-0" : "")">
 				<BeaconSearchMode ActiveSearchMode="currentSearchMode" SearchModeChanged="switchSearchMode"></BeaconSearchMode>
 				<DebounceInput class="bg-default text-accented border-0 mx-px h-16 rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
 							   placeholder="Search" @bind-Value="searchText" @bind-Value:event="oninput" OnValueChanged="OnSearchChanged"
-							   DebounceTime="100" ></DebounceInput>
+							   DebounceTime="100" @onkeypress="OnSearchKeyPress"></DebounceInput>
 			</div>
 
 			<!--[ SONG LIST ]-->
@@ -57,7 +67,16 @@
 			<!--[ QUEUE AND ADD SONG ]-->
 			<div class="flex justify-between">
 				<BeaconToggle OnClick="QueueModeToggle" IsChecked="isQueueMode" IconUnchecked="L" MessageUnchecked="VIEW QUEUE" IconChecked="L" MessageChecked="BACK TO SONGS"></BeaconToggle>
-				<BeaconButton Message="Add Song" Icon="S" OnClick="AddSongClick"></BeaconButton>
+				
+				@if (isQueueMode)
+				{
+					<BeaconButton Message="Clear Queue" Icon="R" OnClick="ClearQueue"></BeaconButton>
+				}
+				else
+				{
+					<BeaconButton Message="Add Song" Icon="S" OnClick="AddSongClick"></BeaconButton>
+				}
+			
 			</div>
 
 		</div>
@@ -73,8 +92,8 @@
 			@if (!(selectedSong.Id == 0 && selectedSong.Number == 0 && selectedSong.Title == ""))
 			{
 				<!--[ KEY ]-->
-				<div class="bg-sidepanel flex size-16 flex-none items-center justify-center rounded-xl ">
-					<input class="text-l-text-accent size-16 rounded-xl border-0 flex text-center  bg-transparent text-2xl dark:text-d-text-accent placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+				<div class="bg-sidepanel flex size-16 flex-none items-center justify-center rounded-xl">
+					<input class="text-l-text-accent border-0 flex size-16 rounded-xl bg-transparent text-center text-2xl placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:text-d-text-accent dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
 						   placeholder="C♭" @bind-value="@selectedSong.Key" @bind-value:event="oninput" spellcheck="false" disabled="@(!editMode)" />
 				</div>
 

@@ -32,6 +32,8 @@
 	private DateTime lastKeyDownTime = DateTime.MinValue;
 	private async Task Navigate(KeyboardEventArgs e)
 	{
+		if (Lyrics.Count <= 0) return;
+
 		DateTime currentTime = DateTime.Now;
 		int timeElapsed = (currentTime - lastKeyDownTime).Milliseconds;
 		if (timeElapsed <= 150) return;
