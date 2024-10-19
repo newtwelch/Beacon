@@ -46,6 +46,12 @@ namespace Beacon.Blazor.Pages
 				return;
 			}
 
+			if (searchText.StartsWith("."))
+			{
+				songs = await SongService.QueryLyricAsync(searchText.Substring(0));
+				return;
+			}
+
 			songs = currentSearchMode switch
 			{
 				SearchMode.Title => await SongService.QueryTitleAsync(searchText),
@@ -54,10 +60,17 @@ namespace Beacon.Blazor.Pages
 			};
 		}
 
+		private void QueueModeToggle() => isQueueMode = !isQueueMode;
 		private void EditButtonClick()
 		{
 			editMode = true;
 			selectedSongClone = new Song(selectedSong);
+		}
+		private void DiscardEditClick()
+		{
+			editMode = false;
+			selectedSong = new Song(selectedSongClone);
+			UpdateLyrics();
 		}
 		private async Task SaveEditClick()
 		{
@@ -69,12 +82,6 @@ namespace Beacon.Blazor.Pages
 			songs[index].LyricText = "";
 
 			await SongService.UpdateAsync(selectedSong);
-		}
-		private void DiscardEditClick()
-		{
-			editMode = false;
-			selectedSong = new Song(selectedSongClone);
-			UpdateLyrics();
 		}
 		private async Task AddSongClick()
 		{
@@ -88,7 +95,7 @@ namespace Beacon.Blazor.Pages
 		{
 			songToDelete = song;
 			
-			if (true) // add a bool in setting for "Always verify song deletion"
+			if (settingsService.settings.AlwaysConfirmSongDeletion) // add a bool in setting for "Always verify song deletion"
 			{
 				showDeleteModal = true;
 			}

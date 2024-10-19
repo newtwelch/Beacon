@@ -1,8 +1,9 @@
 ﻿@using System.Diagnostics
 @inject ISongService SongService
+@inject SettingsService settingsService
 @inject IJSRuntime jSRuntime
 
-<div class="z-40 @(showDeleteModal ?  "flex" : "hidden") absolute left-0 top-0 h-full w-full items-center justify-center bg-d-background bg-opacity-25">
+<div class="z-40 @(showDeleteModal ?  "flex" : "hidden") absolute left-0 top-0 h-full w-full items-center justify-center bg-d-background bg-opacity-50">
 
 	<div class="bg-container max-w-[500px] space-y-3 rounded-xl p-10">
 		<label class="text-accented font-bold tracking-widest opacity-50">DELETE CONFIRMATION</label>
@@ -21,7 +22,6 @@
 
 	<!-- |===== LEFT SIDE ======| -->
 	<div class="border-r-2 col-span-5 border-sidepanel bg-container h-full overflow-hidden rounded-r-3xl p-10">
-
 		<div class="@(editMode ? "" : "hidden") flex h-full w-full flex-col">
 			<!--[ EDIT MODE: Lyric Text]-->
 			<label class="text-accented font-bold tracking-widest opacity-50">LYRIC EDITOR</label>
@@ -56,7 +56,7 @@
 
 			<!--[ QUEUE AND ADD SONG ]-->
 			<div class="flex justify-between">
-				<BeaconToggle IconUnchecked="L" MessageUnchecked="VIEW QUEUE" IconChecked="L" MessageChecked="BACK TO SONGS"></BeaconToggle>
+				<BeaconToggle OnClick="QueueModeToggle" IsChecked="isQueueMode" IconUnchecked="L" MessageUnchecked="VIEW QUEUE" IconChecked="L" MessageChecked="BACK TO SONGS"></BeaconToggle>
 				<BeaconButton Message="Add Song" Icon="S" OnClick="AddSongClick"></BeaconButton>
 			</div>
 
@@ -69,48 +69,53 @@
 	<div class="col-span-7 bg-default flex h-full w-full flex-col overflow-auto">
 
 		<!--------[ TOP ]-------->
-		<div class="via-l-container/25 border-b-2 border-sidepanel to-l-container/0 flex h-32 w-full items-center rounded-b-3xl bg-gradient-to-t from-l-container px-10 dark:from-d-container dark:via-d-container/25 dark:to-d-container/0">
-
-			<!--[ KEY ]-->
-			<div class="bg-sidepanel flex size-16 flex-none items-center justify-center rounded-xl">
-				<input class="text-l-text-accent border-0 flex bg-transparent text-center text-2xl focus:ring-0 dark:text-d-text-accent"
-					   placeholder="Key" @bind-value="@selectedSong.Key" @bind-value:event="oninput" spellcheck="false" disabled="@(!editMode)"/>
-			</div>
-
-
-			<!--[ TITLE AND AUTHOR ]-->
-			<p class="flex-1 leading-7 mx-3 truncate">
-				@if (!editMode)
-				{
-					<span class="text-accented w-full text-3xl font-bold">@selectedSong.Title</span><br />
-					<span class="text-accented text-lg">@selectedSong.Author</span>
-
-				}
-				else
-				{
-					<input class="bg-sidepanel text-accented border-0 m-px w-full rounded-lg px-3 py-0.5 text-lg placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
-						   @bind-value="@selectedSong.Title" @bind-value:event="oninput" spellcheck="false" placeholder="Song Title" />
-
-					<br />
-
-					<input class="bg-sidepanel text-accented border-0 m-px rounded-lg px-3 py-0.5 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
-						   @bind-value="selectedSong.Author" @bind-value:event="oninput" spellcheck="false" placeholder="Author" />
-				}
-			</p>
+		<div class="via-l-container/25 border-b-2 border-sidepanel to-l-container/0 flex min-h-28 w-full items-center rounded-b-3xl bg-gradient-to-t from-l-container px-10 dark:from-d-container dark:via-d-container/25 dark:to-d-container/0">
+			@if (!(selectedSong.Id == 0 && selectedSong.Number == 0 && selectedSong.Title == ""))
+			{
+				<!--[ KEY ]-->
+				<div class="bg-sidepanel flex size-16 flex-none items-center justify-center rounded-xl ">
+					<input class="text-l-text-accent size-16 rounded-xl border-0 flex text-center  bg-transparent text-2xl dark:text-d-text-accent placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+						   placeholder="C♭" @bind-value="@selectedSong.Key" @bind-value:event="oninput" spellcheck="false" disabled="@(!editMode)" />
+				</div>
 
 
-			<!--[ ACTION BUTTONS ]-->
-			<div class="flex flex-none space-x-3">
-				@if (editMode)
-				{
-					<BeaconButton Message="DISCARD" Icon="D" Hover="hover:bg-l-red dark:hover:bg-d-red hover:text-accented-on-primary" OnClick="DiscardEditClick"></BeaconButton>
-					<BeaconButton Message="SAVE" Icon="s" Background="bg-primary text-accented-on-primary" Hover="hover:bg-l-sidepanel hover:text-primary" OnClick="SaveEditClick"></BeaconButton>
-				}
-				else
-				{
-					<BeaconButton Message="EDIT" Icon="E" OnClick="EditButtonClick"></BeaconButton>
-				}
-			</div>
+				<!--[ TITLE AND AUTHOR ]-->
+				<p class="flex-1 leading-7 mx-3 truncate">
+					@if (!editMode)
+					{
+						<span class="text-accented w-full text-3xl font-bold">@selectedSong.Title</span>
+
+						<br />
+						<span class="text-accented text-lg">@selectedSong.Author</span>
+
+					}
+					else
+					{
+						<input class="bg-sidepanel text-accented border-0 m-px w-full rounded-lg px-3 py-0.5 text-lg placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+							   @bind-value="@selectedSong.Title" @bind-value:event="oninput" spellcheck="false" placeholder="Song Title" />
+
+						<br />
+
+						<input class="bg-sidepanel text-accented border-0 m-px rounded-lg px-3 py-0.5 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+							   @bind-value="selectedSong.Author" @bind-value:event="oninput" spellcheck="false" placeholder="Author" />
+					}
+				</p>
+
+				<!--[ ACTION BUTTONS ]-->
+				<div class="flex flex-none space-x-3">
+					@if (editMode)
+					{
+						<BeaconButton Message="DISCARD" Icon="D" Hover="hover:bg-l-red dark:hover:bg-d-red hover:text-accented-on-primary" OnClick="DiscardEditClick"></BeaconButton>
+						<BeaconButton Message="SAVE" Icon="s" Background="bg-primary text-accented-on-primary" Hover="hover:bg-l-sidepanel hover:text-primary" OnClick="SaveEditClick"></BeaconButton>
+					}
+					else
+					{
+						<BeaconButton Message="EDIT" Icon="E" OnClick="EditButtonClick"></BeaconButton>
+					}
+				</div>
+			}
+
+
 
 		</div>
 
@@ -118,20 +123,23 @@
 		<!-------[ BOTTOM ]-------->
 
 		<!--[ LANGUAGE ]-->
-		<div class="px-10 pt-5">
-			@if (editMode)
-			{
-				<label class="text-accented font-bold tracking-widest opacity-50">LANGUAGE</label>
-				<input class="bg-sidepanel text-default border-0 m-px mb-2 w-fit rounded-xl px-4 py-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
-					   value="@selectedSong.Language" @oninput="(e => { selectedSong.Language = e.Value.ToString(); UpdateLyrics();})" spellcheck="false" placeholder="Language" />
+		@if (!(selectedSong.Id == 0 && selectedSong.Number == 0 && selectedSong.Title == ""))
+		{
+			<div class="px-10 pt-5">
+				@if (editMode)
+				{
+					<label class="text-accented font-bold tracking-widest opacity-50">LANGUAGE</label>
+					<input class="bg-sidepanel text-default border-0 m-px mb-2 w-fit rounded-xl px-4 py-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+					value="@selectedSong.Language" @oninput="(e => { selectedSong.Language = e.Value.ToString(); UpdateLyrics();})" spellcheck="false" placeholder="Language" />
 
-			}
-			else
-			{
-				<SongLanguageList SelectedSong="selectedSong" Songs="languagesOfSelectedSong" SelectedSongChanged="SelectedSongChanged" AddLanguage="AddLanguageClick"></SongLanguageList>
-				
-			}
-		</div>
+				}
+				else
+				{
+					<SongLanguageList SelectedSong="selectedSong" Songs="languagesOfSelectedSong" SelectedSongChanged="SelectedSongChanged" AddLanguage="AddLanguageClick"></SongLanguageList>
+
+				}
+			</div>
+		}
 
 		<!--[ LYRICS ]-->
 		<LyricList SelectedLyric="selectedLyric" Lyrics="lyrics" SelectedLyricChanged="SelectedLyricChanged"></LyricList>

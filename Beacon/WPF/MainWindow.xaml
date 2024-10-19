@@ -11,7 +11,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Beacon"
     WindowStyle="None"
-    Height="{Binding Source={x:Static model:Settings.ProjectorHeight}}"
     Width="1280"
     MinHeight="600"
     MinWidth="900"

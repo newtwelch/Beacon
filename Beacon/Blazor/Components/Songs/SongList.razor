@@ -32,7 +32,7 @@
 				</div>
 
 				<div class="flex space-x-5 ">
-					<div class="@(Song.InQueue ? "" : (isSelected ? "flex" : "hidden group-hover:flex"))">
+					<div class="@(isSelected ? "flex" : "hidden group-hover:flex")">
 						@if (Song.InQueue)
 						{
 							<button class="font-ark hover:opacity-50" @onclick="(() => RemoveFromQueueClick(Song))" @onclick:stopPropagation="true">
@@ -46,7 +46,8 @@
 							</button>
 						}
 					</div>
-					<button class="font-ark hover:opacity-50 @(isSelected ? "flex" : "invisible group-hover:visible")" @onclick="(() => DeleteSongClick(Song))" @onclick:stopPropagation="true">D</button>
+
+					<button class="font-ark hover:opacity-50 @(IsQueueMode ? "invisible" : isSelected ? "flex" : "invisible group-hover:visible")" @onclick="(() => DeleteSongClick(Song))" @onclick:stopPropagation="true">D</button>
 				</div>
 			</div>
 		}

@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
+@inject SettingsService settingsService
 
-<div class="@(Settings.EnableDarkMode ? "dark":"")">
+<div class="@(settingsService.settings.EnableDarkMode ? "dark":"")">
 
 	<div class="font-gont bg-default text-default flex h-screen w-screen">
 	
@@ -24,9 +25,16 @@
 
 @code {
 
+
+
 	private BeaconPage activePage = BeaconPage.SongLibrary;
 
 	private void switchPage(BeaconPage page) => activePage = page;
 
 	private void DarkModeToggled() => StateHasChanged();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await settingsService.Load();
+	}
 }

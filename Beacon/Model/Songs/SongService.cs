@@ -35,9 +35,9 @@ namespace Beacon.Model.Songs
 
 		public async Task<List<Song>> QueryTitleAsync(string searchText)
 		{
-		    searchText = searchText.Trim().Replace("'", " ").Replace(" ", "* + ");
+		    searchText = searchText.Trim().Replace(" ", "* + ").Replace("'", " ");
 		    var songsQueried = await dbConnection.QueryAsync<Song>($"SELECT Id, HIGHLIGHT(SongFts, 1, '<span class=\"text-orange group-hover:text-accented-on-primary\">', '</span>') AS Title, Author, InQueue " +
-																   $"FROM SongFts WHERE Title MATCH '{searchText}*' ORDER BY rank DESC");
+																   $"FROM SongFts WHERE Title MATCH '*{searchText}*' ORDER BY rank DESC");
 		    return songsQueried;
 		}
 

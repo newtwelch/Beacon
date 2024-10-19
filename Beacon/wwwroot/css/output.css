@@ -107,7 +107,7 @@
 }
 
 /*
-! tailwindcss v3.4.13 | MIT License | https://tailwindcss.com
+! tailwindcss v3.4.14 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -550,7 +550,7 @@ video {
 
 /* Make elements with the HTML hidden attribute stay hidden by default */
 
-[hidden] {
+[hidden]:where(:not([hidden="until-found"])) {
   display: none;
 }
 
@@ -1203,10 +1203,6 @@ select {
   height: 6rem;
 }
 
-.h-32 {
-  height: 8rem;
-}
-
 .h-fit {
   height: -moz-fit-content;
   height: fit-content;
@@ -1218,6 +1214,10 @@ select {
 
 .h-screen {
   height: 100vh;
+}
+
+.min-h-28 {
+  min-height: 7rem;
 }
 
 .w-20 {
@@ -1337,12 +1337,6 @@ select {
   --tw-space-x-reverse: 0;
   margin-right: calc(1.25rem * var(--tw-space-x-reverse));
   margin-left: calc(1.25rem * calc(1 - var(--tw-space-x-reverse)));
-}
-
-.space-y-1 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-y-reverse: 0;
-  margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(0.25rem * var(--tw-space-y-reverse));
 }
 
 .space-y-2 > :not([hidden]) ~ :not([hidden]) {
@@ -1493,6 +1487,10 @@ select {
 
 .bg-opacity-25 {
   --tw-bg-opacity: 0.25;
+}
+
+.bg-opacity-50 {
+  --tw-bg-opacity: 0.5;
 }
 
 .bg-gradient-to-t {
@@ -2170,6 +2168,10 @@ a, .btn-link {
 
   .group:hover .group-hover\:flex {
     display: flex;
+  }
+
+  .group:hover .group-hover\:opacity-50 {
+    opacity: 0.5;
   }
 }
 

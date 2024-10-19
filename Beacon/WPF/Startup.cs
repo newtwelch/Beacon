@@ -22,6 +22,9 @@ public static class Startup
         services.AddWpfBlazorWebView();
         services.AddSingleton<ISongService, SongService>();
         services.AddSingleton<ICustomHttpFactory, HttpFactory>();
+        services.AddSingleton<SettingsService>();
+
+        
 
 #if DEBUG
         services.AddBlazorWebViewDeveloperTools();

@@ -1,8 +1,12 @@
-﻿<div class="flex h-full w-full overflow-auto">
+﻿@inject SettingsService settingsService
+
+<div class="flex h-full w-full overflow-auto">
     @* <div class="border-r-2 col-span-5 border-sidepanel bg-container flex h-full flex-col space-y-3 overflow-hidden rounded-r-3xl p-10">
         <BeaconCheckBox Message="Enable Dark Mode" IsChecked="Settings.EnableDarkMode"
                         OnClick="DarkModeToggle"></BeaconCheckBox>
     </div> *@
+
+    <!-- |===== LEFT SIDE ======| -->
     <div class="border-r-2 col-span-5 border-sidepanel bg-container flex h-full flex-col space-y-3 overflow-hidden rounded-r-3xl p-10">
         <p class="flex flex-col space-y-3">
             <button @onclick="() => activeCategory = SettingsCategory.General" class="tracking-widest text-xs beacon-text font-bold @(activeCategory == SettingsCategory.General ? "" : "opacity-50")">GENERAL</button>
@@ -12,29 +16,40 @@
         </p>
     </div>
 
+
+
+    <!-- |===== GENERAL SETTINGS ======| -->
     <div class="@(activeCategory == SettingsCategory.General ? "p-10" : "hidden")">
-        <BeaconCheckBox Message="Enable Dark Mode" IsChecked="Settings.EnableDarkMode"
+        <BeaconCheckBox Message="Enable Dark Mode" IsChecked="settingsService.settings.EnableDarkMode"
                         OnClick="DarkModeToggle"></BeaconCheckBox>
     
     </div>
 
-    <div class="@(activeCategory == SettingsCategory.SongLibrary ? "p-10 space-y-1" : "hidden")">
+    <!-- |===== SONG LIBRARY SETTINGS ======| -->
+    <div class="@(activeCategory == SettingsCategory.SongLibrary ? "p-10 space-y-2" : "hidden")">
         <label class="text-accented font-bold tracking-widest">DOWNLOAD SONGS</label>
         <div class="flex space-x-2">
-            <BeaconButton Message="NEWT COLLECTION"></BeaconButton>
+            <BeaconButton Message="NEWT DB"></BeaconButton>
             <BeaconButton Message="TAGALOG"></BeaconButton>
             <BeaconButton Message="ENGLISH"></BeaconButton>
         </div>
         
         <br/>
+        <br/>
 
         <label class="text-accented font-bold tracking-widest">DATABASE SIZE</label>
-        <div><span class="italic">Songs.db </span>.... @((new System.IO.FileInfo(Constants.SongDbPath).Length / 1048576).ToString()) MB</div>
+        <div><span class="italic">Songs<span class="opacity-50">.db</span> &nbsp</span>.............. @((new System.IO.FileInfo(Constants.SongDbPath).Length / 1048576).ToString()) MB</div>
         <div class="flex space-x-2">
             <BeaconButton Message="TRIM"></BeaconButton>
             <BeaconButton Message="DELETE ALL" Hover="hover:bg-red hover:text-accented"></BeaconButton>
         </div>
 
+        <br />
+        <br />
+
+        <label class="text-accented font-bold tracking-widest">LIBRARY</label>
+        <BeaconCheckBox Message="Confirm before deleting a Song" IsChecked="settingsService.settings.AlwaysConfirmSongDeletion"
+                        OnClick="ConfirmSongDeletionToggle"></BeaconCheckBox>
     </div>
 
 
@@ -54,7 +69,15 @@
 
 
     private async Task DarkModeToggle(){
-        Settings.EnableDarkMode = !Settings.EnableDarkMode;
+        settingsService.settings.EnableDarkMode = !settingsService.settings.EnableDarkMode;
+        await settingsService.Save();
+        await DarkModeToggled.InvokeAsync();
+    }
+
+    private async Task ConfirmSongDeletionToggle()
+    {
+        settingsService.settings.AlwaysConfirmSongDeletion = !settingsService.settings.AlwaysConfirmSongDeletion;
+        await settingsService.Save();
         await DarkModeToggled.InvokeAsync();
     }
 }

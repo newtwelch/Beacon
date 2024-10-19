@@ -1,19 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SQLite;
 
 namespace Beacon.Model
 {
-    public static class Settings
+    public class Settings
     {
-        public static bool EnableDarkMode { get; set; }
+        [PrimaryKey]
+        public int Id { get; set; } = 0;
+
+        //APPEARANCE
+        public bool EnableDarkMode { get; set; }
         
 
-        public static bool AlwaysConfirmSongDeletion { get; set; }
+        //SONG SETTINGS
+        public bool AlwaysConfirmSongDeletion { get; set; }
 
-        public static int ProjectorWidth { get; set; } = 1280;
-        public static int ProjectorHeight { get; set; } = 720;
+        //PROJECTOR SETTINGS
+        public int ProjectorWidth { get; set; } = 1280;
+        public int ProjectorHeight { get; set; } = 720;
+        public bool TrueBlackBackground { get; set; }
+
     }
 }
