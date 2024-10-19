@@ -171,6 +171,8 @@ namespace Beacon.Blazor.Pages
 			await SongService.DeleteAsync(songToDelete);
 			songToDelete = new Song();
 			showDeleteModal = false;
+
+			selectedSong = new Song();
 		}
 		private async Task AddSong(Song song)
 		{
