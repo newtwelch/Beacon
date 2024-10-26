@@ -11,9 +11,11 @@
 	<div class="@(activePage == BeaconPage.SongLibrary ? "" : "hidden") h-full w-full">
 			<SongLibrary ShouldReRender="ShouldRender" />
 	</div>
+
 	<div class="@(activePage == BeaconPage.BibleLibrary ? "" : "hidden") h-full w-full">
-		<BibleLibrary />
+			<BibleLibrary ShouldReRender="ShouldRender" />
 	</div>
+
 	<div class="@(activePage == BeaconPage.SettingsPage ? "" : "hidden") h-full w-full">
 			<SettingsPage ChangeState="ChangeState" />
 	</div>

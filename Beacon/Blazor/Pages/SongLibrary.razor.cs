@@ -50,16 +50,23 @@ namespace Beacon.Blazor.Pages
 				return;
 			}
 
-			if (searchText.StartsWith("."))
-			{
-				songs = await SongService.QueryLyricAsync(searchText.Substring(1));
-				return;
-			}
+			if (!settingsService.settings.EnableSearchModeUI)
+            {
+				if (searchText.StartsWith("."))
+					songs = await SongService.QueryLyricAsync(searchText.Substring(1));
+				else if(searchText.StartsWith("*"))
+                    songs = await SongService.QueryAuthorAsync(searchText.Substring(1));
+                else
+					songs = await SongService.QueryTitleAsync(searchText);
+
+                return;
+            }
 
 			songs = currentSearchMode switch
 			{
 				SearchMode.Title => await SongService.QueryTitleAsync(searchText),
 				SearchMode.Lyric => await SongService.QueryLyricAsync(searchText),
+				SearchMode.Author => await SongService.QueryAuthorAsync(searchText),
 				_ => await SongService.GetAllAsync()
 			};
 		}
@@ -171,6 +178,7 @@ namespace Beacon.Blazor.Pages
 			await SongService.DeleteAsync(songToDelete);
 			songToDelete = new Song();
 			showDeleteModal = false;
+			lyrics.Clear();
 
 			selectedSong = new Song();
 		}

@@ -14,6 +14,7 @@ namespace Beacon.Model
         //SONG SETTINGS
         public bool AlwaysConfirmSongDeletion { get; set; }
         public bool ShowLyricMargin { get; set; }
+        public bool EnableSearchModeUI { get; set; }
 
         //PROJECTOR SETTINGS
         public int ProjectorWidth { get; set; } = 1280;

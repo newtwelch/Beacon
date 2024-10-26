@@ -21,8 +21,8 @@
 <div class="grid-cols-12 relative grid h-full w-full">
 
 	<!-- |===== LEFT SIDE ======| -->
-	<div class="border-r-2 col-span-5 border-sidepanel bg-container h-full overflow-hidden rounded-r-3xl p-10">
-		<div class="@(editMode ? "" : "hidden") flex h-full w-full flex-col">
+	<div class="border-r-2 relative col-span-5 border-sidepanel bg-container h-full overflow-hidden rounded-r-3xl p-10">
+		<div class="@(editMode ? "" : "opacity-0 absolute top-10 left-10") transition-all flex h-full w-full flex-col">
 			<!--[ EDIT MODE: Lyric Text]-->
 			<label class="text-accented font-bold tracking-widest opacity-50">LYRIC EDITOR</label>
 			<div class="h-full w-full relative mb-3">
@@ -31,7 +31,7 @@
 				
 				@if (settingsService.settings.ShowLyricMargin)
 				{
-					<div class="absolute top-0 left-0 w-fit border-dashed border-r-2 border-accented h-full opacity-15 rounded-xl z-10 text-transparent text-sm">
+					<div class="absolute pointer-events-none top-0 left-0 w-fit border-dashed border-r-2 border-accented h-full opacity-15 rounded-xl z-10 text-transparent text-sm">
 						Amazing Grace, How sweet the sound
 					</div>
 				}
@@ -54,8 +54,13 @@
 
 			<!--[ SEARCH INPUT ]-->
 			<div class="flex w-full flex-col space-y-2 transition-all duration-200 @(isQueueMode ? "-translate-y-24 absolute top-0 left-0 opacity-0" : "")">
-				<BeaconSearchMode ActiveSearchMode="currentSearchMode" SearchModeChanged="switchSearchMode"></BeaconSearchMode>
-				<DebounceInput class="bg-default text-accented border-0 mx-px h-16 rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+				
+				@if (settingsService.settings.EnableSearchModeUI)
+				{
+					<BeaconSearchMode ActiveSearchMode="currentSearchMode" SearchModeChanged="switchSearchMode"></BeaconSearchMode>
+				}
+
+				<DebounceInput class="bg-default text-accented mt-px border-0 mx-px h-16 rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
 							   placeholder="Search" @bind-Value="searchText" @bind-Value:event="oninput" OnValueChanged="OnSearchChanged"
 							   DebounceTime="100" @onkeypress="OnSearchKeyPress"></DebounceInput>
 			</div>

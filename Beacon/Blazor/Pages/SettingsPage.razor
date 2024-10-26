@@ -52,6 +52,8 @@
                         OnClick="ConfirmSongDeletionToggle"></BeaconCheckBox>
         <BeaconCheckBox Message="Show Lyric safe area margin when editing" IsChecked="settingsService.settings.ShowLyricMargin"
                         OnClick="ShowLyricMarginToggle"></BeaconCheckBox>
+        <BeaconCheckBox Message="Enable 'Search Mode' (if disabled: use shortcuts)" IsChecked="settingsService.settings.EnableSearchModeUI"
+                        OnClick="SearchModeUIToggle"></BeaconCheckBox>
     </div>
 
 
@@ -86,6 +88,13 @@
     private async Task ShowLyricMarginToggle()
     {
         settingsService.settings.ShowLyricMargin = !settingsService.settings.ShowLyricMargin;
+        await settingsService.Save();
+        await ChangeState.InvokeAsync();
+    }
+
+    private async Task SearchModeUIToggle()
+    {
+        settingsService.settings.EnableSearchModeUI = !settingsService.settings.EnableSearchModeUI;
         await settingsService.Save();
         await ChangeState.InvokeAsync();
     }
