@@ -56,7 +56,9 @@ namespace Beacon.Blazor.Pages
 					songs = await SongService.QueryLyricAsync(searchText.Substring(1));
 				else if(searchText.StartsWith("*"))
                     songs = await SongService.QueryAuthorAsync(searchText.Substring(1));
-                else
+				else if (searchText.StartsWith("#"))
+					songs = await SongService.QueryTagAsync(searchText.Substring(1));
+				else
 					songs = await SongService.QueryTitleAsync(searchText);
 
                 return;
@@ -67,6 +69,7 @@ namespace Beacon.Blazor.Pages
 				SearchMode.Title => await SongService.QueryTitleAsync(searchText),
 				SearchMode.Lyric => await SongService.QueryLyricAsync(searchText),
 				SearchMode.Author => await SongService.QueryAuthorAsync(searchText),
+				SearchMode.Tag => await SongService.QueryTagAsync(searchText),
 				_ => await SongService.GetAllAsync()
 			};
 		}
@@ -99,12 +102,14 @@ namespace Beacon.Blazor.Pages
 		{
 			editMode = false;
 
+			await SongService.UpdateAsync(selectedSong);
+
 			// Update the local list so we don't have to fetch from database
 			var index = songs.FindIndex(s => selectedSong.Id == s.Id);
 			songs[index] = new Song(selectedSong);
 			songs[index].LyricText = "";
+			songs[index].InQueue = selectedSong.InQueue;
 
-			await SongService.UpdateAsync(selectedSong);
 		}
 		private async Task AddSongClick()
 		{

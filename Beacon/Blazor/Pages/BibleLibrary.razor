@@ -1,4 +1,38 @@
-﻿<h3>BibleLibrary</h3>
+﻿
+<div class="grid-cols-12 relative grid h-full w-full">
+
+	<!-- |===== LEFT SIDE ======| -->
+	<div class="bg-container col-span-3 left-0 top-0 flex h-full rounded-r-3xl">
+
+		<div class="border-r-2 border-sidepanel bg-container relative flex h-full w-full flex-col overflow-hidden rounded-r-3xl">
+			<DebounceInput class="bg-default text-accented border-0 mx-5 mt-10 h-16 rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+						   placeholder="Book" ></DebounceInput>
+		</div>
+
+		<div class="border-r-2 border-sidepanel bg-container relative flex h-full w-full flex-col overflow-hidden rounded-r-3xl">
+			<DebounceInput class="bg-default text-accented border-0 mx-5 mt-10 h-16 rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+						   placeholder="Chapter"></DebounceInput>
+		</div>
+
+	</div>
+
+
+	<!-- |===== RIGHT SIDE ======| -->
+	<div class="col-span-9 bg-default flex h-full w-full flex-col overflow-auto">
+
+		<!--------[ TOP ]-------->
+		<div class="via-l-container/25 border-b-2 border-sidepanel to-l-container/0 flex min-h-28 w-full items-center rounded-b-3xl bg-gradient-to-t from-l-container px-10 dark:from-d-container dark:via-d-container/25 dark:to-d-container/0">
+
+
+		</div>
+
+
+		<!-------[ BOTTOM ]-------->
+
+
+	</div>
+
+</div>
 
 @code {
 	[Parameter] public Func<bool> ShouldReRender { get; set; }

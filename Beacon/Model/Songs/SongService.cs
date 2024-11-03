@@ -31,7 +31,7 @@ namespace Beacon.Model.Songs
 		    }
 		    catch (Exception ex)
 		    {
-		        var t = ex;
+		        var test = ex;
 		    }
 
 		}
@@ -61,28 +61,28 @@ namespace Beacon.Model.Songs
 		{
 		    searchText = searchText.Trim().Replace(" ", "* + ").Replace("'", " ");
 		    var songsQueried = await dbConnection.QueryAsync<Song>($"SELECT Id, HIGHLIGHT(SongFts, 1, '<span class=\"text-orange group-hover:text-accented-on-primary\">', '</span>') AS Title, Author, InQueue " +
-																   $"FROM SongFts WHERE Title MATCH '{searchText}*' ORDER BY rank DESC");
+																   $"FROM SongFts WHERE Title MATCH '{searchText}*' ORDER BY rank DESC LIMIT 100");
 		    return songsQueried;
 		}
         public async Task<List<Song>> QueryAuthorAsync(string searchText)
         {
             searchText = searchText.Trim().Replace(" ", "* + ").Replace("'", " ");
             var songsQueried = await dbConnection.QueryAsync<Song>($"SELECT Id, Title, HIGHLIGHT(SongFts, 2, '<span class=\"text-orange group-hover:text-white_light\">', '</span>') AS Author, InQueue " +
-																   $"FROM SongFts WHERE Author MATCH '{searchText}*' ORDER BY rank DESC");
+																   $"FROM SongFts WHERE Author MATCH '{searchText}*' ORDER BY rank DESC LIMIT 100");
             return songsQueried;
         }
         public async Task<List<Song>> QueryLyricAsync(string searchText)
         {
             searchText = searchText.Trim().Replace(" ", "* + ").Replace("'", " ");
             var songsQueried = await dbConnection.QueryAsync<Song>($"SELECT Id, Title, SNIPPET(SongFts, 3, '<b>', '</b>', '', 12) AS LyricText, InQueue " +
-			$"FROM SongFts WHERE LyricText MATCH '{searchText}*' ORDER BY rank");
+																   $"FROM SongFts WHERE LyricText MATCH '{searchText}*' ORDER BY rank LIMIT 100");
 			return songsQueried;
 		}
 		public async Task<List<Song>> QueryTagAsync(string searchText)
 		{
 			searchText = searchText.Trim().Replace(" ", "* + ").Replace("'", " ");
 			var songsQueried = await dbConnection.QueryAsync<Song>($"SELECT Id, Title, HIGHLIGHT(SongFts, 4, '<span class=\"text-orange group-hover:text-white_light\">', '</span>') AS Tags, InQueue " +
-																   $"FROM SongFts WHERE Tags MATCH '{searchText}*' ORDER BY rank DESC").ConfigureAwait(false);
+																   $"FROM SongFts WHERE Tags MATCH '{searchText}*' ORDER BY rank DESC LIMIT 100").ConfigureAwait(false);
 		    return songsQueried;
 		}
 

@@ -34,6 +34,7 @@
         <PackageReference Include="Majorsoft.Blazor.Components.Debounce" Version="1.5.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="8.*" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.*" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
         <PackageReference Include="WpfScreenHelper" Version="2.1.1" />
     </ItemGroup>
