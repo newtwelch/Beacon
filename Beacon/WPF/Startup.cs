@@ -1,4 +1,5 @@
 using Beacon.Model;
+using Beacon.Model.Bibles;
 using Beacon.Model.Songs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -21,6 +22,7 @@ public static class Startup
     {
         services.AddWpfBlazorWebView();
         services.AddSingleton<ISongService, SongService>();
+        services.AddSingleton<IBibleService, BibleService>();
         services.AddSingleton<ICustomHttpFactory, HttpFactory>();
         services.AddSingleton<SettingsService>();
 

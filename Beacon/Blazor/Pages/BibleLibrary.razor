@@ -1,17 +1,27 @@
-﻿
+﻿@inject IBibleService BibleService
+
 <div class="grid-cols-12 relative grid h-full w-full">
 
 	<!-- |===== LEFT SIDE ======| -->
-	<div class="bg-container col-span-3 left-0 top-0 flex h-full rounded-r-3xl">
+	<div class="bg-container col-span-3 left-0 top-0 flex h-full overflow-auto rounded-r-3xl">
 
-		<div class="border-r-2 border-sidepanel bg-container relative flex h-full w-full flex-col overflow-hidden rounded-r-3xl">
+		<div class="border-r-2 border-sidepanel bg-container relative flex h-full w-2/3 flex-col overflow-hidden rounded-r-3xl">
 			<DebounceInput class="bg-default text-accented border-0 mx-5 mt-10 h-16 rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
-						   placeholder="Book" ></DebounceInput>
+			placeholder="Book" ></DebounceInput>
+
+			<div class="m-5 h-full overflow-auto rounded-xl">
+				<BookList Books="books" SelectedBookChanged="BookChanged" SelectedBook="selectedBook"></BookList>
+			</div>
 		</div>
 
-		<div class="border-r-2 border-sidepanel bg-container relative flex h-full w-full flex-col overflow-hidden rounded-r-3xl">
+		<div class="border-r-2 border-sidepanel bg-container relative flex h-full w-1/3 flex-col overflow-hidden rounded-r-3xl">
 			<DebounceInput class="bg-default text-accented border-0 mx-5 mt-10 h-16 rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
-						   placeholder="Chapter"></DebounceInput>
+			placeholder="Chapter"></DebounceInput>
+
+
+			<div class="m-5 h-full overflow-auto rounded-xl">
+				<ChapterList Chapters="chapters" SelectedChapter="selectedChapter" SelectedChapterChanged="ChapterChanged"></ChapterList>
+			</div>
 		</div>
 
 	</div>
@@ -28,13 +38,69 @@
 
 
 		<!-------[ BOTTOM ]-------->
+		<div class="flex h-full w-full flex-col overflow-hidden px-10 py-7">
 
+			<div class="flex h-16 items-center space-x-3 overflow-x-auto">
+				<p class="beacon-text text-xs font-bold italic tracking-widest opacity-50">LANGUAGE:</p>
+				<div class="bg-sidepanel flex h-10 cursor-pointer items-center justify-center space-x-3 rounded-[6px] px-5
+text-xs hover:bg-primary hover:text-d-text-accent">
+
+					English
+
+				</div>
+				<BeaconButton Message="+" MessageClass="text-2xl font-thin"></BeaconButton>
+
+			</div>
+
+			<VerseList Verses="verses" SelectedVerse="selectedVerse" SelectedVerseChanged="VerseChanged"></VerseList>
+		</div>
 
 	</div>
 
 </div>
 
 @code {
+
 	[Parameter] public Func<bool> ShouldReRender { get; set; }
 
+	private List<Book> books { get; set; } = new List<Book>();
+	private List<Chapter> chapters { get; set; } = new List<Chapter>();
+	private List<BeaconVerse> verses { get; set; } = new List<BeaconVerse>();
+
+	private Book selectedBook = new Book();
+	private Chapter selectedChapter = new Chapter();
+	private BeaconVerse selectedVerse = new BeaconVerse();
+
+	protected override async Task OnInitializedAsync()
+	{
+		books = await BibleService.GetBooksAsync("kjv");
+		chapters = await BibleService.GetChaptersAsync("kjv", 1);
+		verses = await BibleService.GetVersesAsync("kjv", 1, 1);
+	}
+
+	private async Task BookChanged(Book book){
+		selectedBook = book;
+
+		if(verses.Count > 0)
+			verses.Clear();
+
+		selectedChapter = new Chapter();
+		selectedVerse = new BeaconVerse();
+
+		chapters = await BibleService.GetChaptersAsync("kjv", book.Id);
+	}
+
+	private async Task ChapterChanged(Chapter chapter)
+	{
+		selectedChapter = chapter;
+		selectedVerse = new BeaconVerse();
+
+		verses = await BibleService.GetVersesAsync("kjv", selectedBook.Id, selectedChapter.Id);
+	}
+
+		private void VerseChanged(BeaconVerse verse)
+	{
+		selectedVerse = verse;
+
+	}
 }

@@ -22,6 +22,21 @@
     <div class="@(activeCategory == SettingsCategory.General ? "p-10" : "hidden")">
         <BeaconCheckBox Message="Enable Dark Mode" IsChecked="settingsService.settings.EnableDarkMode"
                         OnClick="DarkModeToggle"></BeaconCheckBox>
+
+        <div class="grid items-center md:grid-cols-2">
+            <div>
+                <label>Monitor to show Projection</label>
+            </div>
+            <div class="flex items-center gap-2 md:justify-end">
+                @* <select id="monitorCount" value="@deviceName" @onchange="@((ChangeEventArgs e) => { settingsService.ChosenMonitor = e.Value.ToString(); })"
+                        class="w-fit py-2 pr-14 pl-4 bg-gray_darkest border-0 focus:ring-0 text-white_normal">
+                    @foreach (var monitor in monitorList)
+                    {
+                        <option value="@monitor.Item1">@monitor.Item2.Replace("\\\\.\\", "").Replace("DISPLAY", "DISPLAY ").Trim()</option>
+                    }
+                </select> *@
+            </div>
+        </div>
     
     </div>
 
@@ -66,9 +81,9 @@
 
     private SettingsCategory activeCategory;
 
-    protected override Task OnInitializedAsync()
+
+    protected override async Task OnInitializedAsync()
     {
-        return base.OnInitializedAsync();
     }
 
 

@@ -1,0 +1,65 @@
+﻿@inject IJSRuntime jSRuntime
+
+<div tabindex="0" id="BookList" class="h-full w-full overflow-auto transition-all" @onkeydown="Navigate">
+
+	<Virtualize Items="Books" Context="Book" ItemSize="64">
+		@{
+			var isSelected = Book.Id == SelectedBook.Id;
+
+			<div id="b(@Book.Id)" class="outline-0 group flex h-16 cursor-pointer select-none items-center rounded-xl px-3
+@(isSelected ? "bg-primary text-accented-on-primary" : "hover:text-accented hover:bg-primary hover:bg-opacity-25 dark:hover:bg-opacity-15 ")"
+			@onclick="(async () => await SelectionChanged(Book))">
+
+				<div class="flex-1 truncate text-sm">
+					<span class="text-sm">@((MarkupString)Book.Name)</span>
+				</div>
+			</div>
+		}
+
+
+	</Virtualize>
+
+</div>
+
+@code {
+	[Parameter]
+	public List<Book> Books { get; set; }
+
+	[Parameter]
+	public Book SelectedBook { get; set; } = new Book();
+
+	[Parameter]
+	public EventCallback<Book> SelectedBookChanged { get; set; }
+
+
+	private DateTime lastKeyDownTime = DateTime.MinValue;
+	private async Task Navigate(KeyboardEventArgs e)
+	{
+		if (Books.Count <= 0) return;
+
+		DateTime currentTime = DateTime.Now;
+		int timeElapsed = (currentTime - lastKeyDownTime).Milliseconds;
+		if (timeElapsed <= 150) return;
+		lastKeyDownTime = currentTime;
+
+		var index = Books!.IndexOf(Books.Where(b => b.Id == SelectedBook!.Id).First());
+
+		if (e.Code == "ArrowUp")
+			await SelectionChanged(Books[Math.Max(index - 1, 0)]);
+		else if (e.Code == "ArrowDown")
+			await SelectionChanged(Books[Math.Min(index + 1, Books.Count() - 1)]);
+
+	}
+
+	private async Task SelectionChanged(Book book)
+	{
+		SelectedBook = book;
+
+		var index = Books!.IndexOf(Books.Where(b => b.Id == SelectedBook!.Id).First());
+		await jSRuntime.InvokeVoidAsync("ScrollWithHeight", "BookList", index);
+		await Task.Delay(10);
+
+		await SelectedBookChanged.InvokeAsync(book);
+
+	}
+}

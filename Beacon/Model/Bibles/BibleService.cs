@@ -21,7 +21,7 @@ namespace Beacon.Model.Bibles
         public async Task CreateTable() => await dbConnection.CreateTableAsync<Bible>();
 
         //[GET]=========================================
-        public async Task<List<Book>> GetBooksAsync(string translation, bool useEnglish = false)
+        public async Task<List<Book>> GetBooksAsync(string translation, bool useEnglish)
             => useEnglish ? await dbConnection.QueryAsync<Book>($"SELECT * FROM kjvBooks").ConfigureAwait(false) :
                             await dbConnection.QueryAsync<Book>($"SELECT * FROM {translation}Books");
         public async Task<List<Chapter>> GetChaptersAsync(string translation, int book)

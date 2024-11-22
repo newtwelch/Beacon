@@ -1,0 +1,111 @@
+﻿@using System.Text.RegularExpressions
+@inject IJSRuntime jSRuntime
+
+<div id="VerseList" tabindex="0" class="flex h-full w-full flex-col gap-3 overflow-auto rounded-xl" @onkeydown="Navigate">
+
+	<Virtualize Items="Verses" Context="Verse" ItemSize="64">
+		@{
+			var isSelected = Verse.Verse == SelectedVerse.Verse;
+			<div id="v(@Verse.Verse)" class="border-x-2 border-sidepanel bg-container relative flex cursor-pointer items-center rounded-3xl px-5 py-7 text-sm
+@(isSelected ? "bg-primary text-accented-on-primary" : "hover:text-accented hover:bg-primary hover:bg-opacity-25 dark:hover:bg-opacity-15 dark:bg-opacity-25 dark:border-opacity-50 border-opacity-50 bg-opacity-25")"
+			@onclick="(async () => await SelectionChanged(Verse))">
+
+				@if (isSelected)
+				{
+					<p class="leading-[50px] h-full break-words text-sm">@Verse.Verse. 
+						@foreach(var portion in VersePortions){
+							var isSelectedPortion = portion.Item1 == SelectedPortion.Item1;
+							<span class="bg-container mr-3 w-full gap-3 rounded-lg p-3 @(isSelectedPortion ? "text-orange" : "")"
+								  @onclick="async () => await PortionChanged(portion)" @onclick:stopPropagation="true">@portion.Item2</span>
+						}
+					</p>
+				}else{
+					<p class="h-fit h-full break-words text-sm">@Verse.Verse. @Verse.Text</p>
+				}
+
+			</div>
+		}
+	</Virtualize>
+</div>
+
+@code {
+	[Parameter]
+	public List<BeaconVerse> Verses { get; set; }
+
+	[Parameter]
+	public BeaconVerse SelectedVerse { get; set; } = new BeaconVerse();
+
+	[Parameter]
+	public EventCallback<BeaconVerse> SelectedVerseChanged { get; set; }
+
+	[Parameter]
+	public List<Tuple<int, string>> VersePortions { get; set; } = new();
+
+	[Parameter]
+	public Tuple<int, string> SelectedPortion { get; set; } = new Tuple<int, string>(0, "");
+
+
+	private DateTime lastKeyDownTime = DateTime.MinValue;
+	private async Task Navigate(KeyboardEventArgs e)
+	{
+		if (Verses.Count <= 0) return;
+
+		DateTime currentTime = DateTime.Now;
+		int timeElapsed = (currentTime - lastKeyDownTime).Milliseconds;
+		if (timeElapsed <= 150) return;
+		lastKeyDownTime = currentTime;
+
+		var index = Verses!.IndexOf(Verses.Where(v => v.Verse == SelectedVerse!.Verse).First());
+
+		if (e.Code == "ArrowUp"){
+
+			if (SelectedPortion.Item1 > 1 && VersePortions.Count != 0)
+			{
+				var id = Math.Max(SelectedPortion.Item1 - 1, 1);
+				await PortionChanged(VersePortions[id - 1]);
+				return;
+			}
+
+			await SelectionChanged(Verses[Math.Max(index - 1, 0)]);
+			await PortionChanged(VersePortions[0]);
+		}
+		else if (e.Code == "ArrowDown"){
+
+			if (SelectedPortion.Item1 < VersePortions.Count && VersePortions.Count != 0)
+			{
+				var id = Math.Min(SelectedPortion.Item1 + 1, VersePortions.Count);
+				await PortionChanged(VersePortions[id - 1]);
+				return;
+			}
+			await SelectionChanged(Verses[Math.Min(index + 1, Verses.Count() - 1)]);
+			await PortionChanged(VersePortions[0]);
+		}
+	}
+
+	private async Task SelectionChanged(BeaconVerse verse)
+	{
+		SelectedVerse = verse;
+
+		VersePortions.Clear();
+		SelectedPortion = new Tuple<int, string>(0, "");
+
+		var portions = Regex.Split(verse.Text, @"(?<=[\.,;:!\?])\s+");
+		for (int i = 1; i <= portions.Length; i++)
+		{
+			VersePortions.Add(new Tuple<int, string>(i, portions[i - 1]));
+		}
+
+		await Task.Delay(7);
+
+		var index = Verses!.IndexOf(Verses.Where(v => v.Verse == SelectedVerse!.Verse).First());
+		await jSRuntime.InvokeVoidAsync("ScrollToView", $"v({verse.Verse})");
+
+		await SelectedVerseChanged.InvokeAsync(verse);
+
+	}
+
+	private async Task PortionChanged(Tuple<int, string> portion){
+		SelectedPortion = portion;
+	}
+}
+

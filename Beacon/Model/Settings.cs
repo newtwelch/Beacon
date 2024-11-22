@@ -9,12 +9,15 @@ namespace Beacon.Model
 
         //APPEARANCE
         public bool EnableDarkMode { get; set; }
-        
+        public string ProjectionMonitor { get; set; }
 
         //SONG SETTINGS
         public bool AlwaysConfirmSongDeletion { get; set; }
         public bool ShowLyricMargin { get; set; }
         public bool EnableSearchModeUI { get; set; }
+
+        //BIBLE SETTINGS
+        public bool AlwaysEnglishBookNames { get; set; }
 
         //PROJECTOR SETTINGS
         public int ProjectorWidth { get; set; } = 1280;
