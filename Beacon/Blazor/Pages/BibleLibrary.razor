@@ -1,22 +1,26 @@
-﻿@inject IBibleService BibleService
+﻿@using System.Text.RegularExpressions
+@inject IBibleService BibleService
+@inject SettingsService settingsService
+@inject IJSRuntime jSRuntime
 
 <div class="grid-cols-12 relative grid h-full w-full">
 
 	<!-- |===== LEFT SIDE ======| -->
-	<div class="bg-container col-span-3 left-0 top-0 flex h-full overflow-auto rounded-r-3xl">
+	<div class="bg-container col-span-4 left-0 top-0 flex h-full overflow-auto rounded-r-3xl">
 
 		<div class="border-r-2 border-sidepanel bg-container relative flex h-full w-2/3 flex-col overflow-hidden rounded-r-3xl">
-			<DebounceInput class="bg-default text-accented border-0 mx-5 mt-10 h-16 rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
-			placeholder="Book" ></DebounceInput>
+			<DebounceInput id="BookSearch" class="bg-default text-accented border-0 mx-5 mt-10 min-h-16 rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+			placeholder="Book" @bind-Value="searchBook" @bind-Value:event="oninput" OnValueChanged="OnBookSearchChanged" ForceNotifyByEnter="true"
+			@onkeyup="async (args) => { await OnKeySearch(args, 'b'); }"></DebounceInput>
 
 			<div class="m-5 h-full overflow-auto rounded-xl">
 				<BookList Books="books" SelectedBookChanged="BookChanged" SelectedBook="selectedBook"></BookList>
 			</div>
 		</div>
 
-		<div class="border-r-2 border-sidepanel bg-container relative flex h-full w-1/3 flex-col overflow-hidden rounded-r-3xl">
-			<DebounceInput class="bg-default text-accented border-0 mx-5 mt-10 h-16 rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
-			placeholder="Chapter"></DebounceInput>
+		<div class="border-r-2 border-sidepanel bg-container relative flex h-full w-1/3 flex-col overflow-hidden rounded-r-3xl pt-10">
+			<DebounceInput id="ChapterSearch" class="bg-default text-accented border-0 mx-5 min-h-16 rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+			placeholder="Chapter" @bind-Value="searchChapter" @bind-Value:event="oninput" OnValueChanged="OnChapterSearchChanged" @onkeyup="async (args) => { await OnKeySearch(args, 'c'); }"></DebounceInput>
 
 
 			<div class="m-5 h-full overflow-auto rounded-xl">
@@ -28,29 +32,19 @@
 
 
 	<!-- |===== RIGHT SIDE ======| -->
-	<div class="col-span-9 bg-default flex h-full w-full flex-col overflow-auto">
+	<div class="col-span-8 bg-default flex h-full w-full flex-col overflow-auto">
 
 		<!--------[ TOP ]-------->
-		<div class="via-l-container/25 border-b-2 border-sidepanel to-l-container/0 flex min-h-28 w-full items-center rounded-b-3xl bg-gradient-to-t from-l-container px-10 dark:from-d-container dark:via-d-container/25 dark:to-d-container/0">
-
-
+		<div class="via-l-container/25 border-b-2 border-sidepanel to-l-container/0 flex min-h-28 w-full rounded-b-3xl bg-gradient-to-t from-l-container px-10 dark:from-d-container dark:via-d-container/25 dark:to-d-container/0">
+			<DebounceInput id="VerseSearch" class="bg-default text-accented border-0 mx-5 mt-10 h-16 max-w-20 rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+			placeholder="Verse" @bind-Value="searchVerse" @bind-Value:event="oninput"  @onkeyup="async (args) => { await OnKeySearch(args, 'v'); }"></DebounceInput>
 		</div>
 
 
 		<!-------[ BOTTOM ]-------->
 		<div class="flex h-full w-full flex-col overflow-hidden px-10 py-7">
 
-			<div class="flex h-16 items-center space-x-3 overflow-x-auto">
-				<p class="beacon-text text-xs font-bold italic tracking-widest opacity-50">LANGUAGE:</p>
-				<div class="bg-sidepanel flex h-10 cursor-pointer items-center justify-center space-x-3 rounded-[6px] px-5
-text-xs hover:bg-primary hover:text-d-text-accent">
-
-					English
-
-				</div>
-				<BeaconButton Message="+" MessageClass="text-2xl font-thin"></BeaconButton>
-
-			</div>
+			<BibleLanguageList SelectedTranslation="@selectedTranslation" Translations="translations" SelectedTranslationChanged="TranslationChanged"></BibleLanguageList>
 
 			<VerseList Verses="verses" SelectedVerse="selectedVerse" SelectedVerseChanged="VerseChanged"></VerseList>
 		</div>
@@ -63,19 +57,45 @@ text-xs hover:bg-primary hover:text-d-text-accent">
 
 	[Parameter] public Func<bool> ShouldReRender { get; set; }
 
-	private List<Book> books { get; set; } = new List<Book>();
-	private List<Chapter> chapters { get; set; } = new List<Chapter>();
-	private List<BeaconVerse> verses { get; set; } = new List<BeaconVerse>();
+	private List<Book> books { get; set; } = new();
+	private List<Chapter> chapters { get; set; } = new();
+	private List<BeaconVerse> verses { get; set; } = new();
+	private List<string> translations { get; set; } = new();
 
 	private Book selectedBook = new Book();
 	private Chapter selectedChapter = new Chapter();
 	private BeaconVerse selectedVerse = new BeaconVerse();
 
+	private string selectedTranslation = "";
+	private string searchBook = "";
+	private string searchChapter = "";
+	private string searchVerse = "";
+
 	protected override async Task OnInitializedAsync()
 	{
-		books = await BibleService.GetBooksAsync("kjv");
-		chapters = await BibleService.GetChaptersAsync("kjv", 1);
-		verses = await BibleService.GetVersesAsync("kjv", 1, 1);
+		//Get Translations
+		foreach (var bible in await BibleService.GetBiblesAsync())
+		{
+			translations.Add(bible.Abbreviation);
+		}
+
+		selectedTranslation = translations[0];
+		books = await BibleService.GetBooksAsync(selectedTranslation, settingsService.settings.AlwaysEnglishBookNames);
+		chapters = await BibleService.GetChaptersAsync(selectedTranslation, 1);
+		verses = await BibleService.GetVersesAsync(selectedTranslation, 1, 1);
+
+		selectedBook = books[0];
+		selectedChapter = chapters[0];
+		selectedVerse = verses[0];
+
+	}
+
+	private async Task TranslationChanged(string translation){
+		selectedTranslation = translation;
+		books = await BibleService.GetBooksAsync(selectedTranslation, settingsService.settings.AlwaysEnglishBookNames);
+		await BookChanged(selectedBook);
+		await ChapterChanged(selectedChapter);
+		await VerseChanged(selectedVerse);
 	}
 
 	private async Task BookChanged(Book book){
@@ -84,23 +104,97 @@ text-xs hover:bg-primary hover:text-d-text-accent">
 		if(verses.Count > 0)
 			verses.Clear();
 
-		selectedChapter = new Chapter();
 		selectedVerse = new BeaconVerse();
 
-		chapters = await BibleService.GetChaptersAsync("kjv", book.Id);
+		chapters = await BibleService.GetChaptersAsync(selectedTranslation, book.Id);
+		await ChapterChanged(selectedChapter);
 	}
-
 	private async Task ChapterChanged(Chapter chapter)
 	{
 		selectedChapter = chapter;
 		selectedVerse = new BeaconVerse();
 
-		verses = await BibleService.GetVersesAsync("kjv", selectedBook.Id, selectedChapter.Id);
+		verses = await BibleService.GetVersesAsync(selectedTranslation, selectedBook.Id, selectedChapter.Id);
 	}
-
-		private void VerseChanged(BeaconVerse verse)
+	private async Task VerseChanged(BeaconVerse verse)
 	{
 		selectedVerse = verse;
+	}
 
+	private async Task OnBookSearchChanged()
+	{
+		if (String.IsNullOrWhiteSpace(searchBook))
+		{
+			books = await BibleService.GetBooksAsync(selectedTranslation);
+			return;
+		}
+
+		searchChapter = "";
+		searchVerse = "";
+
+		books = await BibleService.SearchBooksAsync(selectedTranslation, searchBook, settingsService.settings.AlwaysEnglishBookNames);
+
+		if (books.Count == 1){
+			await BookChanged(books[0]);
+			await Task.Delay(7);
+			await jSRuntime.InvokeVoidAsync("SwitchFocusTo", "ChapterSearch");
+		}
+	}
+
+	private async Task OnChapterSearchChanged()
+	{
+		await SearchChapterNumber(); 
+	}
+
+	private async Task OnKeySearch(KeyboardEventArgs e, char type)
+	{
+		if(type == 'b'){
+			searchBook = Regex.Replace(searchBook, @"(\d)(\p{L})", "$1 $2");
+		}
+
+		if (e.Code != "Enter")
+			return;
+
+		if(type == 'b' && books.Count > 0){
+			await BookChanged(books[0]);
+			await jSRuntime.InvokeVoidAsync("SwitchFocusTo", "ChapterSearch");
+			searchChapter = "";
+			searchVerse = "";
+		}
+		if (type == 'c' && chapters.Count > 0 && !String.IsNullOrWhiteSpace(searchChapter))
+		{
+			await SearchChapterNumber();
+		}
+		if (type == 'v' && verses.Count > 0 && !String.IsNullOrWhiteSpace(searchVerse))
+		{
+			await SearchVerseNumber();
+		}
+	}
+
+	private async Task SearchChapterNumber()
+	{
+		int searchedChapterNumber;
+		bool isNumber = Int32.TryParse(searchChapter, out searchedChapterNumber);
+		if (isNumber && searchedChapterNumber > 0)
+		{
+			var clamp = Math.Min(searchedChapterNumber - 1, chapters.Count() - 1);
+			await ChapterChanged(chapters[clamp]);
+			await jSRuntime.InvokeVoidAsync("ScrollWithHeight", "ChapterList", searchedChapterNumber);
+			await jSRuntime.InvokeVoidAsync("SwitchFocusTo", "VerseSearch");
+			searchVerse = "";
+		}
+	}
+
+	private async Task SearchVerseNumber()
+	{
+		int searchedVerseNumber;
+		bool isNumber = Int32.TryParse(searchVerse, out searchedVerseNumber);
+		if (isNumber && searchedVerseNumber > 0 )
+		{
+			var clamp = Math.Min(searchedVerseNumber - 1, verses.Count() - 1);
+			await VerseChanged(verses[clamp]);
+			await jSRuntime.InvokeVoidAsync("SwitchFocusTo", "VerseList");
+			await jSRuntime.InvokeVoidAsync("ScrollToView", $"v({clamp})");
+		}
 	}
 }

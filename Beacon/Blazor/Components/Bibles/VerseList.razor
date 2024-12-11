@@ -3,7 +3,7 @@
 
 <div id="VerseList" tabindex="0" class="flex h-full w-full flex-col gap-3 overflow-auto rounded-xl" @onkeydown="Navigate">
 
-	<Virtualize Items="Verses" Context="Verse" ItemSize="64">
+	<Virtualize Items="Verses" Context="Verse" OverscanCount="100">
 		@{
 			var isSelected = Verse.Verse == SelectedVerse.Verse;
 			<div id="v(@Verse.Verse)" class="border-x-2 border-sidepanel bg-container relative flex cursor-pointer items-center rounded-3xl px-5 py-7 text-sm
@@ -16,11 +16,11 @@
 						@foreach(var portion in VersePortions){
 							var isSelectedPortion = portion.Item1 == SelectedPortion.Item1;
 							<span class="bg-container mr-3 w-full gap-3 rounded-lg p-3 @(isSelectedPortion ? "text-orange" : "")"
-								  @onclick="async () => await PortionChanged(portion)" @onclick:stopPropagation="true">@portion.Item2</span>
+							@onclick="async () => await PortionChanged(portion)" @onclick:stopPropagation="true">@portion.Item2</span>
 						}
 					</p>
 				}else{
-					<p class="h-fit h-full break-words text-sm">@Verse.Verse. @Verse.Text</p>
+					<p class="h-fit h-full break-words text-sm">@Verse.Verse. @((MarkupString)Verse.Text)</p>
 				}
 
 			</div>
@@ -86,21 +86,24 @@
 	{
 		SelectedVerse = verse;
 
-		VersePortions.Clear();
-		SelectedPortion = new Tuple<int, string>(0, "");
-
-		var portions = Regex.Split(verse.Text, @"(?<=[\.,;:!\?])\s+");
-		for (int i = 1; i <= portions.Length; i++)
-		{
-			VersePortions.Add(new Tuple<int, string>(i, portions[i - 1]));
-		}
-
-		await Task.Delay(7);
 
 		var index = Verses!.IndexOf(Verses.Where(v => v.Verse == SelectedVerse!.Verse).First());
 		await jSRuntime.InvokeVoidAsync("ScrollToView", $"v({verse.Verse})");
 
 		await SelectedVerseChanged.InvokeAsync(verse);
+
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		VersePortions.Clear();
+		SelectedPortion = new Tuple<int, string>(0, "");
+
+		var portions = Regex.Split(SelectedVerse.Text, @"(?<=[\.,;:!\?])\s+");
+		for (int i = 1; i <= portions.Length; i++)
+		{
+			VersePortions.Add(new Tuple<int, string>(i, portions[i - 1]));
+		}
 
 	}
 

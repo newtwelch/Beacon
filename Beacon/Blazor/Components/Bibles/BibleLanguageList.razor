@@ -1,0 +1,28 @@
+﻿<div class="flex h-16 items-center space-x-3 overflow-x-auto">
+	<p class="beacon-text text-xs font-bold italic tracking-widest opacity-50">LANGUAGE:</p>
+
+	@foreach(var Translation in Translations){
+
+		<div class="bg-sidepanel flex h-10 cursor-pointer items-center justify-center space-x-3 rounded-[6px] px-5 select-none
+								text-xs hover:bg-primary hover:text-d-text-accent @(Translation == SelectedTranslation ? "bg-primary text-accented-on-primary" : "")"
+		@onclick="async () => await SelectionChanged(Translation)">
+
+			@Translation.ToUpper()
+
+		</div>
+
+	}
+</div>
+
+@code{
+	[Parameter] public List<string> Translations { get; set; } = new();
+	[Parameter] public string SelectedTranslation { get; set; }
+	[Parameter] public EventCallback<string> SelectedTranslationChanged { get; set; }
+
+	private async Task SelectionChanged(string translation)
+	{
+		if (translation == SelectedTranslation) return;
+		SelectedTranslation = translation;
+		await SelectedTranslationChanged.InvokeAsync(translation);
+	}
+}
