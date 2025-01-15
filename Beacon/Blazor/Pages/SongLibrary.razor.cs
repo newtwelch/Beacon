@@ -160,7 +160,9 @@ namespace Beacon.Blazor.Pages
 			if (e.Code == "Enter")
 			{
 				await SelectedSongChanged(songs[0]);
-			}
+                await jSRuntime.InvokeVoidAsync("SwitchFocusTo", "SongList");
+
+            }
 		}
 		private async Task ClearQueue()
 		{

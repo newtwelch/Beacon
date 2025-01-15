@@ -4,8 +4,7 @@
 	@foreach(var Song in Songs)
 	{
 		
-		<div class="bg-sidepanel flex h-10 cursor-pointer items-center justify-center space-x-3 rounded-[6px] px-5
-text-xs hover:bg-primary hover:text-d-text-accent @(Song.Id == SelectedSong.Id ? "bg-primary text-accented-on-primary" : "")"
+		<div class="bg-sidepanel flex h-10 cursor-pointer items-center justify-center space-x-3 rounded-[6px] px-5 text-xs hover:bg-primary hover:text-d-text-accent @(Song.Id == SelectedSong.Id ? "bg-primary text-accented-on-primary" : "")"
 			@onclick="async () => await SelectionChanged(Song)">
 
 			@Song.Language

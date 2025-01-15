@@ -6,8 +6,7 @@
 		@{
 			var isSelected = Chapter.Id == SelectedChapter.Id;
 
-			<div id="c(@Chapter.Id)" class="outline-0 group flex h-16 cursor-pointer select-none items-center rounded-xl px-3
-@(isSelected ? "bg-primary text-accented-on-primary" : "hover:text-accented hover:bg-primary hover:bg-opacity-25 dark:hover:bg-opacity-15 ")"
+			<div id="c(@Chapter.Id)" class="outline-0 group flex h-16 cursor-pointer select-none items-center rounded-xl px-3 @(isSelected ? "bg-primary text-accented-on-primary" : "hover:text-accented hover:bg-primary hover:bg-opacity-25 dark:hover:bg-opacity-15 ")"
 				@onclick="(async () => await SelectionChanged(Chapter))">
 	
 				<div class="flex-1 truncate text-sm">

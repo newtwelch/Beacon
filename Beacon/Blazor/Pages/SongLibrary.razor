@@ -21,17 +21,17 @@
 <div class="grid-cols-12 relative grid h-full w-full">
 
 	<!-- |===== LEFT SIDE ======| -->
-	<div class="border-r-2 relative col-span-5 border-sidepanel bg-container h-full overflow-hidden rounded-r-3xl p-10">
-		<div class="@(editMode ? "" : "opacity-0 absolute top-10 left-10") transition-all flex h-full w-full flex-col">
+	<div class="border-r-2 col-span-5 border-sidepanel relative h-full overflow-hidden rounded-r-3xl bg-gradient-to-br from-l-container to-l-background p-10 dark:from-d-container dark:to-d-background">
+		<div class="@(editMode ? "" : "opacity-0 absolute top-10 left-10") flex h-full w-full flex-col transition-all">
 			<!--[ EDIT MODE: Lyric Text]-->
 			<label class="text-accented font-bold tracking-widest opacity-50">LYRIC EDITOR</label>
-			<div class="h-full w-full relative mb-3">
-				<textarea class="bg-sidepanel text-default border-0 min-h-1/2 h-full m-px w-full rounded-xl px-4 py-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+			<div class="relative mb-3 h-full w-full">
+				<textarea class="bg-sidepanel text-default border-0 min-h-1/2 m-px h-full w-full rounded-xl px-4 py-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary ring-opacity-50 focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
 						  value="@selectedSong.LyricText" @oninput="(e => { selectedSong.LyricText = e.Value.ToString(); UpdateLyrics();})" spellcheck="false" placeholder="Lyric" />
 				
 				@if (settingsService.settings.ShowLyricMargin)
 				{
-					<div class="absolute pointer-events-none top-0 left-0 w-fit border-dashed border-r-2 border-accented h-full opacity-15 rounded-xl z-10 text-transparent text-sm">
+					<div class="border-r-2 border-accented z-10 pointer-events-none absolute left-0 top-0 h-full w-fit rounded-xl border-dashed text-sm text-transparent opacity-15">
 						Amazing Grace, How sweet the sound
 					</div>
 				}
@@ -60,7 +60,7 @@
 					<BeaconSearchMode ActiveSearchMode="currentSearchMode" SearchModeChanged="switchSearchMode"></BeaconSearchMode>
 				}
 
-				<DebounceInput class="bg-default text-accented mt-px border-0 mx-px h-16 rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
+				<DebounceInput class="bg-default text-accented border-0 mx-px mt-px h-16 rounded-xl px-3 text-sm placeholder-l-text placeholder-opacity-50 ring-l-primary focus:ring-1 dark:ring-d-primary dark:placeholder-d-text dark:placeholder-opacity-50"
 							   placeholder="Search" @bind-Value="searchText" @bind-Value:event="oninput" OnValueChanged="OnSearchChanged"
 							   DebounceTime="100" @onkeypress="OnSearchKeyPress"></DebounceInput>
 			</div>
@@ -93,7 +93,7 @@
 	<div class="col-span-7 bg-default flex h-full w-full flex-col overflow-auto">
 
 		<!--------[ TOP ]-------->
-		<div class="via-l-container/25 border-b-2 border-sidepanel to-l-container/0 flex min-h-28 w-full items-center rounded-b-3xl bg-gradient-to-t from-l-container px-10 dark:from-d-container dark:via-d-container/25 dark:to-d-container/0">
+		<div class="border-b-2 border-sidepanel flex min-h-28 w-full items-center rounded-b-3xl bg-gradient-to-t from-l-container to-l-background px-10 dark:from-d-container dark:to-d-background">
 			@if (!(selectedSong.Id == 0 && selectedSong.Number == 0 && selectedSong.Title == ""))
 			{
 				<!--[ KEY ]-->

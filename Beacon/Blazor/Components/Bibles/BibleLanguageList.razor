@@ -3,8 +3,7 @@
 
 	@foreach(var Translation in Translations){
 
-		<div class="bg-sidepanel flex h-10 cursor-pointer items-center justify-center space-x-3 rounded-[6px] px-5 select-none
-								text-xs hover:bg-primary hover:text-d-text-accent @(Translation == SelectedTranslation ? "bg-primary text-accented-on-primary" : "")"
+		<div class="bg-sidepanel flex h-10 cursor-pointer select-none items-center justify-center space-x-3 rounded-[6px] px-5 text-xs hover:bg-primary hover:text-d-text-accent @(Translation == SelectedTranslation ? "bg-primary text-accented-on-primary" : "")"
 		@onclick="async () => await SelectionChanged(Translation)">
 
 			@Translation.ToUpper()

@@ -3,8 +3,7 @@
                         IsChecked = !IsChecked;
                         await OnClick.InvokeAsync();
                     }" class="flex space-x-3 group hover:text-accented items-center">
-    <div class="border-2 border-l-text-accent/20 flex size-5 items-center justify-center space-x-3 rounded-[6px] text-xs dark:border-d-text-accent/10
-@(IsChecked ? "bg-primary text-accented-on-primary" :
+    <div class="border-2 border-l-text-accent/20 flex size-5 items-center justify-center space-x-3 rounded-[6px] text-xs dark:border-d-text-accent/10 @(IsChecked ? "bg-primary text-accented-on-primary" :
                             "group-hover:bg-primary group-hover:opacity-50 ")">
 
     </div>

@@ -19,7 +19,7 @@ namespace Beacon.Model.Songs
 
         public static string RemoveHighlight(this string lyric)
         {
-            return lyric.Replace("<span class=\"text-orange\">", "").Replace("</span>", "");
+            return lyric.Replace("<span class=\"text-orange\">", "").Replace("</span>", "").Replace("<span class=\"text-orange group-hover:text-white_light\">", "");
         }
     }
 }

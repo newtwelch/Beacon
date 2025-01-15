@@ -22,7 +22,7 @@ namespace Beacon.Model.Bibles
 
         //[GET]=========================================
         public async Task<List<Book>> GetBooksAsync(string translation, bool useEnglish)
-            => useEnglish ? await dbConnection.QueryAsync<Book>($"SELECT * FROM kjvBooks").ConfigureAwait(false) :
+            => useEnglish ? await dbConnection.QueryAsync<Book>($"SELECT * FROM kjvBooks") :
                             await dbConnection.QueryAsync<Book>($"SELECT * FROM {translation}Books");
         public async Task<List<Chapter>> GetChaptersAsync(string translation, int book)
             => await dbConnection.QueryAsync<Chapter>($"SELECT DISTINCT Chapter FROM {translation} WHERE Book = {book}");
@@ -36,7 +36,7 @@ namespace Beacon.Model.Bibles
             var books = new List<Book>();
 
             if (useEnglish)
-                books = await dbConnection.QueryAsync<Book>($"SELECT * FROM kjvaBooks WHERE Name LIKE '%{searchTerm}%'");
+                books = await dbConnection.QueryAsync<Book>($"SELECT * FROM kjvBooks WHERE Name LIKE '%{searchTerm}%'");
             else
                 books = await dbConnection.QueryAsync<Book>($"SELECT * FROM {translation}Books WHERE Name LIKE '%{searchTerm}%'");
 

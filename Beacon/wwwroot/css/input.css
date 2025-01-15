@@ -85,25 +85,27 @@
 /* VERTICAL */
 /* width */
 ::-webkit-scrollbar:vertical {
-    width: 5px;
+    width: 3px;
+    @apply border-l-2 border-red-500;
 }
 
 /* Track */
 ::-webkit-scrollbar-track:vertical {
-    @apply bg-l-background dark:bg-d-background;
+    @apply bg-l-background dark:bg-d-background/50;
     border-radius: 12px;
+    border: 10px;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb:vertical {
     border-radius: 12px;
-    @apply bg-l-sidepanel dark:bg-d-sidepanel;
+    @apply bg-l-sidepanel dark:bg-d-sidepanel/50;
 }
 
 /* HORIZONTAL */
-/* width */
+/* height */
 ::-webkit-scrollbar {
-    height: 5px;
+    height: 3px;
 }
 
 /* Track */
@@ -125,7 +127,8 @@
 }
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    @apply cursor-pointer bg-l-primary dark:bg-d-primary}
+    @apply cursor-pointer bg-l-primary dark:bg-d-primary;
+}
 
 input[type=file] {
     opacity: 0;

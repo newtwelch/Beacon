@@ -6,21 +6,20 @@
 	<Virtualize Items="Verses" Context="Verse" OverscanCount="100">
 		@{
 			var isSelected = Verse.Verse == SelectedVerse.Verse;
-			<div id="v(@Verse.Verse)" class="border-x-2 border-sidepanel bg-container relative flex cursor-pointer items-center rounded-3xl px-5 py-7 text-sm
-@(isSelected ? "bg-primary text-accented-on-primary" : "hover:text-accented hover:bg-primary hover:bg-opacity-25 dark:hover:bg-opacity-15 dark:bg-opacity-25 dark:border-opacity-50 border-opacity-50 bg-opacity-25")"
+			<div id="v(@Verse.Verse)" class="border-x-2 border-sidepanel bg-container relative flex cursor-pointer items-center rounded-3xl px-5 py-6 text-sm @(isSelected ? "bg-primary text-accented-on-primary" : "hover:text-accented hover:bg-primary hover:bg-opacity-25 dark:hover:bg-opacity-15 dark:bg-opacity-25 dark:border-opacity-50 border-opacity-50 bg-opacity-25")"
 			@onclick="(async () => await SelectionChanged(Verse))">
 
 				@if (isSelected)
 				{
-					<p class="leading-[50px] h-full break-words text-sm">@Verse.Verse. 
+					<p class="leading-[40px] h-full break-words text-sm">@Verse.Verse. 
 						@foreach(var portion in VersePortions){
 							var isSelectedPortion = portion.Item1 == SelectedPortion.Item1;
-							<span class="bg-container mr-3 w-full gap-3 rounded-lg p-3 @(isSelectedPortion ? "text-orange" : "")"
+							<span class="bg-container mr-3 w-full gap-3 rounded-lg px-3 py-1.5 @(isSelectedPortion ? "text-orange" : "")"
 							@onclick="async () => await PortionChanged(portion)" @onclick:stopPropagation="true">@portion.Item2</span>
 						}
 					</p>
 				}else{
-					<p class="h-fit h-full break-words text-sm">@Verse.Verse. @((MarkupString)Verse.Text)</p>
+					<p class="h-fit h-full break-words text-sm"><span class="text-white/75">@(IsGlobalMode ? $"{Verse.BookName} {Verse.Chapter}:{Verse.Verse}" : Verse.Verse). &nbsp;</span> @((MarkupString)Verse.Text)</p>
 				}
 
 			</div>
@@ -39,6 +38,9 @@
 	public EventCallback<BeaconVerse> SelectedVerseChanged { get; set; }
 
 	[Parameter]
+	public bool IsGlobalMode { get; set; }
+
+	[Parameter]
 	public List<Tuple<int, string>> VersePortions { get; set; } = new();
 
 	[Parameter]
@@ -55,7 +57,9 @@
 		if (timeElapsed <= 150) return;
 		lastKeyDownTime = currentTime;
 
-		var index = Verses!.IndexOf(Verses.Where(v => v.Verse == SelectedVerse!.Verse).First());
+
+		var index = Verses!.IndexOf(Verses.Where(v => v.Verse == SelectedVerse!.Verse).FirstOrDefault());
+
 
 		if (e.Code == "ArrowUp"){
 
