@@ -75,6 +75,8 @@ namespace Beacon.Model.Songs
 
                         chorus.Id = lyricId++;
                         lyrics.Add(chorus);
+
+                        stanzaBeforeChorusCounter = 0;
                     }
 
                 }
