@@ -14,11 +14,11 @@
 		<PublisherName>Newt Welch</PublisherName>
 		<Title>Beacon</Title>
 		<Author>Newt Welch</Author>
-		<Version>0.1.1</Version>
+		<Version>0.2.0</Version>
 		<PublisherName>Welch Engine</PublisherName>
 		<AssemblyTitle>Beacon</AssemblyTitle>
 		<AssemblyName>Beacon</AssemblyName>
-		<AssemblyVersion>0.1.1</AssemblyVersion>
+		<AssemblyVersion>0.2.0</AssemblyVersion>
 		
         <!-- Project Options -->
         <LangVersion>latest</LangVersion>
