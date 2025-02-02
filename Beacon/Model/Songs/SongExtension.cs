@@ -35,7 +35,6 @@ namespace Beacon.Model.Songs
             var bridge = ConvertTextToLyrics(song.LyricText).Find(x => x.Type == LyricType.Bridge);
             var preChorus = ConvertTextToLyrics(song.LyricText).Find(x => x.Type == LyricType.PreChorus);
 
-
             var stanzaBeforeChorus = 0;
             var stanzaBeforeChorusCounter = 0;
             var lyricId = 1;
@@ -63,9 +62,8 @@ namespace Beacon.Model.Songs
 
                     if (isStanza)
                         stanzaBeforeChorusCounter++;
-                    
 
-                    if(stanzaBeforeChorus == stanzaBeforeChorusCounter && chorus is not null)
+                    if((stanzaBeforeChorus == stanzaBeforeChorusCounter && chorus is not null) || isBridge)
                     {
                         if(preChorus is not null)
                         {
@@ -73,8 +71,9 @@ namespace Beacon.Model.Songs
                             lyrics.Add(preChorus);
                         }
 
-                        chorus.Id = lyricId++;
-                        lyrics.Add(chorus);
+                        var chorusCopy = new Lyric(chorus);
+                        chorusCopy.Id = lyricId++;
+                        lyrics.Add(chorusCopy);
 
                         stanzaBeforeChorusCounter = 0;
                     }

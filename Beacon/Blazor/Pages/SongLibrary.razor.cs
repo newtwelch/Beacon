@@ -1,12 +1,14 @@
 using Beacon.Model.Enums;
 using Beacon.Model.Songs;
+using Beacon.WPF;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using System.Windows;
 
 namespace Beacon.Blazor.Pages
 {
-	public partial class SongLibrary
+    public partial class SongLibrary
 	{
 		[Parameter] public Func<bool> ShouldReRender { get; set; }
 
@@ -157,12 +159,11 @@ namespace Beacon.Blazor.Pages
 		}
 		private async Task OnSearchKeyPress(KeyboardEventArgs e)
 		{
-			if (e.Code == "Enter")
-			{
-				await SelectedSongChanged(songs[0]);
-                await jSRuntime.InvokeVoidAsync("SwitchFocusTo", "SongList");
-
-            }
+			//if (e.Code == "Enter")
+			//{
+			//	await SelectedSongChanged(songs[0]);
+   //             await jSRuntime.InvokeVoidAsync("SwitchFocusTo", "SongList");
+   //         }
 		}
 		private async Task ClearQueue()
 		{
@@ -198,9 +199,22 @@ namespace Beacon.Blazor.Pages
 			await InvokeAsync(StateHasChanged);
 			await jSRuntime.InvokeVoidAsync("ScrollWithHeight", "SongList", songs.Count());
 		}
-		private void SelectedLyricChanged(Lyric lyric)
+		private async Task SelectedLyricChanged(Lyric lyric)
 		{
 			selectedLyric = lyric;
-		}
+
+			await InvokeAsync(() =>
+			{
+				DisplayWindow.Instance.SetWindow(settingsService.settings.ProjectionMonitor);
+				DisplayWindow.Instance.Show();
+				DisplayWindow.Instance.Content.Text = lyric.Text.RemoveHighlight();
+				DisplayWindow.Instance.Content.FontSize = 100;
+				DisplayWindow.Instance.Content.TextWrapping = TextWrapping.NoWrap;
+				DisplayWindow.Instance.Content.Width = Double.NaN;
+				DisplayWindow.Instance.Content.HighlightCount = 0;
+				DisplayWindow.Instance.Header1.Text = selectedSong.Title.ToUpper();
+				DisplayWindow.Instance.Header2.Text = lyric.Id + " / " + selectedSong.Lyrics().Count();
+			});
+        }
 	}
 }

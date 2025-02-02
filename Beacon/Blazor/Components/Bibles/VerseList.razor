@@ -12,7 +12,7 @@
 				@if (isSelected)
 				{
 					<p class="leading-[40px] h-full break-words text-sm">@Verse.Verse. 
-						@foreach(var portion in VersePortions){
+						@foreach (var portion in VersePortions) {
 							var isSelectedPortion = portion.Item1 == SelectedPortion.Item1;
 							<span class="bg-container mr-3 w-full gap-3 rounded-lg px-3 py-1.5 @(isSelectedPortion ? "text-orange" : "")"
 							@onclick="async () => await PortionChanged(portion)" @onclick:stopPropagation="true">@portion.Item2</span>
@@ -43,8 +43,10 @@
 	[Parameter]
 	public List<Tuple<int, string>> VersePortions { get; set; } = new();
 
+	private Tuple<int, string> SelectedPortion { get; set; }
+
 	[Parameter]
-	public Tuple<int, string> SelectedPortion { get; set; } = new Tuple<int, string>(0, "");
+	public EventCallback<Tuple<int, string>> SelectedPortionChanged { get; set; }
 
 
 	private DateTime lastKeyDownTime = DateTime.MinValue;
@@ -112,6 +114,8 @@
 	}
 
 	private async Task PortionChanged(Tuple<int, string> portion){
+		await SelectedPortionChanged.InvokeAsync(portion);
+		await Task.Delay(10);
 		SelectedPortion = portion;
 	}
 }

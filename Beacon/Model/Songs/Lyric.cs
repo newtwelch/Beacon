@@ -12,6 +12,16 @@ namespace Beacon.Model.Songs
         public string Line { get; set; } = "";
         public string Text { get; set; } = "";
         public LyricType Type { get; set; }
+
+        public Lyric() { }
+
+        public Lyric(Lyric lyric)
+        {
+            Id = lyric.Id;
+            Line = lyric.Line;
+            Text = lyric.Text;
+            Type = lyric.Type;
+        }
     }
 
     public enum LyricType

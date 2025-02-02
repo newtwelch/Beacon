@@ -38,7 +38,7 @@
 		if (timeElapsed <= 150) return;
 		lastKeyDownTime = currentTime;
 
-		var index = Lyrics!.IndexOf(Lyrics.Where(s => s.Id == SelectedLyric!.Id).First());
+		var index = Lyrics!.IndexOf(Lyrics.Where(l => l.Id == SelectedLyric!.Id).First());
 
 		if (e.Code == "ArrowUp")
 			await SelectionChanged(Lyrics[Math.Max(index - 1, 0)]);
