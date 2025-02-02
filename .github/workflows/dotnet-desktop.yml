@@ -33,9 +33,9 @@ jobs:
         - name: Create Velopack Release
           run: |
             dotnet tool install -g vpk
-            vpk download github --repoUrl https://github.com/Welch-Engine/Beacon --token ${{ secrets.GITHUB_TOKEN }}
+            vpk download github --repoUrl https://github.com/newtwelch/Beacon --token ${{ secrets.GITHUB_TOKEN }}
             vpk pack -u Beacon -v ${{ steps.get-version.outputs.version }} -p publish
-            vpk upload github --repoUrl https://github.com/Welch-Engine/Beacon --publish --releaseName "Beacon ${{ steps.get-version.outputs.version }}" --tag v${{ steps.get-version.outputs.version }} --token ${{ secrets.GITHUB_TOKEN }}
+            vpk upload github --repoUrl https://github.com/newtwelch/Beacon --publish --releaseName "Beacon ${{ steps.get-version.outputs.version }}" --tag v${{ steps.get-version.outputs.version }} --token ${{ secrets.GITHUB_TOKEN }}
 
         
         # - uses: actions/create-release@v1
