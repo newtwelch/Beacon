@@ -212,8 +212,8 @@ namespace Beacon.Blazor.Pages
 				DisplayWindow.Instance.Content.TextWrapping = TextWrapping.NoWrap;
 				DisplayWindow.Instance.Content.Width = Double.NaN;
 				DisplayWindow.Instance.Content.HighlightCount = 0;
-				DisplayWindow.Instance.Header1.Text = selectedSong.Title.ToUpper();
-				DisplayWindow.Instance.Header2.Text = lyric.Id + " / " + selectedSong.Lyrics().Count();
+				DisplayWindow.Instance.Header1.Text = selectedSong.Title.ToUpper() ;
+				DisplayWindow.Instance.Header2.Text = lyric.Type + " - " + lyric.Id + " / " + selectedSong.Lyrics().Count();
 			});
         }
 	}

@@ -24,9 +24,17 @@
         <LangVersion>latest</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>Beacon</RootNamespace>
+        <ApplicationIcon>Resources\Images\Beacon.ico</ApplicationIcon>
     </PropertyGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="wwwroot\**" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="Resources\Images\Beacon.ico" />
+	  <None Remove="Resources\Images\Splash.png" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Include="Resources\Images\Beacon.ico" />
 	</ItemGroup>
 	
     <ItemGroup>
@@ -36,7 +44,13 @@
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.*" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+        <PackageReference Include="Velopack" Version="0.0.1053" />
         <PackageReference Include="WpfScreenHelper" Version="2.1.1" />
+    </ItemGroup>
+	
+    <ItemGroup>
+      <Resource Include="Resources\Images\Beacon.ico" />
+      <Resource Include="Resources\Images\Splash.png" />
     </ItemGroup>
 
 </Project>

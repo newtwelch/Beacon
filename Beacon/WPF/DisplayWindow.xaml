@@ -22,16 +22,16 @@ WINDOW CHROME: custom title bar and window stuff
     <DockPanel>
 
         <Viewbox Stretch="Uniform" DockPanel.Dock="Top">
-            <Border Background="#0F0F10" CornerRadius="24" Margin="20" Padding="50 20">
-                <DockPanel Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DockPanel}}, Path=ActualWidth}">
-                    <TextBlock Background="Transparent" x:Name="Header1"
+            <Border CornerRadius="24" BorderThickness="0 0 0 2" BorderBrush="White" Margin="20" Padding="50 20">
+                <DockPanel Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DockPanel}}, Path=ActualWidth}" Opacity=".9">
+                    <TextBlock Background="Transparent" x:Name="Header1" 
                                            TextWrapping="Wrap" FontFamily="Gontserrat"  
-                                           Foreground="#F5F3F5" VerticalAlignment="Center"
-                                           FontWeight="Bold" FontSize="60" HorizontalAlignment="Left"/>
+                                           Foreground="#F5F3F5" VerticalAlignment="Center" 
+                                           FontWeight="Bold" FontSize="55" HorizontalAlignment="Left"/>
                     <TextBlock Background="Transparent" x:Name="Header2"
                                            TextWrapping="Wrap" 
                                            Foreground="#F5F3F5" VerticalAlignment="Center"
-                                           FontSize="45" HorizontalAlignment="Right"/>
+                                           FontSize="55" HorizontalAlignment="Right"/>
                 </DockPanel>
             </Border>
         </Viewbox>
@@ -39,7 +39,7 @@ WINDOW CHROME: custom title bar and window stuff
         <Viewbox StretchDirection="DownOnly" Margin="40 0 40 20">
             <hlpr:HighlightableTextBlock x:Name="Content"
                                          TextWrapping="NoWrap" FontFamily="Gontserrat"
-                                         Foreground="#F5F3F5" 
+                                         Foreground="#F5F3F5"
                                          HighlightBrush="Orange"  HighlightCount="0" Opacity=".9"
                                          TextAlignment="Center">
             </hlpr:HighlightableTextBlock>
