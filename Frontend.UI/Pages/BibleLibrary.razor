@@ -1,0 +1,282 @@
+﻿@page "/bible"
+@using System.Text.RegularExpressions
+@inject BibleService BibleService
+@inject BookAliasService BookAliasService
+@inject ProjectionService ProjectionService
+@inject IJSRuntime JSRuntime
+
+<div class="flex h-full w-full gap-4">
+
+    <!-- Books -->
+    <div class="flex w-64 min-w-64 flex-col rounded-2xl bg-con1 p-4">
+
+        <DebounceInput class="mb-3 h-11 w-full rounded-xl border-2 border-gray bg-black p-3"
+                       DebounceTime="0"
+                       placeholder="Book"
+                       Value="@searchBook"
+                       OnValueChanged="BookSearchChanged" 
+                       onkeyup="@BookSearchKeyUp"/>
+
+        <div class="min-h-0 flex-1 overflow-auto">
+
+            <BookList
+                Books="FilteredBooks"
+                      SelectedBook="selectedBook" 
+                      SelectedBookChanged="BookChanged" />
+
+        </div>
+
+    </div>
+
+    <!-- Chapters -->
+    <div class="flex w-36 min-w-36 flex-col rounded-2xl bg-con1 p-4">
+        
+        <DebounceInput class="mb-3 h-11 w-full rounded-xl border-2 border-gray bg-black p-3"
+                       DebounceTime="400"
+                       placeholder="Chapter"
+                       id="ChapterSearch"
+                       Value="@searchChapter"
+                       OnValueChanged="ChapterSearchChanged" />
+
+        <div class="min-h-0 flex-1 overflow-auto">
+
+            <ChapterList Chapters="FilteredChapters"
+                         SelectedChapter="selectedChapter"
+                         SelectedChapterChanged="ChapterChanged"/>
+
+        </div>
+
+    </div>
+
+    <!-- Reader -->
+    <div class="flex flex-col gap-3 rounded-2xl bg-black pt-4">
+
+        <DebounceInput class="h-11 w-28 rounded-xl border-2 border-gray bg-black p-3"
+                       DebounceTime="450"
+                       id="VerseSearch"
+                       placeholder="Verse"
+                       Value="@searchVerse"
+                       OnValueChanged="VerseNumberChanged" />
+
+        <VerseList Navigator="navigator" 
+                SelectedVerseChanged="SelectedVerseChanged"
+                SelectedPortionChanged="SelectedVersePortionChanged"/>
+
+    </div>
+
+</div>
+@code {
+    [Parameter]
+    public EventCallback ChangeState { get; set; }
+
+    // DATA
+    private List<Bible> bibles = [];
+    private List<Book> books = [];
+    private List<Chapter> chapters = [];
+    private List<BeaconVerse> verses = [];
+
+    private VerseNavigator navigator = new VerseNavigator();
+
+    // SELECTION
+    private Bible? selectedBible;
+    private Book? selectedBook;
+    private Chapter? selectedChapter;
+    private BeaconVerse? selectedVerse;
+
+    // SEARCH
+    private string searchBook = "";
+    private string searchChapter = "";
+    private string searchVerse = "";
+
+    // VIEW
+    private List<Book> FilteredBooks =>
+        string.IsNullOrWhiteSpace(searchBook)
+            ? books
+            : books.Where(book => BookAliasService.Matches(book, searchBook)).ToList();
+
+    private List<Chapter> FilteredChapters =>
+            chapters;
+
+    private List<BeaconVerse> FilteredVerses =>
+        string.IsNullOrWhiteSpace(searchVerse)
+            ? verses
+            : verses.Where(v =>
+                v.Text.Contains(searchVerse,
+                    StringComparison.OrdinalIgnoreCase)).ToList();
+
+    protected override async Task OnInitializedAsync()
+    {
+        bibles = await BibleService.GetBiblesAsync();
+
+        selectedBible = bibles.FirstOrDefault();
+
+        if (selectedBible is null)
+            return;
+
+        await LoadBooks();
+    }
+
+    private async Task BookSearchKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            if (FilteredBooks.Count == 0)
+                return;
+
+            await BookChanged(FilteredBooks[0]);
+
+
+            await InvokeAsync(StateHasChanged);
+
+            await Task.Delay(30);
+
+            await JSRuntime.InvokeVoidAsync(
+                "SwitchFocusTo",
+                "ChapterSearch");
+        }
+    }
+
+    private async Task TranslationChanged(Bible bible)
+    {
+        selectedBible = bible;
+
+        await LoadBooks();
+    }
+
+    private async Task BookChanged(Book book)
+    {
+        selectedBook = book;
+
+        await LoadChapters();
+    }
+
+    private async Task ChapterChanged(Chapter chapter)
+    {
+        selectedChapter = chapter;
+
+        await LoadVerses();
+    }
+
+    private async Task BookSearchChanged(string value)
+    {
+        searchBook = value;
+
+        if (FilteredBooks.Count == 1)
+        {
+            await BookChanged(FilteredBooks[0]);
+
+            await Task.Delay(50);
+
+            await JSRuntime.InvokeVoidAsync(
+                "SwitchFocusTo",
+                "ChapterSearch");
+        }
+
+        searchChapter = "";
+        searchVerse = "";
+    }
+
+    private async Task ChapterSearchChanged(string value)
+    {
+        searchChapter = Regex.Replace(value, @"\D", "");
+
+        if (string.IsNullOrWhiteSpace(searchChapter))
+            return;
+
+        if (!int.TryParse(searchChapter, out int chapter))
+            return;
+
+        chapter = Math.Clamp(chapter, 1, chapters.Count);
+
+        await ChapterChanged(chapters[chapter - 1]);
+
+        await Task.Delay(50);
+
+        await JSRuntime.InvokeVoidAsync(
+            "SwitchFocusTo",
+            "VerseSearch");
+
+        await Task.Delay(10);
+
+        await JSRuntime.InvokeVoidAsync("ScrollToView", $"c({chapter})");
+
+        searchVerse = "";
+    }
+    private async Task VerseNumberChanged(string value)
+    {
+        searchVerse = Regex.Replace(value, @"\D", "");
+
+        if (string.IsNullOrWhiteSpace(searchVerse))
+            return;
+
+        if (!int.TryParse(searchVerse, out int verse))
+            return;
+
+        verse = Math.Clamp(verse, 1, navigator.Verses.Count);
+        if(navigator.Verses.Count< verse){ return; }
+
+        navigator.SelectVerse(navigator.Verses[verse - 1]);
+
+
+        await JSRuntime.InvokeVoidAsync(
+            "SwitchFocusTo",
+            "VerseList");
+
+        await Task.Delay(10);
+
+        await JSRuntime.InvokeVoidAsync("ScrollToView", $"v({navigator.SelectedVerse.Verse})");
+        
+    }
+
+    private void SelectedVerseChanged(BeaconVerse verse)
+    {
+        ProjectionService.ChangeVerseText($"{verse.BookName} {verse.Chapter}:{verse.Verse}", "ENGLISH", verse.Text);
+    }
+    private void SelectedVersePortionChanged(VersePortion versePortion)
+    {
+        ProjectionService.ChangeVersePortion(versePortion.Index);
+    }
+
+    private async Task LoadBooks()
+    {
+        if (selectedBible is null)
+            return;
+
+        books = await BibleService.GetBooksAsync(selectedBible.Abbreviation, false);
+
+        selectedBook = books.FirstOrDefault();
+
+        await LoadChapters();
+    }
+
+    private async Task LoadChapters()
+    {
+        if (selectedBible is null || selectedBook is null)
+            return;
+
+        chapters = await BibleService.GetChaptersAsync(
+            selectedBible.Abbreviation,
+            selectedBook.Id);
+
+        selectedChapter = chapters.FirstOrDefault();
+
+        await LoadVerses();
+    }
+
+    private async Task LoadVerses()
+    {
+        if (selectedBible is null ||
+            selectedBook is null ||
+            selectedChapter is null)
+            return;
+
+        verses = await BibleService.GetVersesAsync(
+            selectedBible.Abbreviation,
+            selectedBook.Id,
+            selectedChapter.Id);
+
+        navigator.SetVerses(verses);
+
+        selectedVerse = verses.FirstOrDefault();
+    }
+}

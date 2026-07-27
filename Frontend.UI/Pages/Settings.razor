@@ -1,0 +1,180 @@
+﻿@using Frontend.UI.Components.Settings
+@inject Backend.Core.Services.IUpdateService UpdateService
+
+<div class="flex h-full gap-6">
+
+    <!-- SIDEBAR -->
+    <div class="flex w-64 flex-col gap-2">
+
+        <Button OnClick="() => activeCategory = SettingsCategory.General"
+                RemoveBorder="true"
+                Class="@GetTabClass(SettingsCategory.General)">
+            <Text>GENERAL</Text>
+        </Button>
+
+        @* <Button OnClick="() => activeCategory = SettingsCategory.SongLibrary"
+                RemoveBorder="true"
+                Class="@GetTabClass(SettingsCategory.SongLibrary)">
+            <Text>SONG LIBRARY</Text>
+        </Button> *@
+
+    </div>
+
+    <!-- CONTENT -->
+    <div class="flex-1">
+
+        @if (activeCategory == SettingsCategory.General)
+        {
+            <UpdateCard
+                CurrentVersion="1.0.0"
+                LatestVersion="@latestVersion"
+                ReleaseNotes="@latestNotes"
+                Progress="@downloadProgress"
+                ProgressMessage="@progressMessage"
+                ButtonText="@buttonText"
+                StatusText="@statusText"
+                StatusColor="@statusColor"
+                OnAction="@HandleUpdateAction" />
+        }
+
+    </div>
+
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback ChangeState { get; set; }  
+
+    private SettingsCategory activeCategory = SettingsCategory.General;
+
+    private bool isUpdateAvailable;
+    private bool isUpdateDownloaded;
+
+    private string latestVersion = "";
+    private string latestNotes = "";
+
+    private int downloadProgress = 0;
+
+    private string progressMessage = "";
+    private string buttonText = "Check For Updates";
+
+    private string statusText = "Up To Date";
+    private string statusColor = "bg-green-700/30 text-green-400";
+
+    protected override void OnInitialized()
+    {
+        UpdateService.OnDownloadProgress += progress =>
+        {
+            downloadProgress = progress;
+            progressMessage = $"Downloading...";
+
+            InvokeAsync(StateHasChanged);
+        };
+    }
+
+    private string GetTabClass(SettingsCategory category)
+    {
+        bool active = activeCategory == category;
+
+        return active
+            ? "bg-blue text-white rounded-xl"
+            : "bg-transparent opacity-70 hover:opacity-100";
+    }
+
+    private async Task HandleUpdateAction()
+    {
+        if (!isUpdateAvailable)
+        {
+            await CheckUpdate();
+        }
+        else if (!isUpdateDownloaded)
+        {
+            await DownloadUpdate();
+        }
+        else
+        {
+            await ApplyUpdate();
+        }
+    }
+
+    private async Task CheckUpdate()
+    {
+        buttonText = "Checking...";
+        progressMessage = "Checking for updates...";
+        downloadProgress = 20;
+
+        var result = await UpdateService.CheckForUpdateAsync();
+
+        downloadProgress = 0;
+
+        if (result.Success)
+        {
+            isUpdateAvailable = result.Data;
+
+            latestVersion = UpdateService.LatestVersion;
+            latestNotes = UpdateService.LatestNotes;
+
+            if (isUpdateAvailable)
+            {
+                statusText = "Update Available";
+                statusColor = "bg-yellow-700/30 text-yellow-300";
+
+                buttonText = "Download Update";
+            }
+            else
+            {
+                statusText = "Up To Date";
+                statusColor = "bg-green-700/30 text-green-400";
+
+                buttonText = "You're Updated";
+            }
+        }
+        else
+        {
+            statusText = "Update Failed";
+            statusColor = "bg-red-700/30 text-red-300";
+
+            buttonText = "Try Again";
+        }
+    }
+
+    private async Task DownloadUpdate()
+    {
+        buttonText = "Downloading...";
+        progressMessage = "Downloading update...";
+
+        var result = await UpdateService.DownloadUpdateAsync();
+
+        if (result.Success)
+        {
+            isUpdateDownloaded = true;
+
+            statusText = "Ready To Install";
+            statusColor = "bg-blue-700/30 text-blue-300";
+
+            buttonText = "Restart To Apply";
+        }
+        else
+        {
+            statusText = "Download Failed";
+            statusColor = "bg-red-700/30 text-red-300";
+
+            buttonText = "Retry Download";
+        }
+    }
+
+    private async Task ApplyUpdate()
+    {
+        buttonText = "Restarting...";
+
+        await UpdateService.ApplyAndRestartIfPendingAsync();
+    }
+
+    enum SettingsCategory
+    {
+        General,
+        SongLibrary,
+        BibleLibrary
+    }
+
+}

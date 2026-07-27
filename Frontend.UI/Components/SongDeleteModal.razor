@@ -1,0 +1,31 @@
+﻿@inherits ComponentBase
+
+@if (Visible)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-xs">
+        <div class="w-[350px] rounded-2xl bg-con1 p-6">
+            <h2 class="mb-4 leading-3 font-semibold">CONFIRM DELETION</h2>
+            <p class="mb-6 text-sm">
+                Are you sure you want to delete <span class="text-red">@Song?.Title</span>?
+            </p>
+
+            <div class="flex justify-end gap-3">
+
+                <Button OnClick="CancelClicked" RemoveBorder="true"><Text>Cancel</Text></Button>
+                <Button OnClick="ConfirmClicked" Class="bg-red hover:bg-white hover:text-red"><Text>DELETE</Text></Button>
+
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public Song? Song { get; set; }
+
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private async Task ConfirmClicked() => await OnConfirm.InvokeAsync();
+    private async Task CancelClicked() => await OnCancel.InvokeAsync();
+}

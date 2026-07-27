@@ -1,0 +1,83 @@
+﻿@inject IJSRuntime JSRuntime
+
+<div id="ChapterList"
+     tabindex="0"
+     class="h-full overflow-auto"
+     @onkeydown="Navigate">
+
+    <Virtualize Items="Chapters"
+                Context="chapter"
+                ItemSize="64">
+
+        @{
+            var selected = chapter.Id == SelectedChapter?.Id;
+        }
+
+        <div id="c(@chapter.Id)"
+            class="@ItemClass(selected)"
+             @onclick="() => Select(chapter)">
+
+            @chapter.Id
+
+        </div>
+
+    </Virtualize>
+
+</div>
+
+@code{
+    [Parameter] public List<Chapter> Chapters { get; set; } = [];
+    [Parameter] public Chapter? SelectedChapter { get; set; }
+
+    [Parameter]
+    public EventCallback<Chapter> SelectedChapterChanged { get; set; }
+
+    private async Task Navigate(KeyboardEventArgs e)
+    {
+        if (Chapters.Count == 0)
+            return;
+
+        var index = Chapters.FindIndex(x => x.Id == SelectedChapter?.Id);
+
+        if (index < 0)
+            index = 0;
+
+        switch (e.Code)
+        {
+            case "ArrowUp":
+
+                if (index > 0)
+                    await Select(Chapters[index - 1]);
+
+                break;
+
+            case "ArrowDown":
+
+                if (index < Chapters.Count - 1)
+                    await Select(Chapters[index + 1]);
+
+                break;
+        }
+    }
+
+    private async Task Select(Chapter chapter)
+    {
+        SelectedChapter = chapter;
+
+        await JSRuntime.InvokeVoidAsync(
+            "ScrollWithHeight",
+            "ChapterList",
+            chapter.Id - 1);
+
+        await SelectedChapterChanged.InvokeAsync(chapter);
+    }
+
+    private string ItemClass(bool selected)
+    {
+        return
+            $"flex h-16 cursor-pointer items-center rounded-xl px-3 transition-colors " +
+            (selected
+                ? "bg-pale-blue text-blue"
+                : "hover:text-blue");
+    }
+}

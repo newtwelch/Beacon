@@ -1,0 +1,237 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@inject IJSRuntime JSRuntime
+@inject ILogger<VerseList> Logger
+
+<div tabindex="0"
+     id="VerseList"
+     class="flex h-full w-full flex-col gap-3 overflow-auto rounded-2xl text-lg outline-none"
+     @onkeydown="Navigate">
+
+    <Virtualize Items="Navigator.Verses"
+                Context="verse"
+                OverscanCount="50">
+        @{
+            bool isSelected = verse == Navigator.SelectedVerse;
+
+            <div id="v(@verse.Verse)"
+                 class="cursor-pointer rounded-2xl p-6 leading-tight transition-colors
+                @(isSelected ? "bg-blue" : "bg-con2 hover:bg-pale-blue")"
+                 @onclick="() => SelectionChanged(verse)">
+
+                @if (GlobalSearch)
+                {
+                    <!-- GLOBAL SEARCH RESULT -->
+
+                    <span class="font-light">
+                        @verse.BookName @verse.Chapter:@verse.Verse
+                    </span>
+
+                    <p class="mt-2 ml-6 whitespace-pre-wrap
+                        @(isSelected
+                           ? "font-light"
+                           : "font-thin opacity-80")">
+
+                        @((MarkupString)verse.Text)
+
+                    </p>
+                }
+                else
+                {
+                    <!-- NORMAL VERSE -->
+
+                    <span class="font-light">
+                        @verse.Verse
+                    </span>
+
+                    @if (isSelected && Navigator.Portions.Any())
+                    {
+                        <!-- Portion Chips -->
+
+                        <div class="mt-2 ml-6 flex flex-wrap gap-2">
+
+                            @foreach (var portion in Navigator.Portions)
+                            {
+                                bool selectedPortion =
+                                    portion == Navigator.SelectedPortion;
+
+                                <div id="p(@portion.Index)"
+                                     class="cursor-pointer rounded-xl px-3 py-2 text-sm transition-colors
+                                    @(selectedPortion
+                                        ? "bg-black font-light text-white"
+                                        : "bg-black/70 font-thin opacity-80 hover:bg-black")"
+                                     @onclick:stopPropagation="true"
+                                     @onclick="() => PortionChanged(portion)">
+
+                                    @portion.Text
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Collapsed Verse -->
+
+                        <p class="mt-2 ml-6 whitespace-pre-wrap
+                            @(isSelected
+                               ? "font-light"
+                               : "font-thin opacity-80")">
+
+                            @((MarkupString)verse.Text)
+
+                        </p>
+                    }
+                }
+
+            </div>
+        }
+
+    </Virtualize>
+
+</div>
+
+@code{
+    [Parameter] public VerseNavigator Navigator { get; set; } = default!;
+
+    [Parameter] public bool GlobalSearch { get; set; }
+
+    [Parameter] public EventCallback<BeaconVerse> SelectedVerseChanged { get; set; }
+
+    [Parameter] public EventCallback<VersePortion> SelectedPortionChanged { get; set; }
+
+    private DateTime lastKeyDown = DateTime.MinValue;
+
+    protected override void OnInitialized()
+    {
+        Navigator.SelectionChanged += NavigatorChanged;
+    }
+
+    public void Dispose()
+    {
+        Navigator.SelectionChanged -= NavigatorChanged;
+    }
+
+    private void NavigatorChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Navigate(KeyboardEventArgs e)
+    {
+        var elapsed = (DateTime.Now - lastKeyDown).TotalMilliseconds;
+
+        if (elapsed < 120)
+            return;
+
+        lastKeyDown = DateTime.Now;
+
+        try
+        {
+            switch (e.Code)
+            {
+                //-----------------------------------
+                // Down
+                //-----------------------------------
+
+                case "ArrowDown":
+
+                    if (Navigator.Next())
+                        await RaiseSelectionChanged();
+
+                    break;
+
+                //-----------------------------------
+                // Up
+                //-----------------------------------
+
+                case "ArrowUp":
+
+                    if (Navigator.Previous())
+                        await RaiseSelectionChanged();
+
+                    break;
+
+                //-----------------------------------
+                // Expand
+                //-----------------------------------
+
+                case "ArrowRight":
+
+                case "Enter":
+
+                case "Space":
+
+                    if (Navigator.ExpandSelectedVerse())
+                        await RaiseSelectionChanged();
+
+                    break;
+
+                //-----------------------------------
+                // Collapse
+                //-----------------------------------
+
+                case "ArrowLeft":
+
+                case "Escape":
+
+                    if (Navigator.CollapseSelectedVerse())
+                        await RaiseSelectionChanged();
+
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Verse navigation failed.");
+        }
+    }
+
+    private async Task SelectionChanged(BeaconVerse verse)
+    {
+        Navigator.SelectVerse(verse);
+
+        await RaiseSelectionChanged();
+    }
+
+    private async Task PortionChanged(VersePortion portion)
+    {
+        Navigator.SelectPortion(portion);
+
+        if (SelectedPortionChanged.HasDelegate)
+            await SelectedPortionChanged.InvokeAsync(portion);
+    }
+
+    private async Task RaiseSelectionChanged()
+    {
+        await Task.Delay(10);
+        //-----------------------------------
+        // Scroll verse
+        //-----------------------------------
+
+        if (Navigator.SelectedVerse != null)
+        {
+            await JSRuntime.InvokeVoidAsync(
+                "ScrollToView",
+                $"v({Navigator.SelectedVerse.Verse})");
+
+            if (SelectedVerseChanged.HasDelegate)
+                await SelectedVerseChanged.InvokeAsync(
+                    Navigator.SelectedVerse);
+        }
+
+        //-----------------------------------
+        // Scroll portion
+        //-----------------------------------
+        if (Navigator.SelectedPortion != null)
+        {
+            await JSRuntime.InvokeVoidAsync(
+                "ScrollToView",
+                $"p({Navigator.SelectedPortion.Index})");
+
+            if (SelectedPortionChanged.HasDelegate)
+                await SelectedPortionChanged.InvokeAsync(
+                    Navigator.SelectedPortion);
+        }
+    }
+}

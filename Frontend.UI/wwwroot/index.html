@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <base href="/" />
+        <link id="appcss" rel="stylesheet" href="css/app.css" />
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    </head>
+    <body>
+        <div id="app" class="font-gont">Loading...</div>
+        <div id="blazor-error-ui" class="h-fit w-full p-2 text-white">
+        <div class="bg-opacity-25 rounded-xl bg-red p-3">
+                An unhandled error has occurred.
+                <a href="" class="reload text-primary">Reload</a>
+                <a class="dismiss text-primary">🗙</a>
+            </div>
+        </div>
+    
+        <script>
+            const cssLink = document.getElementById("appcss");
+            cssLink.href = cssLink.href.split("?")[0] + "?v=" + Date.now();
+        </script>
+    
+        <script src="_framework/blazor.webview.js"></script>
+        <script>
+    
+            document.addEventListener('keydown', preventKeyBoardScroll, false);
+            function preventKeyBoardScroll(e) {
+                var keys = [32, 33, 34, 35, 37, 38, 39, 40];
+                if (!(document.activeElement.tagName == "INPUT" || document.activeElement.tagName == "TEXTAREA")) {
+                    if (keys.includes(e.keyCode)) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+            }
+    
+            function SwitchFocusTo(id) {
+                document.getElementById(id).focus();
+            }
+    
+            function ScrollWithHeight(containerId, index) {
+                var height = 64;
+                const ListContainer = document.getElementById(containerId);
+    
+                ListContainer.scrollTo({
+                    top: ((height * index) - (ListContainer.offsetHeight * 0.5)) + (height * 0.5),
+                    behavior: "smooth"
+                });
+            }
+            
+            function ScrollToView(itemId) {
+                try {
+                    document.getElementById(itemId).scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    });
+                } catch (error) {}
+            }
+    
+    
+        </script>
+    </body>
+</html>

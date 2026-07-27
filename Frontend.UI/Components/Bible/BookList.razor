@@ -1,0 +1,130 @@
+﻿@inject IJSRuntime JSRuntime
+@inject ILogger<BookList> Logger
+
+<div id="BookList"
+     tabindex="0"
+     class="h-full overflow-auto">
+
+    <Virtualize Items="Books"
+                Context="book"
+                ItemSize="64">
+
+        @{
+            var selected = book == SelectedBook;
+        }
+
+        <div class="group flex h-16 cursor-pointer items-center rounded-xl px-3 outline-0 select-none @ItemClass(selected)"
+             @onclick="() => SafeAction(() => SelectionChanged(book),
+                                    nameof(SelectionChanged),
+                                    book)">
+
+            @book.Name
+
+        </div>
+
+    </Virtualize>
+
+</div>
+
+@code {
+
+    [Parameter]
+    public List<Book> Books { get; set; } = [];
+
+    [Parameter]
+    public Book? SelectedBook { get; set; }
+
+    [Parameter]
+    public EventCallback<Book> SelectedBookChanged { get; set; }
+
+    private async Task SelectionChanged(Book book)
+    {
+        SelectedBook = book;
+
+        Logger.LogInformation(
+            "Selected book: {Book}",
+            book.Name.RemoveHighlight());
+
+        var index = Books.FindIndex(x => x.Id == book.Id);
+
+        if (index >= 0)
+        {
+            await JSRuntime.InvokeVoidAsync(
+                "ScrollWithHeight",
+                "BookList",
+                index);
+        }
+
+        await SelectedBookChanged.InvokeAsync(book);
+    }
+
+    private async Task SafeAction(
+    Func<Task> action,
+    string actionName,
+    Book book)
+    {
+        try
+        {
+            await action();
+
+            Logger.LogInformation(
+                "{Action} succeeded for {Book}",
+                actionName,
+                book.Name.RemoveHighlight());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex,
+                "Error while executing {Action} for {Book}",
+                actionName,
+                book.Name.RemoveHighlight());
+        }
+    }
+
+    private DateTime _lastKeyDownTime = DateTime.MinValue;
+
+    private async Task Navigate(KeyboardEventArgs e)
+    {
+        if (Books.Count == 0)
+            return;
+
+        var elapsed = (DateTime.Now - _lastKeyDownTime).TotalMilliseconds;
+
+        if (elapsed <= 150)
+            return;
+
+        _lastKeyDownTime = DateTime.Now;
+
+        try
+        {
+            var index = Books.FindIndex(x => x.Id == SelectedBook?.Id);
+
+            if (index == -1)
+                index = 0;
+
+            if (e.Code == "ArrowUp" && index > 0)
+                await SelectionChanged(Books[index - 1]);
+
+            else if (e.Code == "ArrowDown" && index < Books.Count - 1)
+                await SelectionChanged(Books[index + 1]);
+
+            else if (e.Code == "Enter")
+                Logger.LogInformation("Enter pressed on {Book}", SelectedBook?.Name);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex,
+                "Error during keyboard navigation");
+        }
+    }
+
+    private string ItemClass(bool selected)
+    {
+        return
+            $"cursor-pointer items-center rounded-xl px-3 transition-colors " +
+            (selected
+                ? "bg-pale-blue text-blue"
+                : "hover:text-blue");
+    }
+
+}

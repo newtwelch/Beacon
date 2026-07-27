@@ -1,0 +1,41 @@
+﻿@inherits LayoutComponentBase
+
+<div class="flex h-screen w-screen bg-con1">
+	<div class="flex h-full w-20 flex-none flex-col items-center bg-con1 pt-3 text-white">
+		<!-- Navigation -->
+		<Button Class="@(activePage == BeaconPage.SongLibrary ? "text-blue" : "")" RemoveBorder="true" OnClick="() => activePage = BeaconPage.SongLibrary"><Icon><MusicIcon></MusicIcon></Icon></Button>
+		<Button Class="@(activePage == BeaconPage.BibleLibrary ? "text-blue" : "")" RemoveBorder="true" OnClick="() => activePage = BeaconPage.BibleLibrary"><Icon><BibleIcon></BibleIcon></Icon></Button>
+		<Button Class="@(activePage == BeaconPage.SettingsPage ? "text-blue" : "")" RemoveBorder="true" OnClick="() => activePage = BeaconPage.SettingsPage"><Icon><GearIcon></GearIcon></Icon></Button>
+	</div>
+
+	<div class="@(activePage == BeaconPage.SongLibrary ? "" : "hidden") h-full w-full rounded-l-3xl bg-black p-6 text-white">
+		<SongLibrary ShouldReRender="ShouldRender" />
+	</div>
+
+	<div class="@(activePage == BeaconPage.BibleLibrary ? "" : "hidden") h-full w-full rounded-l-3xl bg-black p-6 text-white">
+		<BibleLibrary ChangeState="ChangeState" />
+	</div>
+
+	<div class="@(activePage == BeaconPage.SettingsPage ? "" : "hidden") h-full w-full rounded-l-3xl bg-black p-6 text-white">
+		<Settings ChangeState="ChangeState" />
+	</div>
+
+</div>
+
+
+<div class="bg-pale-blue text-pale-blue bg-con1 bg-con2 bg-white bg-black text-yellow text-red text-blue text-green text-orange group-hover:text-blue"></div>
+@code {
+
+	private BeaconPage activePage = BeaconPage.SongLibrary;
+
+	private void switchPage(BeaconPage page)
+	{
+		activePage = page;
+	}
+
+	private void ChangeState() => StateHasChanged();
+
+	protected override async Task OnInitializedAsync()
+	{
+	}
+}
