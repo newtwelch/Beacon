@@ -26,7 +26,7 @@
         @if (activeCategory == SettingsCategory.General)
         {
             <UpdateCard
-                CurrentVersion="1.0.0"
+                CurrentVersion="@UpdateService.CurrentVersion"
                 LatestVersion="@latestVersion"
                 ReleaseNotes="@latestNotes"
                 Progress="@downloadProgress"
@@ -105,6 +105,10 @@
 
         var result = await UpdateService.CheckForUpdateAsync();
 
+        downloadProgress = 99;
+
+        await Task.Delay(50);
+        
         downloadProgress = 0;
 
         if (result.Success)
@@ -126,7 +130,7 @@
                 statusText = "Up To Date";
                 statusColor = "bg-green-700/30 text-green-400";
 
-                buttonText = "You're Updated";
+                buttonText = "You're Updated - " + latestVersion;
             }
         }
         else

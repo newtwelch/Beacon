@@ -22,6 +22,7 @@ namespace Frontend.WPF.Services
         // Expose info for UI
         public string LatestVersion { get; private set; } = "";
         public string LatestNotes { get; private set; } = "";
+        public string? CurrentVersion => manager.CurrentVersion?.ToString();
         public bool IsUpdateAvailable { get; private set; } = false;
 
         public async Task<Result<bool>> CheckForUpdateAsync()
@@ -29,6 +30,8 @@ namespace Frontend.WPF.Services
             return await ExecuteAsync(async () =>
             {
                 latestVelopackInfo = await manager.CheckForUpdatesAsync();
+                logger.LogInformation("Checking Updates");
+                logger.LogInformation(manager.AppId + " ");
                 if (latestVelopackInfo == null)
                 {
                     IsUpdateAvailable = false;
@@ -42,7 +45,7 @@ namespace Frontend.WPF.Services
                 LatestVersion = latestVelopackInfo.TargetFullRelease.Version.ToString();
                 LatestNotes = latestVelopackInfo.TargetFullRelease.NotesHTML ?? "";
                 IsUpdateAvailable = true;
-
+                
                 logger.LogInformation("Update available: {Version}", LatestVersion);
                 return true;
             });

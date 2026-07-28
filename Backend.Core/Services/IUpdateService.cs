@@ -10,6 +10,7 @@ namespace Backend.Core.Services
         /// <summary>
         /// Optional: expose info for UI.
         /// </summary>
+        string CurrentVersion { get; }  
         string LatestVersion { get; }
         string LatestNotes { get; }
         bool IsUpdateAvailable { get; }

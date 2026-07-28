@@ -26,16 +26,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Serve static files from "Updates" folder at "/updates"
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
-        Path.Combine(AppContext.BaseDirectory, "Updates")
-    ),
-    RequestPath = "/updates",
-    ServeUnknownFileTypes = true
-});
-
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();

@@ -108,7 +108,7 @@
     {
         bibles = await BibleService.GetBiblesAsync();
 
-        selectedBible = bibles.FirstOrDefault();
+        selectedBible = bibles[1];
 
         if (selectedBible is null)
             return;
