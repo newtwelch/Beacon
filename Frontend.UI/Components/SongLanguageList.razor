@@ -1,5 +1,4 @@
-﻿
-<div class="mb-3 flex gap-3 transition-colors">
+﻿<div class="mb-3 flex gap-3 transition-colors">
 	@foreach(var Song in Songs)
 	{
 		<Button OnClick="async () => await SelectionChanged(Song)" Class="@(Song.Id == SelectedSong.Id ? "bg-pale-blue text-blue" : "hover:text-blue")"><Text>@Song.Language</Text></Button>

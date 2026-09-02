@@ -12,12 +12,17 @@
             <Text>GENERAL</Text>
         </Button>
 
-        @* <Button OnClick="() => activeCategory = SettingsCategory.SongLibrary"
+         <Button OnClick="() => activeCategory = SettingsCategory.SongLibrary"
                 RemoveBorder="true"
                 Class="@GetTabClass(SettingsCategory.SongLibrary)">
             <Text>SONG LIBRARY</Text>
-        </Button> *@
+        </Button> 
 
+        <Button OnClick="() => activeCategory = SettingsCategory.BibleLibrary"
+                RemoveBorder="true"
+                Class="@GetTabClass(SettingsCategory.BibleLibrary)">
+            <Text>BIBLE LIBRARY</Text>
+        </Button>
     </div>
 
     <!-- CONTENT -->
@@ -35,6 +40,11 @@
                 StatusText="@statusText"
                 StatusColor="@statusColor"
                 OnAction="@HandleUpdateAction" />
+        }
+
+        @if (activeCategory == SettingsCategory.BibleLibrary)
+        {
+            <TranslationsCard/>
         }
 
     </div>
@@ -59,7 +69,7 @@
     private string buttonText = "Check For Updates";
 
     private string statusText = "Up To Date";
-    private string statusColor = "bg-green-700/30 text-green-400";
+    private string statusColor = "bg-green/30 text-green";
 
     protected override void OnInitialized()
     {
@@ -77,7 +87,7 @@
         bool active = activeCategory == category;
 
         return active
-            ? "bg-blue text-white rounded-xl"
+            ? "bg-pale-blue text-blue rounded-xl"
             : "bg-transparent opacity-70 hover:opacity-100";
     }
 

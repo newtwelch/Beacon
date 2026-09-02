@@ -1,0 +1,34 @@
+﻿<div class="flex gap-3 transition-colors">
+    @foreach (var bible in Bibles)
+    {
+        <Button OnClick="async () => await SelectionChanged(bible)"
+                Class="@(bible.Id == SelectedBible?.Id
+                                ? "bg-pale-blue text-blue"
+                                : "hover:text-blue")">
+
+            <Text>@bible.Language.ToUpper()</Text>
+
+        </Button>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public List<Bible> Bibles { get; set; } = new();
+
+    [Parameter]
+    public Bible? SelectedBible { get; set; }
+
+    [Parameter]
+    public EventCallback<Bible> SelectedBibleChanged { get; set; }
+
+    private async Task SelectionChanged(Bible bible)
+    {
+        if (SelectedBible?.Id == bible.Id)
+            return;
+
+        SelectedBible = bible;
+
+        await SelectedBibleChanged.InvokeAsync(bible);
+    }
+}

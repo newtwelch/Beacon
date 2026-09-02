@@ -4,7 +4,7 @@
 
 <div tabindex="0"
      id="VerseList"
-     class="flex h-full w-full flex-col gap-3 overflow-auto rounded-2xl text-lg outline-none"
+     class="flex h-full w-full flex-col overflow-auto rounded-2xl text-lg outline-none"
      @onkeydown="Navigate">
 
     <Virtualize Items="Navigator.Verses"
@@ -14,7 +14,7 @@
             bool isSelected = verse == Navigator.SelectedVerse;
 
             <div id="v(@verse.Verse)"
-                 class="cursor-pointer rounded-2xl p-6 leading-tight transition-colors
+                 class="mb-3 cursor-pointer rounded-2xl p-6 leading-tight transition-colors
                 @(isSelected ? "bg-blue" : "bg-con2 hover:bg-pale-blue")"
                  @onclick="() => SelectionChanged(verse)">
 
@@ -114,7 +114,12 @@
 
     private void NavigatorChanged()
     {
-        InvokeAsync(StateHasChanged);
+        InvokeAsync(async () =>
+        {
+            StateHasChanged();
+
+            await RaiseSelectionChanged();
+        });
     }
 
     private async Task Navigate(KeyboardEventArgs e)
@@ -233,5 +238,5 @@
                 await SelectedPortionChanged.InvokeAsync(
                     Navigator.SelectedPortion);
         }
-    }
+    }   
 }

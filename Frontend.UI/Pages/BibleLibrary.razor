@@ -51,12 +51,17 @@
     <!-- Reader -->
     <div class="flex flex-col gap-3 rounded-2xl bg-black pt-4">
 
-        <DebounceInput class="h-11 w-28 rounded-xl border-2 border-gray bg-black p-3"
+        <DebounceInput class="mb-3 h-11 w-28 rounded-xl border-2 border-gray bg-black p-3"
                        DebounceTime="450"
                        id="VerseSearch"
                        placeholder="Verse"
                        Value="@searchVerse"
                        OnValueChanged="VerseNumberChanged" />
+
+        <!-- Bible translations -->
+        <BibleLanguageList Bibles="bibles"
+                           SelectedBible="selectedBible"
+                           SelectedBibleChanged="TranslationChanged" />
 
         <VerseList Navigator="navigator" 
                 SelectedVerseChanged="SelectedVerseChanged"
@@ -106,14 +111,46 @@
 
     protected override async Task OnInitializedAsync()
     {
+        BibleService.BiblesChanged += OnBiblesChanged;
+
+        await RefreshBibles();
+    }
+    private async void OnBiblesChanged()
+    {
+        await InvokeAsync(RefreshBibles);
+    }
+
+    public void Dispose()
+    {
+        BibleService.BiblesChanged -= OnBiblesChanged;
+    }
+
+    private async Task RefreshBibles()
+    {
         bibles = await BibleService.GetBiblesAsync();
 
-        selectedBible = bibles[1];
+        if (bibles.Count == 0)
+        {
+            selectedBible = null;
+            books.Clear();
+            chapters.Clear();
+            verses.Clear();
 
-        if (selectedBible is null)
+            navigator.SetVerses([]);
+
+            await InvokeAsync(StateHasChanged);
             return;
+        }
+
+        var currentBibleId = selectedBible?.Id;
+
+        selectedBible =
+            bibles.FirstOrDefault(b => b.Id == currentBibleId)
+            ?? bibles.First();
 
         await LoadBooks();
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task BookSearchKeyUp(KeyboardEventArgs e)
@@ -138,7 +175,14 @@
 
     private async Task TranslationChanged(Bible bible)
     {
+        if (selectedBible?.Id == bible.Id)
+            return;
+
         selectedBible = bible;
+
+        searchBook = "";
+        searchChapter = "";
+        searchVerse = "";
 
         await LoadBooks();
     }
@@ -147,12 +191,17 @@
     {
         selectedBook = book;
 
+        selectedChapter = null;
+        selectedVerse = null;
+
         await LoadChapters();
     }
 
     private async Task ChapterChanged(Chapter chapter)
     {
         selectedChapter = chapter;
+
+        selectedVerse = null;
 
         await LoadVerses();
     }
@@ -225,11 +274,12 @@
         await Task.Delay(10);
 
         await JSRuntime.InvokeVoidAsync("ScrollToView", $"v({navigator.SelectedVerse.Verse})");
-        
+
     }
 
     private void SelectedVerseChanged(BeaconVerse verse)
     {
+        selectedVerse = verse;
         ProjectionService.ChangeVerseText($"{verse.BookName} {verse.Chapter}:{verse.Verse}", "ENGLISH", verse.Text);
     }
     private void SelectedVersePortionChanged(VersePortion versePortion)
@@ -242,14 +292,27 @@
         if (selectedBible is null)
             return;
 
-        books = await BibleService.GetBooksAsync(selectedBible.Abbreviation, false);
+        var previousBookId = selectedBook?.Id;
+        var previousChapterId = selectedChapter?.Id;
+        var previousVerseNumber = selectedVerse?.Verse;
 
-        selectedBook = books.FirstOrDefault();
+        books = await BibleService.GetBooksAsync(
+            selectedBible.Abbreviation,
+            false);
 
-        await LoadChapters();
+        if (books.Count == 0)
+            return;
+
+        selectedBook =
+            books.FirstOrDefault(b => b.Id == previousBookId)
+            ?? books.First();
+
+        await LoadChapters(previousChapterId, previousVerseNumber);
     }
 
-    private async Task LoadChapters()
+    private async Task LoadChapters(
+    int? previousChapterId = null,
+    int? previousVerseNumber = null)
     {
         if (selectedBible is null || selectedBook is null)
             return;
@@ -258,12 +321,17 @@
             selectedBible.Abbreviation,
             selectedBook.Id);
 
-        selectedChapter = chapters.FirstOrDefault();
+        if (chapters.Count == 0)
+            return;
 
-        await LoadVerses();
+        selectedChapter =
+            chapters.FirstOrDefault(c => c.Id == previousChapterId)
+            ?? chapters.First();
+
+        await LoadVerses(previousVerseNumber);
     }
 
-    private async Task LoadVerses()
+    private async Task LoadVerses(int? previousVerseNumber = null)
     {
         if (selectedBible is null ||
             selectedBook is null ||
@@ -277,6 +345,16 @@
 
         navigator.SetVerses(verses);
 
-        selectedVerse = verses.FirstOrDefault();
+        var verseToSelect =
+            verses.FirstOrDefault(v => v.Verse == previousVerseNumber);
+
+        if (verseToSelect is not null)
+        {
+            navigator.SelectVerse(verseToSelect);
+            selectedVerse = verseToSelect;
+            SelectedVerseChanged(selectedVerse);
+        }
+
+        await InvokeAsync(StateHasChanged);
     }
 }

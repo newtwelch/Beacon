@@ -1,0 +1,173 @@
+﻿@using Backend.Core.Models.Bible
+@inject Backend.Core.Services.BibleService BibleService
+
+<div class="flex flex-col gap-4 rounded-2xl bg-con2 p-6 leading-tight shadow-lg">
+
+    <div class="flex items-start justify-between">
+
+        <div>
+            <h2 class="text-xl font-bold">Bible Library</h2>
+
+            <p class="text-sm font-light opacity-70">
+                Download and manage Bible translations.
+            </p>
+        </div>
+
+        <div class="rounded-full bg-blue/30 px-3 py-1 text-xs text-blue">
+            @InstalledTranslations.Count Installed
+        </div>
+
+    </div>
+
+    <div class="flex flex-col gap-2">
+
+        @foreach (var translation in AvailableTranslations)
+        {
+            var installed = InstalledTranslations
+                .FirstOrDefault(x =>
+                    x.Abbreviation.Equals(
+                        translation.Abbreviation,
+                        StringComparison.OrdinalIgnoreCase));
+
+            <div class="flex items-center justify-between rounded-xl bg-black/60 p-4">
+
+                <div class="flex flex-col gap-1">
+
+                    <p class="font-semibold">
+                        @translation.Name
+                    </p>
+
+                    <p class="text-xs opacity-60">
+                        @translation.Abbreviation.ToUpper()
+                    </p>
+
+                </div>
+
+                @if (Downloading == translation.Abbreviation)
+                {
+                    <div class="flex items-center gap-3">
+
+                        <div class="h-2 w-32 overflow-hidden rounded-full bg-black/30">
+                            <div class="h-2 bg-blue transition-all"
+                                 style="width:@DownloadProgress%">
+                            </div>
+                        </div>
+
+                        <span class="text-xs">
+                            @DownloadProgress%
+                        </span>
+
+                    </div>
+                }
+                else if (installed != null)
+                {
+                    <Button OnClick="() => DeleteTranslation(translation)"
+                            Class="text-red">
+
+                        <Text>Delete</Text>
+
+                    </Button>
+                }
+                else
+                {
+                    <Button OnClick="() => DownloadTranslation(translation)">
+
+                        <Text>Download</Text>
+
+                    </Button>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+@code {
+
+    private List<Bible> InstalledTranslations = new();
+
+    private string Downloading = "";
+    private int DownloadProgress;
+
+    private readonly List<AvailableTranslation> AvailableTranslations = new()
+    {
+        new()
+        {
+            Name = "King James Version",
+            Abbreviation = "kjv"
+        },
+
+        new()
+        {
+            Name = "Tagalog",
+            Abbreviation = "tagalog"
+        },
+
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshTranslations();
+    }
+
+    private async Task RefreshTranslations()
+    {
+        InstalledTranslations =
+            await BibleService.GetBiblesAsync();
+    }
+
+    private async Task DownloadTranslation(
+        AvailableTranslation translation)
+    {
+        if (!string.IsNullOrEmpty(Downloading))
+            return;
+
+        Downloading = translation.Abbreviation;
+        DownloadProgress = 0;
+
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            DownloadProgress = 25;
+            await InvokeAsync(StateHasChanged);
+
+            var success =
+                await BibleService.DownloadBible(
+                    translation.Abbreviation);
+
+            DownloadProgress = 100;
+
+            if (success)
+                await RefreshTranslations();
+
+        }
+        finally
+        {
+            Downloading = "";
+
+            await InvokeAsync(StateHasChanged);
+
+        }
+    }
+
+    private async Task DeleteTranslation(
+        AvailableTranslation translation)
+    {
+        await BibleService.DeleteBibleAsync(
+            translation.Abbreviation);
+
+        await RefreshTranslations();
+
+        await InvokeAsync(StateHasChanged);
+
+    }
+
+    private class AvailableTranslation
+    {
+        public string Name { get; set; } = "";
+        public string Abbreviation { get; set; } = "";
+    }
+}

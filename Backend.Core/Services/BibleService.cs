@@ -13,6 +13,13 @@ namespace Backend.Core.Services
         private SQLiteAsyncConnection dbConnection;
         private HttpClient httpClient;
 
+        public event Action? BiblesChanged;
+
+        private void NotifyBiblesChanged()
+        {
+            BiblesChanged?.Invoke();
+        }
+
         public BibleService(ICustomHttpFactory factory, string bibleDbPath, SQLiteOpenFlags flags)
         {
             dbConnection = new SQLiteAsyncConnection(bibleDbPath, flags);
@@ -78,25 +85,54 @@ namespace Backend.Core.Services
             return verses;
         }
 
-        //[API]=========================================
-        public async Task DownloadBible(string translation)
+        //[DELETE]
+        public async Task DeleteBibleAsync(string translation)
         {
-            //CHECK IF EXISTS
-            bool languageExists = await dbConnection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM Bibles WHERE Abbreviation = '{translation}'").ConfigureAwait(false) > 0;
-            if (languageExists)
-                return;
+            await dbConnection.ExecuteAsync(
+                $"DROP TABLE IF EXISTS [{translation}]");
 
-            //GET BIBLE FROM API
+            await dbConnection.ExecuteAsync(
+                $"DROP TABLE IF EXISTS [{translation}Books]");
+
+            await dbConnection.ExecuteAsync(
+                "DELETE FROM Bibles WHERE Abbreviation = ?",
+                translation);
+
+            await dbConnection.ExecuteAsync("VACUUM"); 
+            NotifyBiblesChanged();
+        }
+
+
+        //[API]=========================================
+        public async Task<bool> DownloadBible(string translation)
+        {
+            bool languageExists = await dbConnection.ExecuteScalarAsync<int>(
+                "SELECT COUNT(*) FROM Bibles WHERE Abbreviation = ?",
+                translation) > 0;
+
+            if (languageExists)
+                return false;
+
             var bible = await GetAPIBibleAsync(translation);
 
-            //CREATE TABLE
-            await dbConnection.ExecuteAsync($"CREATE VIRTUAL TABLE IF NOT EXISTS {translation} USING Fts5(Book, BookName, Chapter, Verse, Text)");
-            await dbConnection.ExecuteAsync($"CREATE TABLE IF NOT EXISTS {translation}Books (Id INTEGER NOT NULL, Name TEXT NOT NULL)");
+            if (bible == null || string.IsNullOrEmpty(bible.Abbreviation))
+                return false;
+
+            await dbConnection.ExecuteAsync(
+                $"CREATE VIRTUAL TABLE IF NOT EXISTS [{translation}] USING Fts5(Book, BookName, Chapter, Verse, Text)");
+
+            await dbConnection.ExecuteAsync(
+                $"CREATE TABLE IF NOT EXISTS [{translation}Books] (Id INTEGER NOT NULL, Name TEXT NOT NULL)");
+
             await dbConnection.InsertAsync(bible);
 
-            //CONVERT AND INSERT TO TABLE
             await ConvertAndSaveToDatabase(bible);
+
             await dbConnection.ExecuteAsync("VACUUM");
+
+            NotifyBiblesChanged();
+
+            return true;
         }
 
         public async Task<Bible> GetAPIBibleAsync(string translation)

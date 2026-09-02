@@ -19,8 +19,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-	  <Version>1.2.1</Version>
-	  <AssemblyVersion>1.2.1</AssemblyVersion>
+	  <Version>1.2.2</Version>
+	  <AssemblyVersion>1.2.2</AssemblyVersion>
   </PropertyGroup>
 
 	<ItemGroup>
