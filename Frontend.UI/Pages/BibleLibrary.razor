@@ -184,6 +184,7 @@
         searchChapter = "";
         searchVerse = "";
 
+        ProjectionService.ChangeTranslation(selectedBible.Abbreviation);
         await LoadBooks();
     }
 
@@ -280,7 +281,7 @@
     private void SelectedVerseChanged(BeaconVerse verse)
     {
         selectedVerse = verse;
-        ProjectionService.ChangeVerseText($"{verse.BookName} {verse.Chapter}:{verse.Verse}", "ENGLISH", verse.Text);
+        ProjectionService.ChangeVerseText($"{verse.BookName} {verse.Chapter}:{verse.Verse}", selectedBible.Abbreviation, verse.Text);
     }
     private void SelectedVersePortionChanged(VersePortion versePortion)
     {

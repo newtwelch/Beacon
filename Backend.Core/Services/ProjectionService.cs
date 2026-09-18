@@ -28,6 +28,11 @@ namespace Backend.Core.Services
         {
             VerseTextChanged?.Invoke(verseReference, translation, text);
         }
+        
+        public void ChangeTranslation(string translation)
+        {
+            VerseTextChanged?.Invoke("", translation, "");
+        }
 
         public void ChangeVersePortion(int id)
         {
