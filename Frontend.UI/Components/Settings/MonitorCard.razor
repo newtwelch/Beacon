@@ -1,0 +1,103 @@
+﻿<div class="flex flex-col gap-4 rounded-2xl bg-con2 p-6 leading-tight shadow-lg">
+
+    <div class="flex items-start justify-between">
+
+        <div>
+            <h2 class="text-xl font-bold">Monitors</h2>
+
+            <p class="text-sm font-light opacity-70">
+                Choose which monitor will show projected text.
+            </p>
+        </div>
+
+        <div class="rounded-full bg-blue/30 px-3 py-1 text-xs text-blue">
+            @Screens.Count Display@(Screens.Count == 1 ? "" : "s")
+        </div>
+
+    </div>
+
+    <div class="flex flex-col gap-2">
+
+        @foreach (var screen in Screens)
+        {
+            var selected = SelectedScreen == screen;
+
+            <button @onclick="() => SelectScreen(screen)"
+                    class="@GetScreenClass(selected) flex cursor-pointer items-center justify-between gap-2 rounded-md p-3 border-2 border-gray">
+
+                <div class="flex items-center gap-3">
+
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-black/20">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+  <path fill-rule="evenodd" d="M2.25 5.25a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3V15a3 3 0 0 1-3 3h-3v.257c0 .597.237 1.17.659 1.591l.621.622a.75.75 0 0 1-.53 1.28h-9a.75.75 0 0 1-.53-1.28l.621-.622a2.25 2.25 0 0 0 .659-1.59V18h-3a3 3 0 0 1-3-3V5.25Zm1.5 0v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5Z" clip-rule="evenodd" />
+</svg>
+
+
+                    </div>
+
+                    <div class="flex flex-col items-start gap-1">
+                        <p class="">
+                            @screen.Name.Replace("\\\\.\\", "").Replace("DISPLAY", "Display  ")
+                        </p>
+
+                        @if(screen.IsPrimary)
+                        {
+                            <p class="text-xs opacity-50">
+                                PRIMARY
+                            </p>
+                        }
+
+                    </div>
+
+                </div>
+
+
+            </button>
+        }
+
+    </div>
+
+    @if (Screens.Count == 0)
+    {
+        <div class="rounded-xl bg-black/20 p-4 text-center text-sm opacity-60">
+            No displays detected.
+        </div>
+    }
+
+</div>
+
+@code {
+    [Parameter]
+    public List<Screen> Screens { get; set; } = new();
+
+    [Parameter]
+    public Screen? SelectedScreen { get; set; }
+
+    [Parameter]
+    public EventCallback<Screen?> SelectedScreenChanged { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (SelectedScreen == null && Screens.Count > 0)
+        {
+            SelectedScreen = Screens.First();
+        }
+
+        base.OnInitialized();
+    }
+
+    private async Task SelectScreen(Screen screen)
+    {
+        SelectedScreen = screen;
+
+        await SelectedScreenChanged.InvokeAsync(screen);
+    }
+
+    private string GetScreenClass(bool selected)
+    {
+        return selected
+            ? "bg-blue/20 p-4 text-left transition text-blue"
+            : "bg-con1 p-4 text-left transition hover:text-blue";
+    }
+}

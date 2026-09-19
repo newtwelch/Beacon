@@ -66,36 +66,39 @@
 
 
         <!-- Buttons OUTSIDE the rounded panel -->
-        <div class="flex justify-between gap-3">
-            <Button OnClick="QueueModeToggle">
-                <Icon>
-                    @if (!isQueueMode)
-                    {
-                        <QueueListIcon></QueueListIcon>
-                    }
-                    else
-                    {
-                        <BareArrowLeftIcon></BareArrowLeftIcon>
-                    }
-                </Icon>
-                <Text>@(isQueueMode ? "All Songs" : "Show Queue")</Text>
-            </Button>
+        @if (!isEditMode)
+        {
+            <div class="flex justify-between gap-3">
+                <Button OnClick="QueueModeToggle">
+                    <Icon>
+                        @if (!isQueueMode)
+                        {
+                            <QueueListIcon></QueueListIcon>
+                        }
+                        else
+                        {
+                            <BareArrowLeftIcon></BareArrowLeftIcon>
+                        }
+                    </Icon>
+                    <Text>@(isQueueMode ? "All Songs" : "Show Queue")</Text>
+                </Button>
 
-            @if (isQueueMode)
-            {
-                <Button Class="bg-red-600 hover:text-white/50" OnClick="ClearQueue">
-                    <Text>Clear Queue</Text>
-                </Button>
-            }
-            else
-            {
-                <Button OnClick="AddSongClick">
-                    <Text>Add Song</Text>
-                </Button>
-            }
-        </div>
+                @if (isQueueMode)
+                {
+                    <Button Class="bg-red-600 hover:text-white/50" OnClick="ClearQueue">
+                        <Text>Clear Queue</Text>
+                    </Button>
+                }
+                else
+                {
+                    <Button OnClick="AddSongClick">
+                        <Text>Add Song</Text>
+                    </Button>
+                }
+            </div>
             
-        
+        }
+
     </div>
 
     <div class="flex h-full w-full flex-col">

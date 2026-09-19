@@ -32,6 +32,7 @@ namespace Frontend.WPF
         static DisplayWindow() => Instance = new DisplayWindow();
 
         private ProjectionService projectionService;
+        private string selectedScreen = "";
 
         public DisplayWindow()
         {
@@ -41,12 +42,29 @@ namespace Frontend.WPF
             projectionService.LyricChanged += LyricChanged;
             projectionService.VerseTextChanged += VerseTextChanged;
             projectionService.VersePortionChanged += VersePortionChanged;
+
+            projectionService.MonitorChanged += (monitor) =>
+            {
+                SetWindow(monitor.Name);
+                selectedScreen = monitor.Name;
+            };
+
+            var screenlist = Screen.AllScreens.ToList();
+            foreach(var screen in screenlist)
+            {
+                projectionService.AddMonitor(new Backend.Core.Models.Beacon.Screen
+                {
+                    Id = screen.DeviceName.GetHashCode(),
+                    Name = screen.DeviceName,
+                    IsPrimary = screen.Primary
+                });
+            }
         }
 
 
         public void LyricChanged(string songTitle, string lyricLine, string lyricText)
         {
-            Instance.SetWindow("");
+            Instance.SetWindow(selectedScreen);
             Instance.Show();
             
             Header1.Text = songTitle;
@@ -61,7 +79,7 @@ namespace Frontend.WPF
 
         public void VerseTextChanged(string verseReference, string translation, string text)
         {
-            Instance.SetWindow("");
+            Instance.SetWindow(selectedScreen);
             Instance.Show();
 
             Header1.Text = verseReference;

@@ -8,7 +8,7 @@
             </p>
         </div>
 
-        <div class="rounded-full bg-green px-3 py-1 text-xs">
+        <div class="bg-@StatusColor/30 text-@StatusColor rounded-full px-3 py-1 text-xs">
             @StatusText
         </div>
     </div>
@@ -77,7 +77,7 @@
     [Parameter] public string ButtonText { get; set; } = "";
 
     [Parameter] public string StatusText { get; set; } = "";
-    [Parameter] public string StatusColor { get; set; } = "bg-gray-700";
+    [Parameter] public string StatusColor { get; set; } = "gray";
 
     [Parameter] public int Progress { get; set; }
     [Parameter] public string ProgressMessage { get; set; } = "";

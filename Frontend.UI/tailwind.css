@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 @source inline("{hover:, focus:,}-text-{con1, con2, white, red, blue, green, yellow, black, pale-blue}");
 
 @theme inline {

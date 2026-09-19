@@ -1,5 +1,6 @@
 ﻿@using Frontend.UI.Components.Settings
 @inject Backend.Core.Services.IUpdateService UpdateService
+@inject Backend.Core.Services.ProjectionService ProjectionService
 
 <div class="flex h-full gap-6">
 
@@ -26,7 +27,7 @@
     </div>
 
     <!-- CONTENT -->
-    <div class="flex-1">
+    <div class="flex flex-1 flex-col gap-3">
 
         @if (activeCategory == SettingsCategory.General)
         {
@@ -40,6 +41,9 @@
                 StatusText="@statusText"
                 StatusColor="@statusColor"
                 OnAction="@HandleUpdateAction" />
+
+            <MonitorCard Screens="@screens"
+                         SelectedScreenChanged="OnSelectedScreenChanged"/>
         }
 
         @if (activeCategory == SettingsCategory.BibleLibrary)
@@ -69,7 +73,10 @@
     private string buttonText = "Check For Updates";
 
     private string statusText = "Up To Date";
-    private string statusColor = "bg-green/30 text-green";
+    private string statusColor = "green";
+
+    private List<Screen> screens = new List<Screen>();
+    private Screen selectedScreen = new Screen();
 
     protected override void OnInitialized()
     {
@@ -80,6 +87,8 @@
 
             InvokeAsync(StateHasChanged);
         };
+
+        screens = ProjectionService.GetMonitors();
     }
 
     private string GetTabClass(SettingsCategory category)
@@ -118,7 +127,7 @@
         downloadProgress = 99;
 
         await Task.Delay(50);
-        
+
         downloadProgress = 0;
 
         if (result.Success)
@@ -131,14 +140,14 @@
             if (isUpdateAvailable)
             {
                 statusText = "Update Available";
-                statusColor = "bg-yellow-700/30 text-yellow-300";
+                statusColor = "yellow";
 
                 buttonText = "Download Update";
             }
             else
             {
                 statusText = "Up To Date";
-                statusColor = "bg-green-700/30 text-green-400";
+                statusColor = "green";
 
                 buttonText = "You're Updated - " + latestVersion;
             }
@@ -146,7 +155,7 @@
         else
         {
             statusText = "Update Failed";
-            statusColor = "bg-red-700/30 text-red-300";
+            statusColor = "red";
 
             buttonText = "Try Again";
         }
@@ -164,14 +173,14 @@
             isUpdateDownloaded = true;
 
             statusText = "Ready To Install";
-            statusColor = "bg-blue-700/30 text-blue-300";
+            statusColor = "blue";
 
             buttonText = "Restart To Apply";
         }
         else
         {
             statusText = "Download Failed";
-            statusColor = "bg-red-700/30 text-red-300";
+            statusColor = "red";
 
             buttonText = "Retry Download";
         }
@@ -191,4 +200,8 @@
         BibleLibrary
     }
 
+    private void OnSelectedScreenChanged(Screen monitor)
+    {
+        ProjectionService.ChangeMonitor(monitor);
+    }
 }
