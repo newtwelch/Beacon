@@ -5,6 +5,11 @@
       "Input": "tailwind.css",
       "Output": "wwwroot\\css\\app.css",
       "Behavior": "Default"
+    },
+    {
+      "Input": "..\\Website\\tailwind.css",
+      "Output": "..\\Website\\wwwroot\\app.css",
+      "Behavior": "Default"
     }
   ],
   "PackageConfigurationFile": null,

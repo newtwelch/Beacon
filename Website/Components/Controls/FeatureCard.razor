@@ -1,0 +1,13 @@
+<div class="rounded-2xl border-2 border-gray bg-con1 p-8">
+    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-pale-blue text-blue">
+        @Icon
+    </div>
+    <h3 class="mt-6 text-xl font-semibold">@Title</h3>
+    <p class="mt-2 font-light text-white/50">@Description</p>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter, EditorRequired] public string Description { get; set; } = "";
+    [Parameter] public RenderFragment? Icon { get; set; }
+}

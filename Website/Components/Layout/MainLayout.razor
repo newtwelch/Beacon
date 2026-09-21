@@ -1,6 +1,21 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="h-screen w-screen overflow-auto bg-black">
+<div class="font-gont h-screen w-screen overflow-auto bg-black px-6 text-white md:px-16 xl:px-44 2xl:px-96">
+
+    <div class="absolute top-0 left-0 flex h-20 w-screen items-center rounded-lg border-b-2 border-gray bg-black/20 px-6 backdrop-blur-sm md:px-16 xl:px-44 2xl:px-96">
+
+        <img src="images/Beacon Logo.webp" alt="Beacon Logo" height="512" class="h-10"/>
+        <p class="ml-3 text-2xl font-semibold">Beacon</p>
+
+        <nav class="ml-auto hidden gap-2 md:flex">
+            <a href="#hero" class="rounded-lg px-4 py-2 !text-white/80 transition hover:bg-con1 hover:text-white">Home</a>
+            <a href="#features" class="rounded-lg px-4 py-2 !text-white/80 transition hover:bg-con1 hover:text-white">Features</a>
+            <a href="#screenshots" class="rounded-lg px-4 py-2 !text-white/80 transition hover:bg-con1 hover:text-white">Screenshots</a>
+            <a href="#contact" class="rounded-lg px-4 py-2 !text-white/80 transition hover:bg-con1 hover:text-white">Contact</a>
+        </nav>
+
+    </div>
+
     @Body
 </div>
 

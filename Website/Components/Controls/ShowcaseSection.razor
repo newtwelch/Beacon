@@ -1,0 +1,38 @@
+@using Website.Components.Controls
+
+<section id="showcase" class="flex min-h-screen w-full flex-col justify-center gap-24 py-32">
+
+    <div class="w-full md:w-2/3">
+        <h2 class="text-5xl leading-snug font-bold">Built for the booth</h2>
+        <p class="mt-3 text-lg font-light text-white/50">Everything you need to run song and Scripture, in one library.</p>
+    </div>
+
+    <FeatureGroup
+        Title="Song Library"
+        Features="SongLibraryFeatures"
+        ImageSrc="images/screenshot-songs.png"
+        ImageAlt="Beacon's song library, showing a searchable list of songs and lyrics split into stanzas and a chorus." />
+
+    <FeatureGroup
+        Title="Bible Library"
+        Features="BibleLibraryFeatures"
+        ImageSrc="images/screenshot-bible.png"
+        ImageAlt="Beacon's Bible library, showing book, chapter and verse pickers with English and Tagalog text."
+        Reverse="true" />
+
+</section>
+
+@code {
+    private static readonly List<string> SongLibraryFeatures = new()
+    {
+        "Search using title, author, lyric, language, and tags",
+        "Song queue so you can easily access prepared lineups",
+        "Advanced lyric editing with manual and automatic sequencing",
+    };
+
+    private static readonly List<string> BibleLibraryFeatures = new()
+    {
+        "Multi-lingual download",
+        "Global text search",
+    };
+}

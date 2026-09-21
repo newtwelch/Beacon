@@ -1,0 +1,29 @@
+﻿<section id="screenshots" class="flex w-full flex-col justify-center gap-16 py-32">
+
+    <div class="w-full md:w-2/3">
+        <h2 class="text-5xl leading-snug font-bold">See Beacon in action</h2>
+        <p class="mt-3 text-lg font-light text-white/50">A closer look at the screens your team will open every service.</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+        @foreach (var shot in Screens)
+        {
+            <figure class="overflow-hidden rounded-2xl border-2 border-gray bg-con1">
+                <img src="@shot.Image" alt="@shot.Alt" class="w-full" />
+                <figcaption class="p-5 text-lg font-semibold">@shot.Title</figcaption>
+            </figure>
+        }
+    </div>
+
+</section>
+
+@code {
+    private record Screen(string Title, string Image, string Alt);
+
+    private static readonly List<Screen> Screens = new()
+    {
+        new("Songs", "images/screenshot-songs.png", "Beacon's song library with lyrics split into stanzas and a chorus."),
+        new("Bible", "images/screenshot-bible.png", "Beacon's Bible screen with book, chapter and verse pickers."),
+        new("Settings", "images/screenshot-settings.png", "Beacon's Settings screen showing the software update card."),
+    };
+}
