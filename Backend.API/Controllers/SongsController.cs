@@ -3,6 +3,7 @@ using Backend.Core.Models.Songs;
 using Backend.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using SQLite;
+using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,59 +13,107 @@ namespace Backend.API.Controllers
     [ApiController]
     public class SongsController : ControllerBase
     {
-        private readonly SongDbConnection dbConnection;
+        private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
+        private static readonly byte[] NewLine = { (byte)'\n' };
+
+        private readonly SongDbConnection beaconDb;
+        private readonly SongPraiseDbConnection songPraiseDb;
         private readonly ILogger<SongsController> logger;
 
-        public SongsController(SongDbConnection _dbConnection, ILogger<SongsController> _logger)
+        private record SourceInfo(SQLiteAsyncConnection Db, string Name);
+
+        private readonly Dictionary<byte, SourceInfo> sources;
+
+        public SongsController(
+            SongDbConnection _beaconDb,
+            SongPraiseDbConnection _songPraiseDb,
+            ILogger<SongsController> _logger)
         {
-            dbConnection = _dbConnection;
+            beaconDb = _beaconDb;
+            songPraiseDb = _songPraiseDb;
             logger = _logger;
-            dbConnection.CreateTableAsync<Song>().Wait();
-        }
 
-        // GET: api/<SongsController>
-        [HttpGet]
-        public async Task<List<Song>> Get()
-        {
-            return await dbConnection.Table<Song>().ToListAsync();
-        }
+            beaconDb.CreateTableAsync<Song>().Wait();
+            songPraiseDb.CreateTableAsync<Song>().Wait();
 
-        [HttpGet("stream")]
-        public async IAsyncEnumerable<Song> Stream()
-        {
-            var query = dbConnection.Table<Song>().Take(10);
-            var songs = await query.ToListAsync();
-
-            foreach (var song in songs)
+            // Source id -> database. 0 = Beacon, 1 = SongPraise.
+            sources = new()
             {
-                yield return song;
+                [0] = new SourceInfo(beaconDb, "Beacon Songs"),
+                [1] = new SourceInfo(songPraiseDb, "SongPraise"),
+            };
+        }
+
+        // GET /songs/catalog
+        [HttpGet("catalog")]
+        public async Task<IActionResult> Catalog()
+        {
+            var result = new List<SongCollection>();
+
+            foreach (var (id, src) in sources)
+            {
+                var rows = await src.Db.QueryAsync<SongCollection>(
+                    "SELECT Language, COUNT(*) AS Count FROM Song " +
+                    "GROUP BY Language ORDER BY Language");
+
+                foreach (var row in rows)
+                {
+                    row.Source = id;
+                    row.SourceName = src.Name;
+                    result.Add(row);
+                }
             }
+
+            return Ok(result);
         }
 
-
-        // GET api/<SongsController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        // GET /songs/1/english  -> NDJSON stream, one Song per line
+        [HttpGet("{source:int}/{language}")]
+        public async Task Download(byte source, string language, CancellationToken ct)
         {
-            return "value";
-        }
+            if (!sources.TryGetValue(source, out var src))
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return;
+            }
 
-        // POST api/<SongsController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
+            var songs = await src.Db.QueryAsync<Song>(
+                "SELECT * FROM Song WHERE Language = ? COLLATE NOCASE ORDER BY Number, Id",
+                language);
 
-        // PUT api/<SongsController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+            if (songs.Count == 0)
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return;
+            }
 
-        // DELETE api/<SongsController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            Response.ContentType = "application/x-ndjson";
+            Response.Headers["X-Total-Count"] = songs.Count.ToString();
+            Response.Headers["X-Accel-Buffering"] = "no"; // stops nginx from buffering the whole response
+
+            logger.LogInformation("Streaming {Count} songs for source {Source}/{Language}",
+                songs.Count, source, language);
+
+            try
+            {
+                var i = 0;
+                foreach (var song in songs)
+                {
+                    song.Id = 0;            // the app's database assigns its own
+                    song.QueueOrder = 0;
+                    song.InQueue = false;
+
+                    await Response.Body.WriteAsync(JsonSerializer.SerializeToUtf8Bytes(song, Json), ct);
+                    await Response.Body.WriteAsync(NewLine, ct);
+
+                    if (++i % 50 == 0)
+                        await Response.Body.FlushAsync(ct); // keeps the progress bar moving smoothly
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                logger.LogInformation("Client cancelled source {Source}/{Language} download", source, language);
+            }
         }
     }
 }

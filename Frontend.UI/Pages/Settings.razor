@@ -5,7 +5,7 @@
 <div class="flex h-full gap-6">
 
     <!-- SIDEBAR -->
-    <div class="flex w-64 flex-col gap-2">
+    <div class="sticky flex w-64 flex-col gap-2">
 
         <Button OnClick="() => activeCategory = SettingsCategory.General"
                 RemoveBorder="true"
@@ -49,6 +49,11 @@
         @if (activeCategory == SettingsCategory.BibleLibrary)
         {
             <TranslationsCard/>
+        }
+        
+        @if (activeCategory == SettingsCategory.SongLibrary)
+        {
+            <SongCollectionCard/>
         }
 
     </div>

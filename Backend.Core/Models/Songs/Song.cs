@@ -20,6 +20,7 @@ namespace Backend.Core.Models.Songs
 
         public int QueueOrder { get; set; }
         public bool InQueue { get; set; } = false;
+        public byte? Source { get; set; }   // null = made by the user, 0 = Beacon, 1 = SongPraise
 
         public Song() { }
 
@@ -50,6 +51,7 @@ namespace Backend.Core.Models.Songs
             Key = song.Key;
             QueueOrder = song.QueueOrder;
             InQueue = song.InQueue;
+            Source = song.Source;   
         }
 
         public Song Clone()
@@ -67,6 +69,7 @@ namespace Backend.Core.Models.Songs
             clonedSong.Key = Key;
             clonedSong.QueueOrder = QueueOrder;
             clonedSong.InQueue = InQueue;
+            clonedSong.Source = Source; 
 
             return clonedSong;
         }

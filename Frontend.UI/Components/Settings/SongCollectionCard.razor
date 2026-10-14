@@ -1,0 +1,208 @@
+﻿@using System.Globalization
+@using Backend.Core.Models.Songs
+@inject Backend.Core.Services.SongService SongService
+
+<div class="flex h-full flex-col gap-4 overflow-auto rounded-2xl bg-con2 p-6 leading-tight shadow-lg">
+
+    <div class="flex items-start justify-between">
+
+        <div>
+            <h2 class="text-xl font-bold">Song Collections</h2>
+
+            <p class="text-sm font-light opacity-70">
+                Download song libraries by language.
+            </p>
+        </div>
+
+        <div class="rounded-full bg-blue/30 px-3 py-1 text-xs text-blue">
+            @Installed.Count Installed
+        </div>
+
+    </div>
+
+    @if (Error != null)
+    {
+        <div class="flex items-center justify-between rounded-xl bg-red/10 p-3 text-sm text-red">
+            <span>@Error</span>
+
+            <Button OnClick="Load">
+                <Text>Retry</Text>
+            </Button>
+        </div>
+    }
+
+    @if (Loading)
+    {
+        <p class="text-sm font-light opacity-60">Loading song collections...</p>
+    }
+    else
+    {
+        @foreach (var group in Available.OrderBy(x => x.Source).GroupBy(x => x.Source))
+        {
+            <div class="flex flex-col gap-2">
+
+                <p class="text-xs font-semibold tracking-wide uppercase opacity-60">
+                    @group.First().SourceName
+                </p>
+
+                <div class="flex flex-col gap-2 overflow-auto">
+                    
+                @foreach (var collection in group)
+                {
+                    <div class="flex items-center justify-between rounded-xl bg-black/60 p-4">
+
+                        <div class="flex flex-col gap-1">
+
+                            <p class="font-semibold">
+                                @PrettyLanguage(collection.Language)
+                            </p>
+
+                            <p class="text-xs opacity-60">
+                                @collection.Count songs
+                            </p>
+
+                        </div>
+
+                        @if (Downloading == collection.GetKey())
+                        {
+                            <div class="flex items-center gap-3">
+
+                                <div class="h-2 w-32 overflow-hidden rounded-full bg-black/30">
+                                    <div class="h-2 bg-blue transition-all"
+                                         style="width:@DownloadProgress%">
+                                    </div>
+                                </div>
+
+                                <span class="text-xs">
+                                    @DownloadProgress%
+                                </span>
+
+                            </div>
+                        }
+                        else if (Deleting == collection.GetKey())
+                        {
+                            <span class="text-xs opacity-60">Deleting...</span>
+                        }
+                        else if (Installed.Contains(collection.GetKey()))
+                        {
+                            <Button OnClick="() => DeleteCollection(collection)"
+                                    Class="text-red">
+
+                                <Text>Delete</Text>
+
+                            </Button>
+                        }
+                        else
+                        {
+                            <Button OnClick="() => DownloadCollection(collection)">
+
+                                <Text>Download</Text>
+
+                            </Button>
+                        }
+
+                    </div>
+                }
+                </div>
+
+            </div>
+        }
+    }
+
+</div>
+
+@code {
+    private List<SongCollection> Available = new();
+    private HashSet<string> Installed = new(StringComparer.OrdinalIgnoreCase);
+
+    private bool Loading = true;
+    private string? Error;
+
+    private string Downloading = "";
+    private int DownloadProgress;
+
+    protected override async Task OnInitializedAsync() => await Load();
+
+    private async Task Load()
+    {
+        Loading = true;
+        Error = null;
+
+        try
+        {
+            Available = await SongService.GetCollectionsAsync();
+            Installed = await SongService.GetInstalledCollectionKeysAsync();
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+        {
+            Error = "Couldn't reach the song server. Check your connection and try again.";
+        }
+        finally
+        {
+            Loading = false;
+        }
+    }
+
+    private async Task DownloadCollection(SongCollection collection)
+    {
+        if (!string.IsNullOrEmpty(Downloading))
+            return;
+
+        Downloading = collection.GetKey();
+        DownloadProgress = 0;
+        Error = null;
+
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            var progress = new Progress<int>(p =>
+            {
+                DownloadProgress = p;
+                InvokeAsync(StateHasChanged);
+            });
+
+            var success = await SongService.DownloadCollectionAsync(collection, progress);
+
+            if (success)
+                Installed.Add(collection.GetKey());
+            else
+                Error = "Download didn't finish. Please try again.";
+        }
+        catch (Exception ex) when (ex is HttpRequestException or IOException or TaskCanceledException)
+        {
+            Error = "Download failed. Please try again.";
+        }
+        finally
+        {
+            Downloading = "";
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private string Deleting = "";
+
+    private async Task DeleteCollection(SongCollection collection)
+    {
+        if (!string.IsNullOrEmpty(Deleting) || !string.IsNullOrEmpty(Downloading))
+            return;
+
+        Deleting = collection.GetKey();
+        await InvokeAsync(StateHasChanged);
+        await Task.Yield(); // lets "Deleting..." paint before the heavy work starts
+
+        try
+        {
+            await SongService.DeleteCollectionAsync(collection);
+            Installed.Remove(collection.GetKey());
+        }
+        finally
+        {
+            Deleting = "";
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private static string PrettyLanguage(string language) =>
+        CultureInfo.CurrentCulture.TextInfo.ToTitleCase(language.ToLowerInvariant());
+}

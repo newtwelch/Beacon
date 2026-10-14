@@ -2,21 +2,29 @@
 using Backend.Core.Models.Songs;
 using Microsoft.Extensions.Logging;
 using SQLite;
+using System.Text.Json;
 using static SQLite.SQLite3;
+using static System.Net.WebRequestMethods;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace Backend.Core.Services
 {
     public class SongService
     {
         private readonly SQLiteAsyncConnection dbConnection;
-        private readonly ILogger<SongService> logger;
+        private readonly ILogger<SongService> logger; 
+        private HttpClient httpClient;
+        public Task Ready { get; }
 
-        public SongService(SQLiteAsyncConnection _dbConnection, ILogger<SongService> _logger)
+        public SongService(SQLiteAsyncConnection _dbConnection, ILogger<SongService> _logger, ICustomHttpFactory factory)
         {
             dbConnection = _dbConnection;
             logger = _logger;
 
-            EnsureSchemaAsync().SafeFireAndForget();
+            httpClient = factory.GetClient();
+
+            Ready = EnsureSchemaAsync();
         }
 
         private async Task EnsureSchemaAsync()
@@ -49,12 +57,6 @@ namespace Backend.Core.Services
                     WHERE Id = NEW.Id;
                 END;");
 
-                await dbConnection.ExecuteAsync(@"
-                CREATE TRIGGER IF NOT EXISTS delete_songFts AFTER DELETE ON Song
-                BEGIN
-                    DELETE FROM SongFts WHERE Id = OLD.Id;
-                END;");
-
                 logger.LogInformation("Database tables and triggers ensured.");
             }
             catch (Exception ex)
@@ -78,7 +80,7 @@ namespace Backend.Core.Services
         public async Task<Result<List<Song>>> GetAllAsync() =>
             await ExecuteAsync(() =>
                 dbConnection.QueryAsync<Song>(
-                    "SELECT Id, Title, Author, InQueue FROM Song WHERE Language = 'English' ORDER BY Title ASC"));
+                    "SELECT Id, Title, Author, InQueue FROM Song ORDER BY Title ASC"));
 
         // --------------------
         //  Queues
@@ -233,5 +235,135 @@ namespace Backend.Core.Services
                 return Result<T>.Fail(ex.Message);
             }
         }
+
+        // --------------------
+        //  Import support
+        // --------------------
+        public static string SongKey(string? title, string? language) =>
+            $"{(language ?? "").Trim().ToLowerInvariant()}|{(title ?? "").Trim().ToLowerInvariant()}";
+
+        public async Task<Result<int>> GetHighestNumberAsync() =>
+            await ExecuteAsync(() =>
+                dbConnection.ExecuteScalarAsync<int>("SELECT IFNULL(MAX(Number),0) FROM Song"));
+
+        public async Task<Result<HashSet<string>>> GetTitleLanguageKeysAsync() =>
+            await ExecuteAsync(async () =>
+            {
+                var rows = await dbConnection.QueryAsync<Song>("SELECT Id, Title, Language FROM Song");
+                return rows.Select(r => SongKey(r.Title, r.Language)).ToHashSet();
+            });
+
+        public async Task<Result<int>> AddRangeAsync(IEnumerable<Song> songs) =>
+            await ExecuteAsync(async () =>
+            {
+                // one transaction per batch; your FTS insert trigger fires for every row
+                var count = await dbConnection.InsertAllAsync(songs, runInTransaction: true);
+                logger.LogInformation("Inserted {Count} songs", count);
+                return count;
+            });
+
+
+        #region Song collections (downloads)
+        private const string SongsApi = "http://beaconapi.runasp.net/songs";
+        private static readonly JsonSerializerOptions CollectionJson = new(JsonSerializerDefaults.Web);
+        public event Action? OnSongCollectionChanged;
+        public async Task<List<SongCollection>> GetCollectionsAsync() =>
+            await httpClient.GetFromJsonAsync<List<SongCollection>>($"{SongsApi}/catalog") ?? new();
+
+        // Keys ("source:language") of the collections that are already downloaded.
+        public async Task<HashSet<string>> GetInstalledCollectionKeysAsync()
+        {
+            var rows = await dbConnection.QueryAsync<SongCollection>(
+                "SELECT Source, Language, COUNT(*) AS Count FROM Song " +
+                "WHERE Source IS NOT NULL GROUP BY Source, Language");
+
+            return rows.Select(r => r.GetKey()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        }
+
+        public async Task<bool> DownloadCollectionAsync(
+            SongCollection c, IProgress<int>? progress = null, CancellationToken ct = default)
+        {
+            using var response = await httpClient.GetAsync(
+                $"{SongsApi}/{c.Source}/{Uri.EscapeDataString(c.Language)}",
+                HttpCompletionOption.ResponseHeadersRead, // start reading immediately instead of buffering
+                ct);
+
+            if (!response.IsSuccessStatusCode) return false;
+
+            var total = response.Headers.TryGetValues("X-Total-Count", out var values)
+                        && int.TryParse(values.FirstOrDefault(), out var t) ? t : c.Count;
+
+            await using var stream = await response.Content.ReadAsStreamAsync(ct);
+            using var reader = new StreamReader(stream);
+
+            var songs = new List<Song>(total);
+            string? line;
+
+            while ((line = await reader.ReadLineAsync(ct)) is not null)
+            {
+                if (line.Length == 0) continue;
+
+                var song = JsonSerializer.Deserialize<Song>(line, CollectionJson);
+                if (song is null) continue;
+
+                song.Source = c.Source;
+                songs.Add(song);
+
+                if (total > 0 && songs.Count % 25 == 0)
+                    progress?.Report(Math.Min(songs.Count * 95 / total, 95));
+            }
+
+            // Never commit a half-downloaded collection.
+            if (songs.Count == 0 || (total > 0 && songs.Count != total))
+                return false;
+
+            await dbConnection.RunInTransactionAsync(conn =>
+            {
+                DeleteCollectionRows(conn, c.Source, c.Language); // replaces an existing copy, if any
+                conn.InsertAll(songs);
+            });
+
+            // If SongService keeps its own cached song list, refresh it here, before raising the event.
+            OnSongCollectionChanged?.Invoke();
+
+            progress?.Report(100);
+            return true;
+        }
+
+        private const string DeleteFtsTriggerSql = @"
+CREATE TRIGGER IF NOT EXISTS delete_songFts AFTER DELETE ON Song
+BEGIN
+    DELETE FROM SongFts WHERE Id = OLD.Id;
+END;";
+        // Deletes one collection quickly. The per-row delete trigger scans SongFts once for every
+        // song, so we drop it, clear the FTS rows in a single pass, delete the songs, and put it back.
+        private static void DeleteCollectionRows(SQLiteConnection conn, byte source, string language)
+        {
+            conn.Execute("DROP TRIGGER IF EXISTS delete_songFts");
+
+            conn.Execute(
+                "DELETE FROM SongFts WHERE Id IN " +
+                "(SELECT Id FROM Song WHERE Source = ? AND Language = ? COLLATE NOCASE)",
+                source, language);
+
+            conn.Execute(
+                "DELETE FROM Song WHERE Source = ? AND Language = ? COLLATE NOCASE",
+                source, language);
+
+            conn.Execute(DeleteFtsTriggerSql);
+        }
+
+        public async Task DeleteCollectionAsync(SongCollection c)
+        {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+
+            await dbConnection.RunInTransactionAsync(conn => DeleteCollectionRows(conn, c.Source, c.Language));
+
+            System.Diagnostics.Debug.WriteLine($"[songs] delete took {sw.ElapsedMilliseconds} ms");
+
+            OnSongCollectionChanged?.Invoke();
+        }
+
+        #endregion
     }
 }

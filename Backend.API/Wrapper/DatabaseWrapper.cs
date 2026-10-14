@@ -7,6 +7,11 @@ namespace Backend.API.Wrapper
         public SongDbConnection(string path) : base(path) { }
     }
 
+    public class SongPraiseDbConnection : SQLiteAsyncConnection
+    {
+        public SongPraiseDbConnection(string path) : base(path) { }
+    }
+
     public class BibleDbConnection : SQLiteAsyncConnection
     {
         public BibleDbConnection(string path) : base(path) { }

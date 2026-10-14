@@ -5,7 +5,7 @@
         <p class="mt-3 text-lg font-light text-white/50">A closer look at the screens your team will open every service.</p>
     </div>
 
-    <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+    <div class="grid grid-cols-1 gap-4">
         @foreach (var shot in Screens)
         {
             <figure class="overflow-hidden rounded-2xl border-2 border-gray bg-con1">
@@ -22,8 +22,10 @@
 
     private static readonly List<Screen> Screens = new()
     {
-        new("Songs", "images/screenshot-songs.png", "Beacon's song library with lyrics split into stanzas and a chorus."),
-        new("Bible", "images/screenshot-bible.png", "Beacon's Bible screen with book, chapter and verse pickers."),
-        new("Settings", "images/screenshot-settings.png", "Beacon's Settings screen showing the software update card."),
+        new("Songs", "images/song.png", "Beacon's song library with lyrics split into stanzas and a chorus."),
+        new("Bible", "images/bible.png", "Beacon's Bible screen with book, chapter and verse pickers."),
+        new("Settings - General", "images/settings-general.png", "Beacon's Settings screen showing the software update card."),
+        new("Settings - Song Library", "images/settings-songlibrary.png", "Beacon's Settings screen showing song collections to download."),
+        new("Projector - Song Library", "images/projector.png", "Beacon's Projector display."),
     };
 }

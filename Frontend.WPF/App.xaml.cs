@@ -1,4 +1,5 @@
 ﻿using Backend.Core.Logging;
+using Backend.Core.Models.SongPraise;
 using Backend.Core.Services;
 using Frontend.WPF.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ using SQLite;
 using System.Configuration;
 using System.Data;
 using System.IO;
+using System.Net.Http;
 using System.Windows;
 using Velopack;
 
@@ -53,7 +55,8 @@ namespace Frontend.WPF
                     services.AddSingleton<ICustomHttpFactory, HttpFactory>();
                     services.AddSingleton<SongService>(serviceProvider => 
                                                         new SongService(new SQLiteAsyncConnection(songDbPath),
-                                                        serviceProvider.GetRequiredService<ILogger<SongService>>()));
+                                                        serviceProvider.GetRequiredService<ILogger<SongService>>(),
+                                                        serviceProvider.GetRequiredService<ICustomHttpFactory>()));
                     services.AddSingleton<BookAliasService>();
                     services.AddSingleton<BibleService>(serviceProvider => 
                                                         new BibleService(serviceProvider.GetRequiredService<ICustomHttpFactory>(),
@@ -72,10 +75,40 @@ namespace Frontend.WPF
                         return new VelopackUpdateService(manager, logger);
                     });
 
+                    //services.AddSingleton<SongPraiseDownloader>(serviceProvider =>
+                    //{
+                    //    var http = new HttpClient { Timeout = Timeout.InfiniteTimeSpan };   // the downloader applies its own timeouts
+                    //    http.DefaultRequestHeaders.UserAgent.ParseAdd("Beacon-Importer/1.0");
+
+                    //    return new SongPraiseDownloader(http, serviceProvider.GetRequiredService<ILogger<SongPraiseDownloader>>(), new SongPraiseDownloadOptions { MaxConcurrency = 8 });
+                    //});
+                    //services.AddTransient<SongPraiseImporter>();
+
                 })
                 .Build();
 
             base.OnStartup(e);
+
+            // TEMPORARY one-off import: remove or comment out once it has finished.
+            //_ = Task.Run(async () =>
+            //{
+            //    var logger = Host.Services.GetRequiredService<ILogger<SongPraiseImporter>>();
+            //    try
+            //    {
+            //        var downloader = Host.Services.GetRequiredService<SongPraiseDownloader>();
+            //        var importer = Host.Services.GetRequiredService<SongPraiseImporter>();
+
+            //        var cache = Path.Combine(Path.GetDirectoryName(songDbPath)!, "songpraise.jsonl");
+                    
+            //        var summary = await importer.ImportAsync(cache);
+
+            //        logger.LogInformation("SongPraise import finished: {Summary}", summary);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        logger.LogError(ex, "SongPraise import failed");
+            //    }
+            //});
         }
 
         protected override async void OnExit(ExitEventArgs e)

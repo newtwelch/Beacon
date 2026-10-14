@@ -32,5 +32,18 @@ namespace Backend.API.Controllers
 
             return PhysicalFile(path, "application/octet-stream");
         }
+
+        private const string LatestWindowsSetup = "Beacon-win-Setup.exe";
+
+        [HttpGet("latest-windows")]
+        public IActionResult Latest()
+        {
+            var path = Path.Combine(updatesFolder, LatestWindowsSetup);
+
+            if (!System.IO.File.Exists(path))
+                return NotFound();
+
+            return PhysicalFile(path, "application/octet-stream", LatestWindowsSetup);
+        }
     }
 }

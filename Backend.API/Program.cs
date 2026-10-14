@@ -6,10 +6,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 string appData = AppContext.BaseDirectory;
-string songDbPath = Path.Combine(appData, "Database", "songs.db");
+string songDbPath = Path.Combine(appData, "Database", "SongPraise.db");
 Directory.CreateDirectory(Path.GetDirectoryName(songDbPath)!);
+string beaconDbPath = Path.Combine(appData, "Database", "BeaconSongs.db");
+Directory.CreateDirectory(Path.GetDirectoryName(beaconDbPath)!);
 
-builder.Services.AddSingleton(new SongDbConnection(songDbPath));
+builder.Services.AddSingleton(new SongDbConnection(beaconDbPath));
+builder.Services.AddSingleton(new SongPraiseDbConnection(songDbPath));
 
 builder.Services.AddControllers();
 

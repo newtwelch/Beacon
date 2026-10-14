@@ -29,6 +29,7 @@
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
+    --tracking-wide: 0.025em;
     --tracking-widest: 0.1em;
     --leading-tight: 1.25;
     --leading-snug: 1.375;
@@ -198,6 +199,12 @@
   }
   .fixed {
     position: fixed;
+  }
+  .static {
+    position: static;
+  }
+  .sticky {
+    position: sticky;
   }
   .inset-0 {
     inset: 0px;
@@ -472,6 +479,9 @@
   .bg-red-600 {
     background-color: var(--color-red-600);
   }
+  .bg-red\/10 {
+    background-color: color-mix(in oklab, #D64747 10%, transparent);
+  }
   .bg-red\/30 {
     background-color: color-mix(in oklab, #D64747 30%, transparent);
   }
@@ -596,6 +606,10 @@
   .font-thin {
     --tw-font-weight: var(--font-weight-thin);
     font-weight: var(--font-weight-thin);
+  }
+  .tracking-wide {
+    --tw-tracking: var(--tracking-wide);
+    letter-spacing: var(--tracking-wide);
   }
   .tracking-widest {
     --tw-tracking: var(--tracking-widest);

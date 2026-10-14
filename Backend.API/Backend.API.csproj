@@ -7,16 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Database\songs.db" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Database\songs.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
@@ -30,5 +20,10 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Updates\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="Database\SongPraise.db">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>
