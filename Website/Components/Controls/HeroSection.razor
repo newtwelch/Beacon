@@ -6,14 +6,7 @@
     <p class="mb-10 text-lg font-light text-white/50 sm:text-xl">A desktop app for your service.</p>
 
     <div class="mb-2 flex flex-col gap-3 sm:flex-row">
-        <a class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-gray bg-con1 p-3 text-center text-xs font-bold tracking-widest uppercase hover:text-blue sm:w-1/2" href="@DownloadUrl">DOWNLOAD BEACON</a>
+        <a class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-gray bg-con1 p-3 text-center text-xs font-bold tracking-widest uppercase hover:text-blue sm:w-1/2" href="/latest/beacon-windows.exe">DOWNLOAD BEACON</a>
     </div> 
 
 </section>
-
-@code {
-    // If the website and the API aren't on the same origin, this needs to be the
-    // API's full URL instead, e.g. "https://api.yourdomain.com/api/updates/latest"
-    private const string DownloadUrl = "http://beaconapi.runasp.net/updates/latest-windows";
-
-}
