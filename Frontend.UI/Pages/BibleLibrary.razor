@@ -281,7 +281,7 @@
     private void SelectedVerseChanged(BeaconVerse verse)
     {
         selectedVerse = verse;
-        ProjectionService.ChangeVerseText($"{verse.BookName} {verse.Chapter}:{verse.Verse}", selectedBible.Abbreviation, verse.Text);
+        ProjectionService.ChangeVerseText($"{verse.BookName} {verse.Chapter}:{verse.Verse}", selectedBible?.Abbreviation.ToUpper() ?? "", verse.Text, verse.Verse, verses.Count());
     }
     private void SelectedVersePortionChanged(VersePortion versePortion)
     {

@@ -17,33 +17,108 @@ WINDOW CHROME: custom title bar and window stuff
 ========================================== -->
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" CornerRadius="0"
-                 GlassFrameThickness="0" />
+                      GlassFrameThickness="0" />
     </WindowChrome.WindowChrome>
-    <DockPanel>
 
-        <Viewbox Stretch="Uniform" DockPanel.Dock="Top">
-            <Border CornerRadius="12" BorderThickness="0 0 0 2" BorderBrush="White" Margin="20" Padding="50 20">
-                <DockPanel Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DockPanel}}, Path=ActualWidth}" Opacity=".9">
-                    <TextBlock Background="Transparent" x:Name="Header1" Text="AMAZING GRACE" Typography.Capitals="AllSmallCaps" 
-                                           TextWrapping="Wrap" FontFamily="Gontserrat"  FontWeight="Bold"
-                                           Foreground="#F5F3F5" VerticalAlignment="Center" 
-                                           FontSize="55" HorizontalAlignment="Left"/>
-                    <TextBlock Background="Transparent" x:Name="Header2" 
-                                           TextWrapping="Wrap" Text="VERSE 1" FontStyle="Italic"  FontWeight="Bold" Typography.Capitals="AllSmallCaps" 
-                                           Foreground="#F5F3F5" VerticalAlignment="Center" FontFamily="Gontserrat"  
-                                           FontSize="55" HorizontalAlignment="Right"/>
-                </DockPanel>
-            </Border>
-        </Viewbox>
+    <Grid x:Name="Root" Margin="48 32 48 40">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-        <Viewbox StretchDirection="DownOnly" Margin="40 0 40 20">
+        <!-- Header -->
+        <Grid Grid.Row="0" Margin="0 0 0 18">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <DockPanel Grid.Column="0" LastChildFill="False" VerticalAlignment="Center">
+                <DockPanel.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontFamily" Value="Gontserrat" />
+                        <Setter Property="FontWeight" Value="Bold" />
+                        <Setter Property="Foreground" Value="#F5F3F5" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                    </Style>
+                </DockPanel.Resources>
+
+                <!-- song title, or the Bible book -->
+                <TextBlock x:Name="Header1" Text="Amazing Grace" FontSize="44" TextTrimming="CharacterEllipsis" />
+                <TextBlock x:Name="RefChapter" FontSize="44" Visibility="Collapsed" />
+                <TextBlock x:Name="RefColon" Text=":" FontSize="44" Visibility="Collapsed" />
+                <TextBlock x:Name="RefVerse" FontSize="44" Visibility="Collapsed" />
+            </DockPanel>
+            
+            <!-- Right-side badges -->
+            <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center"
+                    Margin="24 0 0 0">
+
+                <Border x:Name="KeyBadge"
+                    Visibility="Collapsed"
+                    Margin="0 0 10 0"
+                    Padding="14 7"
+                    CornerRadius="8"
+                    Background="#262830">
+
+                    <TextBlock x:Name="KeyText"
+                           Text="Key: G"
+                           FontFamily="Gontserrat"
+                           FontWeight="SemiBold"
+                           FontSize="32"
+                           Foreground="#E5E5E6" />
+                </Border>
+
+                <Border x:Name="Header2Badge"
+                    Padding="16 7"
+                    CornerRadius="8"
+                    Background="#262830">
+
+                    <TextBlock x:Name="Header2"
+                           Text="Stanza 1 of 4"
+                           FontFamily="Gontserrat"
+                           FontWeight="SemiBold"
+                           FontSize="32"
+                           Foreground="#E5E5E6" />
+                </Border>
+
+            </StackPanel>
+        </Grid>
+
+        <!-- Progress / Accent Line -->
+        <Grid x:Name="ProgressTrack"
+          Grid.Row="1"
+          Height="4"
+          Margin="0 0 0 24"
+          Background="#262830"
+          ClipToBounds="True">
+
+            <Border x:Name="ProgressAccent"
+                Width="180"
+                HorizontalAlignment="Left"
+                Background="#215FE5"
+                CornerRadius="2" />
+        </Grid>
+
+        <!-- Lyrics -->
+        <hlpr:AutoFitDecorator Grid.Row="2"
+                           Margin="44"
+                           MinFontSize="20"
+                           MaxFontSize="160">
+
             <hlpr:HighlightableTextBlock x:Name="Content"
-                                         TextWrapping="NoWrap" FontFamily="Gontserrat"
-                                         Foreground="#F5F3F5" FontWeight="Regular"
-                                         HighlightBrush="Orange"  HighlightCount="0" Opacity=".9"
-                                         TextAlignment="Center">
-            </hlpr:HighlightableTextBlock>
-        </Viewbox>
+                                     TextWrapping="Wrap"
+                                     TextAlignment="Center"
+                                     FontFamily="Gontserrat"
+                                     FontWeight="Regular"
+                                     Foreground="#E5E5E6"
+                                     Opacity=".95"
+                                     HighlightBrush="#E7AB50"
+                                     HighlightCount="0" />
+        </hlpr:AutoFitDecorator>
 
-    </DockPanel>
+    </Grid>
 </Window>

@@ -30,4 +30,10 @@
         BridgeIII
     }
 
+    public record SongLyrics(
+    List<Lyric> Items,
+    int StanzaCount)
+    {
+        public int TotalLyrics => Items.Count;
+    }
 }

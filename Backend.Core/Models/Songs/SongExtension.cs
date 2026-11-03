@@ -32,21 +32,24 @@ namespace Backend.Core.Models.Songs
         /// </summary>
         public static List<Lyric> Lyrics(this Song song)
         {
+            return song.GetLyricsWithStats().Items;
+        }
+
+        public static SongLyrics GetLyricsWithStats(this Song song)
+        {
             if (song is null || string.IsNullOrWhiteSpace(song.LyricText))
-                return new List<Lyric>(0);
+                return new SongLyrics(new List<Lyric>(), 0);
 
             var parsed = ParseLyrics(song.LyricText);
 
-            if (string.IsNullOrWhiteSpace(song.Sequence)
-                || song.Sequence.Equals("o", StringComparison.OrdinalIgnoreCase)
-                || song.Sequence.Equals("auto", StringComparison.OrdinalIgnoreCase))
-            {
-                return BuildAutoSequence(parsed);
-            }
-            else
-            {
-                return BuildManualSequence(parsed, song.Sequence);
-            }
+            var lyrics =
+                string.IsNullOrWhiteSpace(song.Sequence) ||
+                song.Sequence.Equals("o", StringComparison.OrdinalIgnoreCase) ||
+                song.Sequence.Equals("auto", StringComparison.OrdinalIgnoreCase)
+                    ? BuildAutoSequence(parsed)
+                    : BuildManualSequence(parsed, song.Sequence);
+
+            return new SongLyrics(lyrics, parsed.Stanzas.Count);
         }
 
         // --- Internal representations ----------------------------------

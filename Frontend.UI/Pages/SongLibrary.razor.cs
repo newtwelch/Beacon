@@ -16,6 +16,7 @@ namespace Frontend.UI.Pages
         private Song? pendingDeleteSong;
         private List<Song>? languagesOfSelectedSong = new();
         private List<Lyric>? lyrics = new();
+        private SongLyrics? selectedSongLyrics;
         private string searchText = "";
         private bool isQueueMode = false;
         private bool isEditMode = false;
@@ -160,13 +161,20 @@ namespace Frontend.UI.Pages
             UpdateLyrics();
             backUpSong = selectedSong.Clone();
         }
+        private void UpdateLyrics()
+        {
+            selectedSongLyrics = selectedSong?.GetLyricsWithStats();
 
-        private void UpdateLyrics() => lyrics = selectedSong?.Lyrics() ?? new List<Lyric>();
+            lyrics = selectedSongLyrics?.Items ?? new List<Lyric>();
+        }
 
         private void SelectedLyricChanged(Lyric lyric)
         {
-            if (selectedSong is not null)
-                ProjectionService.ChangeLyric(selectedSong.Title, lyric.Line, lyric.Text.RemoveHighlight());
+            if (selectedSong is null || selectedSongLyrics is null)
+                return;
+
+            ProjectionService.ChangeLyric(selectedSong.Title,lyric.Line,lyric.Text.RemoveHighlight(),selectedSongLyrics.StanzaCount,selectedSong.Key,lyric.Id,selectedSongLyrics.TotalLyrics
+            );
         }
 
         private async Task QueueModeToggle()
