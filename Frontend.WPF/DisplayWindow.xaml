@@ -47,8 +47,8 @@ WINDOW CHROME: custom title bar and window stuff
                 <!-- song title, or the Bible book -->
                 <TextBlock x:Name="Header1" Text="Amazing Grace" FontSize="44" TextTrimming="CharacterEllipsis" />
                 <TextBlock x:Name="RefChapter" FontSize="44" Visibility="Collapsed" />
-                <TextBlock x:Name="RefColon" Text=":" FontSize="44" Visibility="Collapsed" />
-                <TextBlock x:Name="RefVerse" FontSize="44" Visibility="Collapsed" />
+                <TextBlock x:Name="RefColon" Text=":" FontSize="44" Visibility="Collapsed" Margin="5 0 0 0"/>
+                <TextBlock x:Name="RefVerse" FontSize="44" Visibility="Collapsed"  Margin="5 0 0 0"/>
             </DockPanel>
             
             <!-- Right-side badges -->
@@ -60,12 +60,12 @@ WINDOW CHROME: custom title bar and window stuff
                 <Border x:Name="KeyBadge"
                     Visibility="Collapsed"
                     Margin="0 0 10 0"
-                    Padding="14 7"
-                    CornerRadius="8"
+                    Padding="20 10"
+                    CornerRadius="12"
                     Background="#262830">
 
                     <TextBlock x:Name="KeyText"
-                           Text="Key: G"
+                           Text="KEY: G"
                            FontFamily="Gontserrat"
                            FontWeight="SemiBold"
                            FontSize="32"
@@ -73,12 +73,12 @@ WINDOW CHROME: custom title bar and window stuff
                 </Border>
 
                 <Border x:Name="Header2Badge"
-                    Padding="16 7"
-                    CornerRadius="8"
+                    Padding="20 10"
+                    CornerRadius="12"
                     Background="#262830">
 
                     <TextBlock x:Name="Header2"
-                           Text="Stanza 1 of 4"
+                           Text="Stanza 1 of 4" 
                            FontFamily="Gontserrat"
                            FontWeight="SemiBold"
                            FontSize="32"
@@ -89,9 +89,9 @@ WINDOW CHROME: custom title bar and window stuff
         </Grid>
 
         <!-- Progress / Accent Line -->
-        <Grid x:Name="ProgressTrack"
+        <Border x:Name="ProgressTrack"
           Grid.Row="1"
-          Height="4"
+          Height="4" CornerRadius="2"
           Margin="0 0 0 24"
           Background="#262830"
           ClipToBounds="True">
@@ -101,7 +101,7 @@ WINDOW CHROME: custom title bar and window stuff
                 HorizontalAlignment="Left"
                 Background="#215FE5"
                 CornerRadius="2" />
-        </Grid>
+        </Border>
 
         <!-- Lyrics -->
         <hlpr:AutoFitDecorator Grid.Row="2"

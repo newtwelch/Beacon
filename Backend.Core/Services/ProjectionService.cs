@@ -14,15 +14,14 @@ namespace Backend.Core.Services
 
         private List<Screen> _monitors = new List<Screen>();
 
-        public event Action<string, string, string, int, string?, int, int>? LyricChanged;
+        public event Action<string, string, string, int, string, int, int>? LyricChanged;
         public event Action<string, string, string, int, int>? VerseTextChanged;
         public event Action<int> VersePortionChanged;
         public event Action<Screen> MonitorChanged;
 
-        public void ChangeLyric(string songTitle,string lyricLine,string lyricText,int stanzaCount,string? key,int lyricId,int totalLyrics)
+        public void ChangeLyric(string songTitle,string lyricLine,string lyricText,int stanzaCount,string key,int lyricId,int totalLyrics)
         {
-            LyricChanged?.Invoke(songTitle,lyricLine,lyricText,stanzaCount, key, lyricId, totalLyrics
-            );
+            LyricChanged?.Invoke(songTitle,lyricLine,lyricText,stanzaCount, key, lyricId, totalLyrics);
         }
         public void ChangeVerseText(string verseReference, string translation, string text, int verse, int totalVerses)
         {

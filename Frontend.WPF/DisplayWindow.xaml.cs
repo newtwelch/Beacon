@@ -36,7 +36,7 @@ namespace Frontend.WPF
         private ProjectionService projectionService;
         private string selectedScreen = "";
 
-        private bool showKey;
+        private bool showKey = true;
         private string? currentKey;
 
         private string? KeyLabel => showKey && !string.IsNullOrWhiteSpace(currentKey) ? $"Key: {currentKey!.Trim()}" : null;
@@ -103,8 +103,8 @@ namespace Frontend.WPF
             string? keyLabel = KeyLabel;
 
             FadeSwap(Header1, songTitle, () => Header1.Text = songTitle);
-            FadeSwap(Header2Badge, section, () => SetBadge(Header2Badge, Header2, section));
-            FadeSwap(KeyBadge, keyLabel, () => SetBadge(KeyBadge, KeyText, keyLabel));
+            FadeSwap(Header2Badge, section.ToUpper(), () => SetBadge(Header2Badge, Header2, section));
+            FadeSwap(KeyBadge, keyLabel?.ToUpper(), () => SetBadge(KeyBadge, KeyText, keyLabel));
             FadeSwap(Content, "NoWrap|" + lyricText, () =>
             {
                 Content.TextWrapping = TextWrapping.NoWrap;

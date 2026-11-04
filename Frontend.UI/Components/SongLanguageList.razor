@@ -3,7 +3,10 @@
 	{
 		<Button OnClick="async () => await SelectionChanged(Song)" Class="@(Song.Id == SelectedSong.Id ? "bg-pale-blue text-blue" : "hover:text-blue")"><Text>@Song.Language</Text></Button>
 	}
-	<Button OnClick="(() => AddLanguage.InvokeAsync())"><Text>+</Text></Button>
+    @if (!InQueueMode)
+    {	
+		<Button OnClick="(() => AddLanguage.InvokeAsync())"><Text>+</Text></Button>
+	}
 </div>
 @code {
 	[Parameter]
@@ -14,6 +17,9 @@
 
 	[Parameter]
 	public EventCallback AddLanguage { get; set; }
+
+	[Parameter]
+	public bool InQueueMode { get; set; }
 
 	[Parameter]
 	public EventCallback<Song> SelectedSongChanged { get; set; }

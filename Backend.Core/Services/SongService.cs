@@ -82,6 +82,40 @@ namespace Backend.Core.Services
                 dbConnection.QueryAsync<Song>(
                     "SELECT Id, Title, Author, InQueue FROM Song ORDER BY Title ASC"));
 
+        // Wipes every song (including hand-made ones), then compacts the database file.
+        public async Task DeleteAllSongsAsync()
+        {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+
+            // Same trick as the collection delete: with the per-row FTS trigger active, this would
+            // scan SongFts once for every song. Clear the FTS table in one pass instead.
+            await dbConnection.RunInTransactionAsync(conn =>
+            {
+                conn.Execute("DROP TRIGGER IF EXISTS delete_songFts");
+                conn.Execute("DELETE FROM SongFts");
+                conn.Execute("DELETE FROM Song");
+                conn.Execute(DeleteFtsTriggerSql);
+            });
+
+            // Deleting FTS rows leaves the old index data behind until it's merged, so compact it first,
+            // otherwise VACUUM has little to reclaim. Best effort: a failure here shouldn't undo the delete.
+            try
+            {
+                await dbConnection.ExecuteAsync("INSERT INTO SongFts(SongFts) VALUES('optimize')");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[songs] fts optimize skipped: {ex.Message}");
+            }
+
+            // VACUUM can't run inside a transaction, so it has to be its own call.
+            await dbConnection.ExecuteAsync("VACUUM");
+
+            System.Diagnostics.Debug.WriteLine($"[songs] delete all + vacuum took {sw.ElapsedMilliseconds} ms");
+
+            OnSongCollectionChanged?.Invoke();
+        }
+
         // --------------------
         //  Queues
         // --------------------

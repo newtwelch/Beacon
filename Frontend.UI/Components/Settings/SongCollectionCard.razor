@@ -37,6 +37,49 @@
     }
     else
     {
+        <div class="mt-2 flex items-center justify-between gap-4 rounded-xl bg-red/10 p-4">
+
+            <div class="flex flex-col gap-1">
+
+                <p class="font-semibold text-red">
+                    Delete all songs
+                </p>
+
+                <p class="text-xs opacity-60">
+                    Removes every song, including ones you created, then compacts the database.
+                </p>
+
+            </div>
+
+            @if (DeletingAll)
+            {
+                <span class="text-xs opacity-60">Deleting...</span>
+            }
+            else if (ConfirmDeleteAll)
+            {
+                <div class="flex items-center gap-2">
+
+                    <Button OnClick="CancelDeleteAll">
+                        <Text>Cancel</Text>
+                    </Button>
+
+                    <Button OnClick="DeleteAllSongs"
+                            Class="text-red">
+                        <Text>Yes, delete</Text>
+                    </Button>
+
+                </div>
+            }
+            else
+            {
+                <Button OnClick="AskDeleteAll"
+                        Class="text-red">
+                    <Text>Delete all</Text>
+                </Button>
+            }
+
+        </div>
+
         @foreach (var group in Available.OrderBy(x => x.Source).GroupBy(x => x.Source))
         {
             <div class="flex flex-col gap-2">
@@ -121,6 +164,11 @@
     private string Downloading = "";
     private int DownloadProgress;
 
+    private bool DeletingAll;
+    private bool ConfirmDeleteAll;
+
+    private bool IsBusy => Downloading != "" || Deleting != "" || DeletingAll;
+
     protected override async Task OnInitializedAsync() => await Load();
 
     private async Task Load()
@@ -202,6 +250,43 @@
             await InvokeAsync(StateHasChanged);
         }
     }
+
+    private void AskDeleteAll()
+    {
+        if (!IsBusy)
+            ConfirmDeleteAll = true;
+    }
+
+    private void CancelDeleteAll() => ConfirmDeleteAll = false;
+
+    private async Task DeleteAllSongs()
+    {
+        if (IsBusy)
+            return;
+
+        ConfirmDeleteAll = false;
+        DeletingAll = true;
+        Error = null;
+
+        await InvokeAsync(StateHasChanged);
+        await Task.Yield();
+
+        try
+        {
+            await SongService.DeleteAllSongsAsync();
+            Installed.Clear();
+        }
+        catch (Exception)
+        {
+            Error = "Couldn't delete the songs. Please try again.";
+        }
+        finally
+        {
+            DeletingAll = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
 
     private static string PrettyLanguage(string language) =>
         CultureInfo.CurrentCulture.TextInfo.ToTitleCase(language.ToLowerInvariant());

@@ -19,9 +19,21 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-	  <Version>1.2.3</Version>
-	  <AssemblyVersion>1.2.3</AssemblyVersion>
+	  <Version>1.2.4</Version>
+	  <AssemblyVersion>1.2.4</AssemblyVersion>
 	  <AssemblyName>Beacon</AssemblyName>
+
+	  <!-- Single-File Configurations -->
+	  <PublishSingleFile>true</PublishSingleFile>
+	  <SelfContained>true</SelfContained>
+	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+
+	  <!-- Critical for WPF Native Components --><!--
+	  <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>-->
+
+	  <!-- Optional: Reduces overall file size -->
+	  <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+	  <DebugType>none</DebugType>
   </PropertyGroup>
 
 	<ItemGroup>
